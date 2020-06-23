@@ -1,0 +1,49 @@
+{% load i18n %}{% load static %}
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>{% block html_title %}Заголовок{% endblock %}</title>
+    <link rel='shortcut icon' type='image/png' href='{% static "img/favicon.ico" %}'>
+    <script src='{% static "js/jquery-3.4.1.min.js" %}'></script>
+    <script src='{% static "js/bootstrap.min.js" %}'></script>
+    <script src='{% static "fa/js/all.js" %}'></script>
+    <link rel='stylesheet' href='{% static "css/bootstrap.min.css" %}' type='text/css' />
+    {% block html_head %}{% endblock %}
+</head>
+<body>
+{% block html_body_menu %}
+    {% if request.user.is_authenticated %}
+        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+            <div class="btn-toolbar" role="toolbar">
+                <div class="btn-group mr-2" role="group">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <span class="dropdown-item"><strong>Здравствуйте, {% firstof user.get_full_name user.get_short_name user.get_username %}</strong></span>
+                        <div class="dropdown-divider"></div>
+                        <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
+                    </div>
+                </div>
+            </div>
+            <a href="{% url 'index' %}" class="navbar-brand">&nbsp;Главная</a>
+        </nav>
+    {% endif %}
+{% endblock %}
+{% if toast %}
+    <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="position: absolute; bottom: 0; right: 10px;" data-delay="10000">
+        <div class="toast-header">
+            <strong class="mr-auto">Внимание</strong>
+            <button type="button" class="ml-2 mb-1 close" data-dismiss="toast" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        </div>
+        <div class="toast-body">
+            {{ toast }}
+        </div>
+    </div>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.toast').toast('show');
+        });
+    </script>
+{% endif %}
+{% block html_body %}{% endblock %}
+</body>
+</html>
