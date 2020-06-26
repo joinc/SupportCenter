@@ -2,7 +2,7 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import auth, User
+from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from .models import UserProfile
@@ -14,8 +14,7 @@ from .models import UserProfile
 @login_required
 def index(request):
     # Главная страница
-    profile = UserProfile.objects.filter(user=request.user).first()
-    context = {'profile': profile, }
+    context = {'profile': get_object_or_404(UserProfile, user=request.user), }
     return render(request, 'index.html', context)
 
 
@@ -29,16 +28,12 @@ def login(request):
         password = request.POST['password']
         user = auth.authenticate(username=username, password=password)
         if user:
-            profile = UserProfile.objects.filter(user=user).first()
-            if profile:
-                if profile.blocked:
-                    messages.info(request, 'Выша учетная запись заблокирована, обратитесь к администратору.')
-                    return redirect(reverse('login'))
-                auth.login(request, user)
-                return redirect(request.POST['next'])
-            else:
-                auth.login(request, user)
-                return redirect(reverse('profile_create'))
+            profile = get_object_or_404(UserProfile, user=user)
+            if profile.blocked:
+                messages.info(request, 'Выша учетная запись заблокирована, обратитесь к администратору.')
+                return redirect(reverse('login'))
+            auth.login(request, user)
+            return redirect(request.POST['next'])
         else:
             messages.info(request, 'Не правильно введенные данные')
             return redirect(reverse('login'))
@@ -59,6 +54,3 @@ def logout(request):
 
 
 ######################################################################################################################
-
-
-

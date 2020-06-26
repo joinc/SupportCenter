@@ -1,0 +1,37 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_title %}Главная{% endblock %}
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container">
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4 class="border-bottom border-gray pb-2 mb-0">Список пользователей:</h4>
+                </div>
+                <div class="col-auto mr-0 text-right">
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i></button>
+                </div>
+            </div>
+            {% for profile in profile_list %}
+                <div class="row border-bottom bo">
+                    <div class="col-auto mr-auto">
+                        <div class="media text-muted pt-3">
+                            <svg class="bd-placeholder-img mr-2 rounded" width="40" height="40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="#28a745"></rect></svg>
+                            <p class="media-body pb-3 mb-0 small lh-125 border-bottom border-gray">
+                                <strong class="d-block text-gray-dark">@{{ profile.user }}</strong>
+                                {{ profile }}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="col-auto mr-0 pt-3 text-right">
+                        <a href="{% url 'profile_show' profile.id %}" class="btn btn-primary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i></a>
+                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i></button>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </main>
+{% endblock %}

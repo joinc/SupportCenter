@@ -7,8 +7,42 @@
 {% block html_body %}
     <main role="main" class="container">
         <div class="my-3 p-3 bg-white rounded shadow-sm">
-            <h4 class="border-bottom border-gray pb-2 mb-0">Профиль:</h4>
-            {{ form_user }}
+            <h4 class="border-bottom border-gray pb-2 mb-0">Первичная настройка профиля пользователя {% firstof user.get_full_name user.get_short_name user.get_username %}:</h4>
+            <form method='post' class="mt-3" action='{% url 'profile_create' %}'>
+                {% csrf_token %}
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">Выберите организацию:</span>
+                    </div>
+                    {{ form_user.organization }}
+                </div>
+                <div class="form-group form-check">
+                    {{ form_user.access_user_list }}
+                    <label class="form-check-label">{{ form_user.access_user_list.label }}</label>
+                </div>
+                <div class="form-group form-check">
+                    {{ form_user.access_user_edit }}
+                    <label class="form-check-label">{{ form_user.access_user_edit.label }}</label>
+                </div>
+{#                <div class="input-group mb-3">#}
+{#                    <div class="input-group-prepend">#}
+{#                        <span class="input-group-text">Выберите организацию:</span>#}
+{#                    </div>#}
+{#                    <select name="org" class="custom-select" id="id_org"></select>#}
+{#                </div>#}
+                <button type="submit" class="btn btn-primary">Сохранить</button>
+            </form>
         </div>
     </main>
+{#    <script>#}
+{#        $(document).ready(function(){#}
+{#            $.getJSON("{% url 'organization_all' %}", function(data){#}
+{#                let $select = $('#id_org');#}
+{#                $select.find('option').remove();#}
+{#                $.each(data['organization_list'], function(id, org) {#}
+{#                    $('<option>').val(org['id']).text(org['short_title']).appendTo($select);#}
+{#                });#}
+{#            });#}
+{#        });#}
+{#    </script>#}
 {% endblock %}
