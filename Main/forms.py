@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from .models import Organization
+from .models import Organization, AccessRole
 
 ######################################################################################################################
 
@@ -40,6 +40,34 @@ class FormUser(forms.Form):
         ),
         required=True,
     )
+    password1 = forms.CharField(
+        label='Пароль',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
+    password2 = forms.CharField(
+        label='Подтверждение пароля',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
+    change_password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
+    change_password2 = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
     organization = forms.ChoiceField(
         label='Организация',
         widget=forms.Select(
@@ -55,13 +83,20 @@ class FormUser(forms.Form):
         ),
         required=True,
     )
-    access_user_list = forms.BooleanField(
-        label='Просматривать список пользователей',
-        required=False,
-    )
-    access_user_edit = forms.BooleanField(
-        label='Добавлять, изменять, удалять пользователей',
-        required=False,
+    access_role = forms.ChoiceField(
+        label='Роль',
+        widget=forms.Select(
+            attrs={
+                'class': 'custom-select',
+            }
+        ),
+        choices=list(
+            map(
+                lambda x: [x['id'], x['title']],
+                list(AccessRole.objects.values('id', 'title').all())
+            )
+        ),
+        required=True,
     )
 
 

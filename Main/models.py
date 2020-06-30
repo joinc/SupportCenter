@@ -1,6 +1,5 @@
 from django.db import models
 from django.contrib.auth.models import User
-from .choices import ACCESS_CHOICES
 
 ######################################################################################################################
 
@@ -35,6 +34,34 @@ class Organization(models.Model):
 ######################################################################################################################
 
 
+class AccessRole(models.Model):
+    title = models.CharField(
+        'Название роли',
+        max_length=124,
+        default='',
+    )
+    user_list = models.BooleanField(
+        verbose_name='Просматривать список пользователей',
+        default=False,
+    )
+    user_edit = models.BooleanField(
+        verbose_name='Добавлять, изменять, удалять пользователей',
+        default=False,
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'id',
+        verbose_name = 'Роль'
+        verbose_name_plural = 'Роли'
+        managed = True
+
+
+######################################################################################################################
+
+
 class UserProfile(models.Model):
     user = models.OneToOneField(
         User,
@@ -51,13 +78,12 @@ class UserProfile(models.Model):
         verbose_name='Учетная запись заблокирована',
         default=False,
     )
-    access_user_list = models.BooleanField(
-        verbose_name='Просматривать список пользователей',
-        default=False,
-    )
-    access_user_edit = models.BooleanField(
-        verbose_name='Добавлять, изменять, удалять пользователей',
-        default=False,
+    access = models.ForeignKey(
+        AccessRole,
+        verbose_name='Роль доступа',
+        null=True,
+        related_name='AccessRole',
+        on_delete=models.SET_NULL,
     )
     create_date = models.DateTimeField(
         verbose_name='Дата создания учетной записи',
@@ -76,3 +102,5 @@ class UserProfile(models.Model):
 
 
 ######################################################################################################################
+
+
