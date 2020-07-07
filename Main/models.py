@@ -40,6 +40,10 @@ class AccessRole(models.Model):
         max_length=124,
         default='',
     )
+    is_sample = models.BooleanField(
+        verbose_name="Это шаблом роли",
+        default=False,
+    )
     user_list = models.BooleanField(
         verbose_name='Просматривать список пользователей',
         default=False,

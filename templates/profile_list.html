@@ -5,19 +5,26 @@
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
 {% block html_body %}
-    <main role="main" class="container">
-        <div class="my-3 p-3 bg-white rounded shadow-sm">
-            <div class="row">
-                <div class="col-auto mr-auto">
-                    <h4 class="border-bottom border-gray pb-2 mb-0">Список пользователей:</h4>
-                </div>
-                <div class="col-auto mr-0 text-right">
-                    {% if profile.access.user_edit %}
-                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i></button>
-                    {% endif %}
-                </div>
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Список пользователей</li>
+                    </ol>
+                </nav>
             </div>
-            {% for u in profile_list %}
+            <div class="col-auto mr-0 text-right">
+                {% if current_user.access.user_edit %}
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="my-3 p-3 bg-white rounded shadow-sm">
+            <h4 class="border-bottom border-gray pb-2 mb-0">Список пользователей:</h4>
+            {% for u in profiles_list %}
                 <div class="row border-bottom bo">
                     <div class="col-auto mr-auto">
                         <div class="media text-muted pt-3">
@@ -29,22 +36,14 @@
                         </div>
                     </div>
                     <div class="col-auto mr-0 pt-3 text-right">
-                        <a href="{% url 'profile_show' u.id %}" class="btn btn-primary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i></a>
-                        {% if not u.user.is_superuser and profile.access.user_edit %}
-                            <button type="button" class="btn btn-outline-info" onclick="UserPassword('{{ u.user.get_full_name }}', '{{ u.user.id }}')" title="Редактировать пользователя"><i class="fas fa-user-edit"></i></button>
-                            <button type="button" class="btn btn-outline-info" onclick="UserPassword('{{ u.user.get_full_name }}', '{{ u.user.id }}')" title="Сменить пароль пользователя"><i class="fas fa-key"></i></button>
-                            {% if u.blocked %}
-                                <button type="button" class="btn btn-outline-success" onclick="UserUnblock('{{ u.user.get_full_name }}', '{{ u.user.id }}')" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i></button>
-                            {% else %}
-                                <button type="button" class="btn btn-outline-danger" onclick="UserBlock('{{ u.user.get_full_name }}', '{{ u.user.id }}')" title="Заблокировать пользователя"><i class="fas fa-lock"></i></button>
-                            {% endif %}
-                        {% endif %}
+                        <a href="{% url 'profile_show' u.id %}" class="btn btn-primary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
                     </div>
                 </div>
             {% endfor %}
+            <small class="d-block text-right mt-3">Всего пользователей: {{ profiles_count }}</small>
         </div>
     </main>
-    {% if profile.access.user_edit %}
+    {% if current_user.access.user_edit %}
         <!-- Окно создания нового пользователя -->
         <div class="modal fade" id="ModalUserAdd" tabindex="-1" role="dialog" aria-labelledby="ModalUserAddTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -65,33 +64,38 @@
                                 <div class="col-md-6 mb-2">
                                     <h6>{{ form_user.first_name.label }}:</h6>
                                     {{ form_user.first_name }}
-                                    <small class="form-text text-muted">Обязательное поле. На русском языке.</small>
+                                    <small class="form-text text-muted">На русском языке.</small>
                                 </div>
                                 <div class="col-md-6 mb-2">
                                     <h6>{{ form_user.last_name.label }}:</h6>
                                     {{ form_user.last_name }}
-                                    <small class="form-text text-muted">Обязательное поле. На русском языке.</small>
+                                    <small class="form-text text-muted">На русском языке.</small>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-12 mb-2">
+                                <div class="col-md-6 mb-2">
                                     <h6>{{ form_user.username.label }}:</h6>
                                     <div class="input-group">
                                         <div class="input-group-prepend"><span class="input-group-text">@</span></div>
                                         {{ form_user.username }}
                                     </div>
-                                    <small class="form-text text-muted">Обязательное поле. Только английские буквы, цифры и символы @/./+/-/_.</small>
+                                    <small class="form-text text-muted">Обязательное поле. Только английские буквы.</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_user.email.label }}:</h6>
+                                    {{ form_user.email }}
+                                    <small class="form-text text-muted">Обязательное поле. Только английские буквы.</small>
                                 </div>
                             </div>
                             <div class="row">
                                 <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.password1.label}}:</h6>
-                                    {{ form_user.password1 }}
+                                    <h6>{{ form_change_password.password1.label}}:</h6>
+                                    {{ form_change_password.password1 }}
                                     <small class="form-text text-muted">Пароль не должен совпадать с логином и состоять только из цифр. Пароль должен содержать как минимум 8 символов.</small>
                                 </div>
                                 <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.password2.label }}:</h6>
-                                    {{ form_user.password2 }}
+                                    <h6>{{ form_change_password.password2.label }}:</h6>
+                                    {{ form_change_password.password2 }}
                                     <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
                                 </div>
                             </div>
@@ -117,119 +121,13 @@
             </div>
         </div>
         <!-- /Окно создания нового пользователя -->
-        <!-- Окно запроса подтверждения на блокировку -->
-        <div class="modal fade" id="ModalUserBlock" tabindex="-1" role="dialog" aria-labelledby="ModalUserBlockTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <form method='post' action='' >
-                        {% csrf_token %}
-                        <input type="hidden" name="useridblock" id="UserIdBlock" value="">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalUserBlockTitle">Заблокировать пользователя</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">Вы действительно хотите заблокировать пользователя <span id="UserNameBlock"></span>?</div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger" type="submit" name="blockuser">Блокировать</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не блокировать</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- /Окно запроса подтверждения на блокировку -->
-        <!-- Окно запроса подтверждения на разблокировку -->
-        <div class="modal fade" id="ModalUserUnblock" tabindex="-1" role="dialog" aria-labelledby="ModalUserUnblockTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered" role="document">
-                <div class="modal-content">
-                    <form method='post' action='' >
-                        {% csrf_token %}
-                        <input type="hidden" name="useridunblock" id="UserIdUnblock" value="">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalUserUnblockTitle">Разблокировать пользователя</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">Вы действительно хотите разблокировать пользователя <span id="UserNameUnblock"></span>?</div>
-                        <div class="modal-footer">
-                            <button class="btn btn-success" type="submit" name="unblockuser">Разблокировать</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не разблокировать</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- /Окно запроса подтверждения на разблокировку -->
-        <!-- Окно смены пароля -->
-        <div class="modal fade" id="ModalUserPassword" tabindex="-1" role="dialog" aria-labelledby="ModalUserPasswordTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content text-left">
-                    <form id="ModalUserPasswordAction" method='post' action='' >
-                        {% csrf_token %}
-                        <input type="hidden" name="useridpassword" id="UserIdPassword" value="">
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="ModalUserPasswordTitle">Сменить пароль пользователя <strong><span id="UserNamePassword"></span></strong></h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            {% for message in messages %}
-                                <div class="mb-3">
-                                    <div class="alert alert-danger" role="alert">{{ message }}</div>
-                                </div>
-                            {% endfor %}
-                            <div class="mb-3">
-                                <h6>{{ form_user.changepasswd1.label}}:</h6>
-                                {{ form_user.changepasswd1 }}
-                                <small class="form-text text-muted">Пароль не должен совпадать с логином и состоять только из цифр. Пароль должен содержать как минимум 8 символов.</small>
-                            </div>
-                            <div class="mb-3">
-                                <h6>{{ form_user.changepasswd2.label }}:</h6>
-                                {{ form_user.changepasswd2 }}
-                                <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-info" type="submit" name="changepassword">Сменить пароль</button>
-                            <button class="btn btn-secondary" type="button" data-dismiss="modal">Не менять пароль</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- /Окно смены пароля -->
     {% endif %}
-    <script type="text/javascript">
-        {% if show_user %}
+    {% if show_form_user %}
+        <script type="text/javascript">
             $(document).ready(function(){
                 $('#ModalUserAdd').modal('show');
             });
-        {% endif %}
-        {% if show_passwd %}
-            $(document).ready(function(){
-                $('#UserNamePassword').text('{{ user.user.get_full_name }}');
-                $('#UserIdPassword').attr('value', '{{ user.user.id }}');
-                $('#ModalUserPassword').modal('show');
-            });
-        {% endif %}
-
-        function UserBlock(uname, uid) {
-            $('#UserNameBlock').text(uname);
-            $('#UserIdBlock').attr('value', uid);
-            $('#ModalUserBlock').modal('show');
-        }
-        function UserUnblock(uname, uid) {
-            $('#UserNameUnblock').text(uname);
-            $('#UserIdUnblock').attr('value', uid);
-            $('#ModalUserUnblock').modal('show');
-        }
-        function UserPassword(uname, uid) {
-            $('#UserNamePassword').text(uname);
-            $('#UserIdPassword').attr('value', uid);
-            $('#ModalUserPassword').modal('show');
-        }
-    </script>
+        </script>
+    {% endif %}
 
 {% endblock %}

@@ -3,6 +3,50 @@
 from django import forms
 from .models import Organization, AccessRole
 
+
+######################################################################################################################
+
+
+class FormChangePassword(forms.Form):
+    password1 = forms.CharField(
+        label='Новый пароль',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
+    password2 = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.TextInput(
+            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+        ),
+        required=True,
+    )
+
+
+######################################################################################################################
+
+
+class FormAccess(forms.Form):
+    access_user_list = forms.BooleanField(
+        label='Просматривать список пользователей',
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'custom-control-input',
+            }
+        ),
+        required=False,
+    )
+    access_user_edit = forms.BooleanField(
+        label='Редактировать пользователя',
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'custom-control-input',
+            }
+        ),
+        required=False,
+    )
+
 ######################################################################################################################
 
 
@@ -14,6 +58,7 @@ class FormUser(forms.Form):
                 'type': 'text',
                 'class': 'form-control',
                 'placeholder': 'Введите логин пользователя',
+                'readonly': '',
             }
         ),
         required=True,
@@ -27,7 +72,7 @@ class FormUser(forms.Form):
                 'placeholder': 'Введите имя пользователя',
             }
         ),
-        required=True,
+        required=False,
     )
     last_name = forms.CharField(
         label='Фамилия',
@@ -38,33 +83,16 @@ class FormUser(forms.Form):
                 'placeholder': 'Введите фамилию пользователя',
             }
         ),
-        required=True,
+        required=False,
     )
-    password1 = forms.CharField(
-        label='Пароль',
-        widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
-        ),
-        required=True,
-    )
-    password2 = forms.CharField(
-        label='Подтверждение пароля',
-        widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
-        ),
-        required=True,
-    )
-    change_password1 = forms.CharField(
-        label='Новый пароль',
-        widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
-        ),
-        required=True,
-    )
-    change_password2 = forms.CharField(
-        label='Подтверждение нового пароля',
-        widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+    email = forms.EmailField(
+        label='Электронная почта',
+        widget=forms.EmailInput(
+            attrs={
+                'type': 'email',
+                'class': 'form-control',
+                'placeholder': 'Введите электронный адрес',
+            }
         ),
         required=True,
     )

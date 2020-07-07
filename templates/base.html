@@ -18,8 +18,8 @@
                 <div class="btn-group mr-2" role="group">
                     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <span class="dropdown-item"><strong>Здравствуйте, {% firstof user.get_full_name user.get_short_name user.get_username %}</strong></span>
-                        {% if profile.access.user_list %}
+                        <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
+                        {% if current_user.access.user_list %}
                             <div class="dropdown-divider"></div>
                             <a href="{% url 'profile_list' %}" class="dropdown-item">
                                 <div class="row">

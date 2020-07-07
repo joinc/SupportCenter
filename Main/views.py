@@ -14,7 +14,7 @@ from .models import UserProfile
 @login_required
 def index(request):
     # Главная страница
-    context = {'profile': get_object_or_404(UserProfile, user=request.user), }
+    context = {'current_user': get_object_or_404(UserProfile, user=request.user), }
     return render(request, 'index.html', context)
 
 
