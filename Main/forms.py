@@ -7,18 +7,26 @@ from .models import Organization, AccessRole
 ######################################################################################################################
 
 
-class FormChangePassword(forms.Form):
+class FormPassword(forms.Form):
     password1 = forms.CharField(
         label='Новый пароль',
         widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+            attrs={
+                'type': 'password',
+                'class': 'form-control',
+                'autocomplete': 'off',
+            }
         ),
         required=True,
     )
     password2 = forms.CharField(
         label='Подтверждение нового пароля',
         widget=forms.TextInput(
-            attrs={'type': 'password', 'class': 'form-control', 'autocomplete': 'off', }
+            attrs={
+                'type': 'password',
+                'class': 'form-control',
+                'autocomplete': 'off',
+            }
         ),
         required=True,
     )
@@ -44,8 +52,27 @@ class FormAccess(forms.Form):
                 'class': 'custom-control-input',
             }
         ),
+
         required=False,
     )
+
+######################################################################################################################
+
+
+class FormUserSearch(forms.Form):
+
+    find = forms.CharField(
+        label='Поиск пользователя',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'text',
+                'class': 'form-control',
+                'placeholder': 'Введите логин или фамилию пользователя',
+            }
+        ),
+        required=False,
+    )
+
 
 ######################################################################################################################
 
@@ -58,7 +85,6 @@ class FormUser(forms.Form):
                 'type': 'text',
                 'class': 'form-control',
                 'placeholder': 'Введите логин пользователя',
-                'readonly': '',
             }
         ),
         required=True,
@@ -121,7 +147,7 @@ class FormUser(forms.Form):
         choices=list(
             map(
                 lambda x: [x['id'], x['title']],
-                list(AccessRole.objects.values('id', 'title').all())
+                list(AccessRole.objects.values('id', 'title').filter(is_sample=True))
             )
         ),
         required=True,

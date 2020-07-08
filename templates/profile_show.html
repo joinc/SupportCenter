@@ -32,28 +32,32 @@
                 {% endif %}
             </div>
         </div>
-        <div class="my-3 p-3 bg-white rounded shadow-sm">
-            <h4 class="border-bottom border-gray pb-2 mb-3{% if profile.blocked %} alert-danger{% endif %}">Профиль пользователя {{ profile }}:</h4>
-            <div class="row">
-                <div class="col-md-6 mb-2">
-                    <h5 class="border-bottom border-gray">{{ profile.user.first_name }}&nbsp;</h5>
-                    <small class="form-text text-muted">Имя</small>
-                </div>
-                <div class="col-md-6 mb-2">
-                    <h5 class="border-bottom border-gray">{{ profile.user.last_name }}&nbsp;</h5>
-                    <small class="form-text text-muted">Фамилия</small>
-                </div>
+        <div class="card bg-light rounded shadow-sm">
+            <div class="card-header{% if profile.blocked %} bg-danger{% endif %}">
+                <h4>Профиль пользователя {{ profile }}:</h4>
             </div>
-            <div class="row">
-                <div class="col mb-2">
-                    <h5 class="border-bottom border-gray">{{ profile.user.username }}</h5>
-                    <small class="form-text text-muted">Логин</small>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <h5 class="border-bottom border-gray">{{ profile.user.first_name }}&nbsp;</h5>
+                        <small class="form-text text-muted">Имя</small>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <h5 class="border-bottom border-gray">{{ profile.user.last_name }}&nbsp;</h5>
+                        <small class="form-text text-muted">Фамилия</small>
+                    </div>
                 </div>
-            </div>
-            <div class="row">
-                <div class="col mb-2">
-                    <h5 class="border-bottom border-gray">{{ profile.user.email }}</h5>
-                    <small class="form-text text-muted">Адрес электронной почты</small>
+                <div class="row">
+                    <div class="col mb-2">
+                        <h5 class="border-bottom border-gray">{{ profile.user.username }}</h5>
+                        <small class="form-text text-muted">Логин</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-2">
+                        <h5 class="border-bottom border-gray">{{ profile.user.email }}</h5>
+                        <small class="form-text text-muted">Адрес электронной почты</small>
+                    </div>
                 </div>
             </div>
         </div>
@@ -121,13 +125,13 @@
                             </div>
                         {% endfor %}
                         <div class="mb-3">
-                            <h6>{{ form_change_password.password1.label}}:</h6>
-                            {{ form_change_password.password1 }}
+                            <h6>{{ form_password.password1.label}}:</h6>
+                            {{ form_password.password1 }}
                             <small class="form-text text-muted">Пароль не должен совпадать с логином и состоять только из цифр.<br />Пароль должен содержать как минимум 8 символов.</small>
                         </div>
                         <div class="mb-3">
-                            <h6>{{ form_change_password.password2.label }}:</h6>
-                            {{ form_change_password.password2 }}
+                            <h6>{{ form_password.password2.label }}:</h6>
+                            {{ form_password.password2 }}
                             <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
                         </div>
                     </div>
