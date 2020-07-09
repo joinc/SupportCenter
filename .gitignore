@@ -4,11 +4,9 @@ venv/
 upload/
 static/
 Main/migrations/
-Main/static/
 Main/migrations/__init__.py
 Main/__init__.py
 Esign/migrations/
-Esign/static/
 Esign/migrations/__init__.py
 Esign/__init__.py
 manage.py

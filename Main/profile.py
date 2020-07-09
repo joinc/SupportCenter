@@ -57,7 +57,7 @@ def profile_create(request, context):
         return redirect(reverse('profile_list'))
     context['form_user'] = FormUser(initial=initial)
     context['show_form_user'] = True
-    # return render(request, 'profile_list.html', context)
+    # return render(request, 'list.html', context)
     return context
 
 ######################################################################################################################
@@ -96,7 +96,7 @@ def profile_list(request):
     context['profiles_count'] = len(profiles_list)
     context['profiles_list'] = profiles_list
 
-    return render(request, 'profile_list.html', context)
+    return render(request, 'profile/list.html', context)
 
 
 ######################################################################################################################
@@ -138,7 +138,7 @@ def profile_show(request, profile_id):
             else:
                 profile.user.set_password(password2)
                 profile.user.save()
-    return render(request, 'profile_show.html', context)
+    return render(request, 'profile/show.html', context)
 
 
 ######################################################################################################################
@@ -204,7 +204,7 @@ def profile_edit(request, profile_id):
         profile.user.save()
         profile.save()
         return redirect(reverse('profile_show', args=(profile_id, )))
-    return render(request, 'profile_edit.html', context)
+    return render(request, 'profile/edit.html', context)
 
 
 ######################################################################################################################
