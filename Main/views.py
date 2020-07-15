@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
-from .models import UserProfile
+from Profile.models import UserProfile
 
 
 ######################################################################################################################

@@ -9,6 +9,9 @@ Main/__init__.py
 Esign/migrations/
 Esign/migrations/__init__.py
 Esign/__init__.py
+Profile/migrations/
+Profile/migrations/__init__.py
+Profile/__init__.py
 manage.py
 db.sqlite3
 SupportCenter/settings.py

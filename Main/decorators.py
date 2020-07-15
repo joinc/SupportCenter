@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import get_object_or_404, redirect, reverse
-from .models import UserProfile
+from Profile.models import UserProfile
 
 
 ######################################################################################################################

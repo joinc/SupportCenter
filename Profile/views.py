@@ -3,10 +3,11 @@
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.contrib.auth.models import auth, User
-from .models import UserProfile, Organization, AccessRole
-from .forms import FormUser, FormPassword, FormAccess, FormUserSearch
-from .decorators import access_user_edit, access_user_list
+from django.contrib.auth.models import User
+from Main.models import Organization
+from Profile.models import UserProfile, AccessRole
+from Main.forms import FormUser, FormPassword, FormAccess, FormUserSearch
+from Main.decorators import access_user_edit, access_user_list
 
 
 ######################################################################################################################
@@ -57,7 +58,6 @@ def profile_create(request, context):
         return redirect(reverse('profile_list'))
     context['form_user'] = FormUser(initial=initial)
     context['show_form_user'] = True
-    # return render(request, 'list.html', context)
     return context
 
 ######################################################################################################################

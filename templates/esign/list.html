@@ -1,0 +1,145 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_title %}Главная{% endblock %}
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">Список электронных подписей</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="col-auto mr-0 text-right">
+                {% if current_user.access.user_edit %}
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить</button>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card bg-light rounded shadow-sm">
+            <div class="card-header">
+                <h4>Список пользователей:</h4>
+                {% if profiles_count %}
+                    <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}.
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-body">
+                {% for u in profiles_list %}
+                    <div class="row border-bottom bo">
+                        <div class="col-auto mr-auto">
+                            <div class="media text-muted pt-3">
+                                <svg class="bd-placeholder-img mr-2 rounded" width="40" height="40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="{% if u.blocked %}#dc3545{% else %}#28a745{% endif %}"></rect></svg>
+                                <p class="media-body pb-3 mb-0 small lh-125">
+                                    <strong class="d-block text-gray-dark">{{ u }}</strong>
+                                    @{{ u.user }}
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-auto mr-0 pt-3 text-right">
+                            <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <small class="d-block text-right">Всего пользователей: {{ profiles_total }}</small>
+            </div>
+        </div>
+    </main>
+    {% if current_user.access.user_edit %}
+        <!-- Окно создания нового пользователя -->
+        <div class="modal fade" id="ModalUserAdd" tabindex="-1" role="dialog" aria-labelledby="ModalUserAddTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content text-left">
+                    <form method='post' action=''>
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h4 class="modal-title" id="ModalUserAddTitle">Добавление нового пользователя</h4>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            {% for message in messages %}
+                                <div class="mb-3">
+                                    <div class="alert alert-danger" role="alert">{{ message }}</div>
+                                </div>
+                            {% endfor %}
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_user.first_name.label }}:</h6>
+                                    {{ form_user.first_name }}
+                                    <small class="form-text text-muted">На русском языке.</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_user.last_name.label }}:</h6>
+                                    {{ form_user.last_name }}
+                                    <small class="form-text text-muted">На русском языке.</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_user.username.label }}:</h6>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend"><span class="input-group-text">@</span></div>
+                                        {{ form_user.username }}
+                                    </div>
+                                    <small class="form-text text-muted">Обязательное поле. Только английские буквы.</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_user.email.label }}:</h6>
+                                    {{ form_user.email }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_password.password1.label}}:</h6>
+                                    {{ form_password.password1 }}
+                                    <small class="form-text text-muted">Пароль не должен совпадать с логином и состоять только из цифр. Пароль должен содержать как минимум 8 символов.</small>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <h6>{{ form_password.password2.label }}:</h6>
+                                    {{ form_password.password2 }}
+                                    <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-2">
+                                    <h6>{{ form_user.organization.label}}:</h6>
+                                    {{ form_user.organization }}
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12 mb-2">
+                                    <h6>{{ form_user.access_role.label}}:</h6>
+                                    {{ form_user.access_role }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit" name="adduser">Добавить</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не добавлять</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /Окно создания нового пользователя -->
+    {% endif %}
+    {% if show_form_user %}
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#ModalUserAdd').modal('show');
+            });
+        </script>
+    {% endif %}
+
+{% endblock %}

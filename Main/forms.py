@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from .models import Organization, AccessRole
-
+from Main.models import Organization
+from Profile.models import AccessRole
 
 ######################################################################################################################
 
