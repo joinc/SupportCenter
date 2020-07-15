@@ -56,11 +56,11 @@ class FormAccess(forms.Form):
         required=False,
     )
 
+
 ######################################################################################################################
 
 
 class FormUserSearch(forms.Form):
-
     find = forms.CharField(
         label='Поиск пользователя',
         widget=forms.TextInput(

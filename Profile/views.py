@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from Main.models import Organization
 from Profile.models import UserProfile, AccessRole
-from Main.forms import FormUser, FormPassword, FormAccess, FormUserSearch
+from Profile.forms import FormUser, FormPassword, FormAccess, FormUserSearch
 from Main.decorators import access_user_edit, access_user_list
 
 
