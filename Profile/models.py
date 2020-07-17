@@ -23,6 +23,18 @@ class AccessRole(models.Model):
         verbose_name='Добавлять, изменять, удалять пользователей',
         default=False,
     )
+    esign_list = models.BooleanField(
+        verbose_name='Просматривать список электронных подписей',
+        default=False,
+    )
+    esign_edit = models.BooleanField(
+        verbose_name='Добавлять, изменять, удалять электронные подписи',
+        default=False,
+    )
+    esign_moderator = models.BooleanField(
+        verbose_name='Модерировать электронные подписи',
+        default=False,
+    )
 
     def __str__(self):
         return '{0}'.format(self.title)

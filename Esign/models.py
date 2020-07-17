@@ -40,6 +40,31 @@ class Certificate(models.Model):
         upload_to='upload/sign/%Y/%m/%d',
         null=True,
     )
+    renew = models.ForeignKey(
+        'self',
+        verbose_name='Продляет сертификат',
+        null=True,
+        default=None,
+
+        related_name='EsignRenew',
+        on_delete=models.SET_NULL,
+    )
+    extended = models.ForeignKey(
+        'self',
+        verbose_name='Продлен сертификатом',
+        null=True,
+        default=None,
+        related_name='EsignExtended',
+        on_delete=models.SET_NULL,
+    )
+    is_extended = models.BooleanField(
+        verbose_name='Продлен',
+        default=False,
+    )
+    is_terminate = models.BooleanField(
+        verbose_name='Аннулирован',
+        default=False,
+    )
     create_date = models.DateTimeField(
         verbose_name='Дата создания учетной записи',
         auto_now_add=True,
@@ -50,8 +75,10 @@ class Certificate(models.Model):
         return '{0}'.format(self.entity)
 
     class Meta:
-        ordering = '-valid_for',
+        ordering = 'is_terminate', 'is_extended', 'valid_for',
         verbose_name = 'Сертификат'
         verbose_name_plural = 'Сертификаты'
         managed = True
 
+
+######################################################################################################################

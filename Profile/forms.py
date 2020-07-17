@@ -52,7 +52,33 @@ class FormAccess(forms.Form):
                 'class': 'custom-control-input',
             }
         ),
-
+        required=False,
+    )
+    access_esign_list = forms.BooleanField(
+        label='Просматривать список электронных подписей',
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'custom-control-input',
+            }
+        ),
+        required=False,
+    )
+    access_esign_edit = forms.BooleanField(
+        label='Добавлять, изменять, удалять электронные подписи',
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'custom-control-input',
+            }
+        ),
+        required=False,
+    )
+    access_esign_moderator = forms.BooleanField(
+        label='Модерировать электронные подписи',
+        widget=forms.CheckboxInput(
+            attrs={
+                'class': 'custom-control-input',
+            }
+        ),
         required=False,
     )
 

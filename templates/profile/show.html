@@ -16,25 +16,10 @@
                     </ol>
                 </nav>
             </div>
-            <div class="col-auto mr-0 text-right">
-                {% if not profile.user.is_superuser %}
-                    {% if current_user == profile or current_user.access.user_edit %}
-                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
-                    {% endif %}
-                    {% if current_user.access.user_edit %}
-                        <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
-                        {% if profile.blocked %}
-                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
-                        {% else %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
-                        {% endif %}
-                    {% endif %}
-                {% endif %}
-            </div>
         </div>
-        <div class="card bg-light rounded shadow-sm">
-            <div class="card-header{% if profile.blocked %} bg-danger{% endif %}">
-                <h4>Профиль пользователя {{ profile }}:</h4>
+        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
+            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+                <h4>Профиль пользователя:</h4>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -59,6 +44,21 @@
                         <small class="form-text text-muted">Адрес электронной почты</small>
                     </div>
                 </div>
+            </div>
+            <div class="card-footer text-right">
+                {% if not profile.user.is_superuser %}
+                    {% if current_user == profile or current_user.access.user_edit %}
+                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
+                    {% endif %}
+                    {% if current_user.access.user_edit %}
+                        <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
+                        {% if profile.blocked %}
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
+                        {% else %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
             </div>
         </div>
     </main>

@@ -18,9 +18,11 @@
                 </nav>
             </div>
         </div>
-        <div class="card bg-light rounded shadow-sm">
-            <div class="card-header{% if profile.blocked %} bg-danger{% endif %}">
-                <h4>Профиль пользователя {{ profile }}:</h4>
+        <h3>Редактировать профиль пользователя:</h3>
+        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
+            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+                <strong class="text-gray-dark">{{ profile }}</strong>
+                @{{ profile.user }}
             </div>
             <div class="card-body">
                 <form method='post' action=''>
@@ -86,4 +88,9 @@
             </div>
         </div>
     </main>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('#id_username').prop("disabled", true);
+        });
+    </script>
 {% endblock %}

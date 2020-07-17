@@ -55,10 +55,11 @@ def profile_create(request, context):
         new_profile.organization = get_object_or_404(Organization, id=organization)
         new_profile.access = get_object_or_404(AccessRole, id=access_role)
         new_profile.save()
-        return redirect(reverse('profile_list'))
+        return context
     context['form_user'] = FormUser(initial=initial)
     context['show_form_user'] = True
     return context
+
 
 ######################################################################################################################
 
@@ -103,11 +104,10 @@ def profile_list(request):
 
 
 @login_required
+@access_user_list
 def profile_show(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
     current_user = get_object_or_404(UserProfile, user=request.user)
-    if profile != current_user and not current_user.access.user_edit:
-        return redirect(reverse('index'))
     context = {
         'current_user': current_user,
         'profile': profile,
@@ -168,6 +168,9 @@ def profile_edit(request, profile_id):
             initial={
                 'access_user_list': profile.access.user_list,
                 'access_user_edit': profile.access.user_edit,
+                'access_esign_list': profile.access.esign_list,
+                'access_esign_edit': profile.access.esign_edit,
+                'access_esign_moderator': profile.access.esign_moderator,
             }
         ),
         'sample': profile.access.is_sample,
@@ -183,22 +186,25 @@ def profile_edit(request, profile_id):
         profile.user.first_name = first_name
         profile.user.last_name = last_name
         profile.organization = get_object_or_404(Organization, id=organization)
-        # Если выбрана определенная роль, то присваивается эта роль
         if access_choice == 'sample':
+            # Если выбрана определенная роль, то присваивается эта роль
             access = get_object_or_404(AccessRole, id=access_role)
-        # Если выбраны отдельные права, то создается новая роль с этими правами
         else:
+            # Если выбраны отдельные права, то создается новая роль с этими правами
             access = AccessRole(
                 user_list=bool(request.POST.get('access_user_list', False)),
                 user_edit=bool(request.POST.get('access_user_edit', False)),
+                esign_list=bool(request.POST.get('access_esign_list', False)),
+                esign_edit=bool(request.POST.get('access_esign_edit', False)),
+                esign_moderator=bool(request.POST.get('access_esign_moderator', False)),
                 title=profile.user.username,
             )
             access.save()
-        # Если роль была шаблонная, то она просто меняется на новую
         if profile.access.is_sample:
+            # Если роль была шаблонная, то она просто меняется на новую
             profile.access = access
-        # Если роль была не шаблонная, то она сначала удаляется, чтобы не накапливать бесхозные роли
         else:
+            # Если роль была не шаблонная, то она сначала удаляется, чтобы не накапливать бесхозные роли
             profile.access.delete()
             profile.access = access
         profile.user.save()

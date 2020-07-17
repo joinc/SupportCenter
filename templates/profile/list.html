@@ -21,52 +21,44 @@
                 {% endif %}
             </div>
         </div>
-
-        <div class="card bg-light rounded shadow-sm">
-            <div class="card-header">
-                <form method='post' action=''>
-                    {% csrf_token %}
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">Поиск пользователей</span>
-                        </div>
-                        {{ form_user_search.find }}
-                        <div class="input-group-append">
-                            <button class="btn btn-info" type="submit" name="search">Поиск</button>
-                        </div>
-                    </div>
-                </form>
-                <h4>Список пользователей:</h4>
-                {% if profiles_count %}
-                    <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}.
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                {% endif %}
+        <form method='post' action=''>
+            {% csrf_token %}
+            <div class="input-group">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">Поиск пользователей</span>
+                </div>
+                {{ form_user_search.find }}
+                <div class="input-group-append">
+                    <button class="btn btn-info" type="submit" name="search">Поиск</button>
+                </div>
             </div>
-            <div class="card-body">
-                {% for u in profiles_list %}
-                    <div class="row border-bottom bo">
-                        <div class="col-auto mr-auto">
-                            <div class="media text-muted pt-3">
-                                <svg class="bd-placeholder-img mr-2 rounded" width="40" height="40" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice" focusable="false" role="img"><rect width="100%" height="100%" fill="{% if u.blocked %}#dc3545{% else %}#28a745{% endif %}"></rect></svg>
-                                <p class="media-body pb-3 mb-0 small lh-125">
-                                    <strong class="d-block text-gray-dark">{{ u }}</strong>
-                                    @{{ u.user }}
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-auto mr-0 pt-3 text-right">
-                            <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
-                        </div>
-                    </div>
-                {% endfor %}
+        </form>
+        <h3>Список пользователей:</h3>
+        {% if profiles_count %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
             </div>
-            <div class="card-footer">
-                <small class="d-block text-right">Всего пользователей: {{ profiles_total }}</small>
-            </div>
-        </div>
+        {% endif %}
+        <table class="table table-hover table-sm">
+            {% for u in profiles_list %}
+                <tr{% if u.blocked %} class="table-danger"{% endif %}>
+                    <td>
+                        <div class="mb-0 small">
+                            <strong class="text-gray-dark">{{ u.user.get_full_name }}</strong>
+                            <span class="d-block">@{{ u.user.get_username }}</span>
+                        </div>
+                    </td>
+                    <td class="pt-2">
+                        {% if u.blocked %}Заблокирован{% endif %}
+                    </td>
+                    <td class="text-right ">
+                        <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </table>
     </main>
     {% if current_user.access.user_edit %}
         <!-- Окно создания нового пользователя -->
