@@ -7,15 +7,30 @@ from Profile.models import UserProfile
 from Esign.models import Certificate
 from Esign.forms import FormUpload
 from Main.decorators import access_esign_list, access_esign_edit
+from datetime import datetime, timedelta
 import fsb795
 import mimetypes
 
 ######################################################################################################################
 
 
+def esign_check_current(esign_list):
+    current_date = datetime.now().date()
+    for esign in esign_list:
+        esign_date = esign.valid_for.date()
+        if esign_date < (current_date + timedelta(days=30)):
+            esign.is_expires = True
+            if esign_date < current_date:
+                esign.is_current = False
+            esign.save()
+
+
+######################################################################################################################
+
+
 @login_required
 @access_esign_list
-def esign_list(request):
+def esign_get_list(request):
     # Список электронных подписей
     current_user = get_object_or_404(UserProfile, user=request.user)
     if request.POST and request.FILES:
@@ -33,6 +48,7 @@ def esign_list(request):
             sub, vlad_sub = cert.subjectCert()
             esign.entity = sub['CN']
             serial = str(hex(cert.serialNumber()))
+            # Убираем из серийного номера символ (x) - обозначение шестнадцатеричной строки
             serial = serial[0] + serial[2:]
             esign.serial = serial
             valid = cert.validityCert()
@@ -45,55 +61,35 @@ def esign_list(request):
                     esign.renew = esign_extended
                     esign.save()
                     esign_extended.is_extended = True
+                    esign_extended.is_current = False
                     esign_extended.extended = esign
                     esign_extended.save()
             esign.save()
         return redirect(reverse('esign_list'))
     else:
         if current_user.access.esign_moderator:
-            esign_list_current = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_terminate=False).filter(is_extended=False)
-            esign_list_extended = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_extended=True)
-            esign_list_terminate = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_terminate=True)
+            esign_check_current(list(Certificate.objects.filter(is_current=True)))
+            esign_list_current = Certificate.objects.filter(is_current=True)
+            esign_list_expires = Certificate.objects.filter(is_expires=True)
+            esign_list_extended = Certificate.objects.filter(is_extended=True)
+            esign_list_terminate = Certificate.objects.filter(is_terminate=True)
         else:
-            esign_list_current = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_terminate=False).filter(is_extended=False).filter(owner__organization=current_user.organization)
-            esign_list_extended = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_extended=True).filter(owner__organization=current_user.organization)
-            esign_list_terminate = Certificate.objects.values(
-                'id',
-                'entity',
-                'valid_from',
-                'valid_for',
-            ).filter(is_terminate=True).filter(owner__organization=current_user.organization)
+            esign_check_current(list(Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization)))
+            esign_list_current = Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization)
+            esign_list_expires = Certificate.objects.filter(is_expires=True).filter(owner__organization=current_user.organization)
+            esign_list_extended = Certificate.objects.filter(is_extended=True).filter(owner__organization=current_user.organization)
+            esign_list_terminate = Certificate.objects.filter(is_terminate=True).filter(owner__organization=current_user.organization)
         context = {
             'current_user': current_user,
             'form_upload': FormUpload(),
             'esign_list_current': esign_list_current,
+            'esign_list_expires': esign_list_expires,
             'esign_list_extended': esign_list_extended,
             'esign_list_terminate': esign_list_terminate,
+            'esign_count_current': esign_list_current.count(),
+            'esign_count_expires': esign_list_expires.count(),
+            'esign_count_extended': esign_list_extended.count(),
+            'esign_count_terminate': esign_list_terminate.count(),
         }
         return render(request, 'esign/list.html', context)
 
@@ -128,6 +124,7 @@ def esign_show(request, esign_id):
 def esign_terminate(request, esign_id):
     # Смена статуса сертификата на Аннулирован
     esign = get_object_or_404(Certificate, id=esign_id)
+    esign.is_current = False
     esign.is_terminate = True
     esign.save()
     return redirect(reverse('esign_show', args=(esign_id, )))

@@ -57,6 +57,14 @@ class Certificate(models.Model):
         related_name='EsignExtended',
         on_delete=models.SET_NULL,
     )
+    is_current = models.BooleanField(
+        verbose_name='Действует',
+        default=True,
+    )
+    is_expires = models.BooleanField(
+        verbose_name='Истекает',
+        default=False,
+    )
     is_extended = models.BooleanField(
         verbose_name='Продлен',
         default=False,
