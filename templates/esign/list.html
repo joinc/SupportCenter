@@ -21,46 +21,80 @@
                 {% endif %}
             </div>
         </div>
+        {% for esign in esign_list %}
+            {{ esign.id }} - {{ esign.entity }} - {{ esign.valid_from }} - {{ esign.valid_for }}<br />
+        {% endfor %}
         <h3>Список электронных подписей:</h3>
-        <table class="table table-hover table-sm">
-            <thead>
-            <tr>
-                <th scope="col">Субект</th>
-                <th scope="col">Срок действия</th>
-                <th scope="col"></th>
-                {% if current_user.access.esign_edit %}
-                    <th scope="col"></th>
-                {% endif %}
-            </tr>
-            </thead>
-            <tbody>
-            {% for esign in esign_list %}
-                <tr class="{% if esign.is_terminate %}table-danger{% elif esign.extended %}table-warning{% endif %}">
-                    <td>
-                        {{ esign.entity }}
-                    </td>
-                    <td>
-                        С {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}
-                    </td>
-                    <td>
-                        <ul class="list-inline mb-0">
-                            {% if esign.is_terminate %}
-                                <li class="list-inline-item">Аннулирован</li>
-                            {% endif %}
-                            {% if esign.extended %}
-                                <li class="list-inline-item">Продлен {% if current_user.access.esign_edit %}<a href="{% url 'esign_show' esign.extended.id %}">сертификатом</a>{% else %}сертификатом{% endif %}</li>
-                            {% endif %}
-                        </ul>
-                    </td>
-                    {% if current_user.access.esign_edit %}
-                        <td class="text-right ">
-                            <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
-                        </td>
-                    {% endif %}
-                </tr>
-            {% endfor %}
-            </tbody>
-        </table>
+        <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+            <li class="nav-item">
+                <a class="nav-link active" id="pills-current-tab" data-toggle="pill" href="#pills-current" role="tab" aria-controls="pills-current" aria-selected="true">Действующие</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-extended-tab" data-toggle="pill" href="#pills-extended" role="tab" aria-controls="pills-extended" aria-selected="false">Продленные</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pills-terminate-tab" data-toggle="pill" href="#pills-terminate" role="tab" aria-controls="pills-terminate" aria-selected="false">Аннулированные</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="pills-tabContent">
+            <div class="tab-pane fade show active" id="pills-current" role="tabpanel" aria-labelledby="pills-current-tab">
+                <table class="table table-hover table-sm">
+                    {% for esign in esign_list_current %}
+                        <tr>
+                            <td>
+                                {{ esign.entity }}
+                            </td>
+                            <td>
+                                С {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}
+                            </td>
+                            <td class="text-right ">
+                                {% if current_user.access.esign_edit %}
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="tab-pane fade" id="pills-extended" role="tabpanel" aria-labelledby="pills-extended-tab">
+                <table class="table table-hover table-sm">
+                    {% for esign in esign_list_extended %}
+                        <tr>
+                            <td>
+                                {{ esign.entity }}
+                            </td>
+                            <td>
+                                С {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}
+                            </td>
+                            <td class="text-right ">
+                                {% if current_user.access.esign_edit %}
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="tab-pane fade" id="pills-terminate" role="tabpanel" aria-labelledby="pills-terminate-tab">
+                <table class="table table-hover table-sm">
+                    {% for esign in esign_list_terminate %}
+                        <tr>
+                            <td>
+                                {{ esign.entity }}
+                            </td>
+                            <td>
+                                С {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}
+                            </td>
+                            <td class="text-right ">
+                                {% if current_user.access.esign_edit %}
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
     </main>
     {% if current_user.access.esign_edit %}
         <!-- Окно добавления фала электронной подписи -->
@@ -80,12 +114,12 @@
                                     {{ form_upload.file }}
                                 </div>
                             </div>
-                            {% if renew_list %}
+                            {% if esign_list_current %}
                                 <div class="row">
                                     <div class="col-md-12 mb-2">
-                                        <h6>{{ form_upload.status.label }}:</h6>
-                                        {% for status in form_upload.status %}
-                                            {{ status }}
+                                        <h6>{{ form_upload.select.label }}:</h6>
+                                        {% for select in form_upload.select %}
+                                            {{ select }}
                                         {% endfor %}
                                     </div>
                                 </div>
@@ -94,8 +128,8 @@
                                         <h6>Выберите сертификат который продляется новым сертификатом:</h6>
                                         <select name="renew" class="custom-select">
                                             <option selected value="0">---</option>
-                                            {% for renew_id, renew_entity, renew_from, renew_for in renew_list %}
-                                                <option value="{{ renew_id }}">{{ renew_entity }} ({{ renew_from|date:"d E Y" }} - {{ renew_for|date:"d E Y" }})</option>
+                                            {% for esign in esign_list_current %}
+                                                <option value="{{ esign.id }}">{{ esign.entity }} ({{ esign.valid_from|date:"d E Y" }} - {{ esign.valid_for|date:"d E Y" }})</option>
                                             {% endfor %}
                                         </select>
                                     </div>
@@ -103,7 +137,7 @@
                             {% endif %}
                         </div>
                         <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit" name="addsign">Добавить</button>
+                            <button class="btn btn-primary" type="submit">Добавить</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Не добавлять</button>
                         </div>
                     </form>
@@ -115,11 +149,11 @@
             $(document).ready(function(){
                 $('#renew_choice').hide();
             });
-            $('input#id_status_0').click(function () {
+            $('input#id_select_0').click(function () {
                     $('#renew_choice').hide();
                 }
             );
-            $('input#id_status_1').click(function () {
+            $('input#id_select_1').click(function () {
                     $('#renew_choice').show();
                 }
             );

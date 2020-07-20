@@ -64,10 +64,19 @@
                 </div>
             </div>
             <div class="card-footer text-right">
-                <a href="" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-download"></i> Скачать файл сертификата</a>
-                {% if not esign.is_terminate %}
-                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
-                {% endif %}
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        {% if esign.is_extended %}
+                            Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом
+                        {% endif %}
+                    </div>
+                    <div class="col-auto">
+                        <a href="{% url 'esign_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                        {% if not esign.is_terminate %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
         </div>
     </main>

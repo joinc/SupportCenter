@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Esign.choices import STATUS_CHOICES
+from Esign.choices import SELECT_CHOICES
 
 ######################################################################################################################
 
@@ -16,10 +16,10 @@ class FormUpload(forms.Form):
         ),
         required=True,
     )
-    status = forms.ChoiceField(
+    select = forms.ChoiceField(
         label='Выберите статус',
         widget=forms.RadioSelect(),
-        choices=STATUS_CHOICES
+        choices=SELECT_CHOICES,
     )
 
 

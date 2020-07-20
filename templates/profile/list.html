@@ -21,6 +21,14 @@
                 {% endif %}
             </div>
         </div>
+        <h3>Список пользователей:</h3>
+        {% if profiles_count %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        {% endif %}
         <form method='post' action=''>
             {% csrf_token %}
             <div class="input-group">
@@ -33,14 +41,6 @@
                 </div>
             </div>
         </form>
-        <h3>Список пользователей:</h3>
-        {% if profiles_count %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endif %}
         <table class="table table-hover table-sm">
             {% for u in profiles_list %}
                 <tr{% if u.blocked %} class="table-danger"{% endif %}>
