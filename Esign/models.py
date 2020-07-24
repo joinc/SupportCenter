@@ -37,7 +37,7 @@ class Certificate(models.Model):
     )
     file_sign = models.FileField(
         verbose_name='Прикрепленный файл',
-        upload_to='upload/sign/%Y/%m/%d',
+        upload_to='sign/%Y/%m/%d',
         null=True,
     )
     renew = models.ForeignKey(
@@ -63,6 +63,10 @@ class Certificate(models.Model):
     )
     is_expires = models.BooleanField(
         verbose_name='Истекает',
+        default=False,
+    )
+    is_expired = models.BooleanField(
+        verbose_name='Истек',
         default=False,
     )
     is_extended = models.BooleanField(

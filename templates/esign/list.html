@@ -61,11 +61,11 @@
                             <td>
                                 <span title="{{ esign.owner.organization }}">{{ esign.owner.organization|truncatechars:40 }}</span>
                             </td>
-                            <td class="text-right ">
-                                {% if current_user.access.esign_edit %}
-                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
-                                {% endif %}
-                            </td>
+                            {% if current_user.access.esign_edit and current_user.organization == esign.owner.organization %}
+                                <td class="text-right ">
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -83,11 +83,11 @@
                             <td>
                                 <span title="{{ esign.owner.organization }}">{{ esign.owner.organization|truncatechars:40 }}</span>
                             </td>
-                            <td class="text-right ">
-                                {% if current_user.access.esign_edit %}
-                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
-                                {% endif %}
-                            </td>
+                            {% if current_user.access.esign_edit and current_user.organization == esign.owner.organization %}
+                                <td class="text-right ">
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -105,11 +105,11 @@
                             <td>
                                 <span title="{{ esign.owner.organization }}">{{ esign.owner.organization|truncatechars:40 }}</span>
                             </td>
-                            <td class="text-right ">
-                                {% if current_user.access.esign_edit %}
-                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
-                                {% endif %}
-                            </td>
+                            {% if current_user.access.esign_edit and current_user.organization == esign.owner.organization %}
+                                <td class="text-right ">
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>
@@ -127,11 +127,11 @@
                             <td>
                                 <span title="{{ esign.owner.organization }}">{{ esign.owner.organization|truncatechars:40 }}</span>
                             </td>
-                            <td class="text-right ">
-                                {% if current_user.access.esign_edit %}
-                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
-                                {% endif %}
-                            </td>
+                            {% if current_user.access.esign_edit and current_user.organization == esign.owner.organization %}
+                                <td class="text-right ">
+                                    <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                </td>
+                            {% endif %}
                         </tr>
                     {% endfor %}
                 </table>

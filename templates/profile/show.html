@@ -33,15 +33,19 @@
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col mb-2">
+                    <div class="col-md-6 mb-2">
                         <h5 class="border-bottom border-gray">{{ profile.user.username }}</h5>
                         <small class="form-text text-muted">Логин</small>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <h5 class="border-bottom border-gray">{{ profile.user.email }}</h5>
+                        <small class="form-text text-muted">Адрес электронной почты</small>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.user.email }}</h5>
-                        <small class="form-text text-muted">Адрес электронной почты</small>
+                        <h5 class="border-bottom border-gray">{{ profile.organization }}</h5>
+                        <small class="form-text text-muted">Организация</small>
                     </div>
                 </div>
             </div>

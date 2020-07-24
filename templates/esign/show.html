@@ -69,9 +69,12 @@
                         {% if esign.is_extended %}
                             Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом
                         {% endif %}
+                            Разместил {{ esign.owner }}
                     </div>
                     <div class="col-auto">
-                        <a href="{% url 'esign_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                        {% if esign.file_sign %}
+                            <a href="{% url 'esign_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                        {% endif %}
                         {% if not esign.is_terminate %}
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
                         {% endif %}

@@ -16,4 +16,4 @@ urlpatterns = [
     # path('organization/list/<str:org_title>', microservice.organization_list, name='organization_list', ),
 ]
 
-urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+# urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

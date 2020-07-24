@@ -8,21 +8,62 @@ from Esign.models import Certificate
 from Esign.forms import FormUpload
 from Main.decorators import access_esign_list, access_esign_edit
 from datetime import datetime, timedelta
+from uuid import uuid4
 import fsb795
 import mimetypes
 
 ######################################################################################################################
 
 
-def esign_check_current(esign_list):
+def esign_change_status(esign: Certificate, is_current=False, is_expires=False, is_expired=False, is_extended=False,
+                        is_terminate=False, is_delete_file=False) -> None:
+    """ Процедура по смене статуса сертификата """
+    esign.is_current = is_current
+    esign.is_expires = is_expires
+    esign.is_expired = is_expired
+    esign.is_extended = is_extended
+    esign.is_terminate = is_terminate
+    if is_delete_file:
+        esign.file_sign.delete()
+    esign.save()
+
+
+######################################################################################################################
+
+
+def esign_check_current(esign_list) -> None:
+    """ Процедура проверкти сертификата на актуальность и смена статуса, в зависимости от текущей даты """
     current_date = datetime.now().date()
     for esign in esign_list:
         esign_date = esign.valid_for.date()
         if esign_date < (current_date + timedelta(days=30)):
-            esign.is_expires = True
             if esign_date < current_date:
-                esign.is_current = False
+                esign_change_status(esign, is_expired=True, is_delete_file=True)
+            else:
+                esign_change_status(esign, is_current=True, is_expires=True)
             esign.save()
+
+
+######################################################################################################################
+
+
+def get_count_esign(current_user):
+    if current_user.access.esign_moderator:
+        return (
+            Certificate.objects.filter(is_current=True).count(),
+            Certificate.objects.filter(is_expires=True).count(),
+            Certificate.objects.filter(is_expired=True).count(),
+            Certificate.objects.filter(is_extended=True).count(),
+            Certificate.objects.filter(is_terminate=True).count()
+        )
+    else:
+        return (
+            Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization).count(),
+            Certificate.objects.filter(is_expires=True).filter(owner__organization=current_user.organization).count(),
+            Certificate.objects.filter(is_expired=True).filter(owner__organization=current_user.organization).count(),
+            Certificate.objects.filter(is_extended=True).filter(owner__organization=current_user.organization).count(),
+            Certificate.objects.filter(is_terminate=True).filter(owner__organization=current_user.organization).count()
+        )
 
 
 ######################################################################################################################
@@ -31,13 +72,12 @@ def esign_check_current(esign_list):
 @login_required
 @access_esign_list
 def esign_get_list(request):
-    # Список электронных подписей
+    """ Список электронных подписей """
     current_user = get_object_or_404(UserProfile, user=request.user)
     if request.POST and request.FILES:
-        esign = Certificate()
-        esign.owner = current_user
+        esign = Certificate(owner=current_user)
         file = request.FILES['file']
-        esign.file_sign.save(file.name, file)
+        esign.file_sign.save(uuid4().hex, file)
         cert = fsb795.Certificate(esign.file_sign.path)
         if cert.pyver == '':
             esign.file_sign.delete()
@@ -60,23 +100,22 @@ def esign_get_list(request):
                     esign_extended = get_object_or_404(Certificate, id=int(renew))
                     esign.renew = esign_extended
                     esign.save()
-                    esign_extended.is_extended = True
-                    esign_extended.is_current = False
                     esign_extended.extended = esign
                     esign_extended.save()
+                    esign_change_status(esign_extended, is_extended=True, is_delete_file=True)
             esign.save()
         return redirect(reverse('esign_list'))
     else:
         if current_user.access.esign_moderator:
-            esign_check_current(list(Certificate.objects.filter(is_current=True)))
+            # esign_check_current(list(Certificate.objects.filter(is_current=True)))
             esign_list_current = Certificate.objects.filter(is_current=True)
-            esign_list_expires = Certificate.objects.filter(is_expires=True)
+            esign_list_expires = Certificate.objects.filter(is_expired=True)
             esign_list_extended = Certificate.objects.filter(is_extended=True)
             esign_list_terminate = Certificate.objects.filter(is_terminate=True)
         else:
             esign_check_current(list(Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization)))
             esign_list_current = Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization)
-            esign_list_expires = Certificate.objects.filter(is_expires=True).filter(owner__organization=current_user.organization)
+            esign_list_expires = Certificate.objects.filter(is_expired=True).filter(owner__organization=current_user.organization)
             esign_list_extended = Certificate.objects.filter(is_extended=True).filter(owner__organization=current_user.organization)
             esign_list_terminate = Certificate.objects.filter(is_terminate=True).filter(owner__organization=current_user.organization)
         context = {
@@ -100,19 +139,20 @@ def esign_get_list(request):
 @login_required
 @access_esign_edit
 def esign_show(request, esign_id):
-    # Список электронных подписей
+    """ Список электронных подписей """
     current_user = get_object_or_404(UserProfile, user=request.user)
     esign = get_object_or_404(Certificate, id=esign_id)
     context = {
         'current_user': current_user,
         'esign': esign,
     }
-    cert = fsb795.Certificate(esign.file_sign.path)
-    if cert.pyver != '':
-        iss, vlad_is = cert.issuerCert()
-        sub, vlad_sub = cert.subjectCert()
-        context['iss'] = iss
-        context['sub'] = sub
+    if esign.file_sign:
+        cert = fsb795.Certificate(esign.file_sign.path)
+        if cert.pyver != '':
+            iss, vlad_is = cert.issuerCert()
+            sub, vlad_sub = cert.subjectCert()
+            context['iss'] = iss
+            context['sub'] = sub
     return render(request, 'esign/show.html', context)
 
 
@@ -122,11 +162,9 @@ def esign_show(request, esign_id):
 @login_required
 @access_esign_edit
 def esign_terminate(request, esign_id):
-    # Смена статуса сертификата на Аннулирован
+    """ Смена статуса сертификата на Аннулирован """
     esign = get_object_or_404(Certificate, id=esign_id)
-    esign.is_current = False
-    esign.is_terminate = True
-    esign.save()
+    esign_change_status(esign, is_terminate=True, is_delete_file=True)
     return redirect(reverse('esign_show', args=(esign_id, )))
 
 
@@ -136,7 +174,7 @@ def esign_terminate(request, esign_id):
 @login_required
 @access_esign_edit
 def esign_download(request, esign_id):
-    # Смена статуса сертификата на Аннулирован
+    """ Смена статуса сертификата на Аннулирован """
     esign = get_object_or_404(Certificate, id=esign_id)
     response = HttpResponse(esign.file_sign.file)
     file_type = mimetypes.guess_type(esign.file_sign.name)
@@ -144,7 +182,7 @@ def esign_download(request, esign_id):
         file_type = 'application/octet-stream'
     response['Content-Type'] = file_type
     response['Content-Length'] = esign.file_sign.size
-    response['Content-Disposition'] = "attachment; filename=" + esign.file_sign.name
+    response['Content-Disposition'] = "attachment; filename=cert.cer"
     return response
 
 

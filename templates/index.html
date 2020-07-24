@@ -5,9 +5,27 @@
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
 {% block html_body %}
-    <main role="main" class="container">
-        <div class="my-3 p-3 bg-white rounded shadow-sm">
-            <h4 class="border-bottom border-gray pb-2 mb-0">Заголовок:</h4>
+    <main role="main" class="container-fluid">
+        <div class="card-columns">
+            {% if current_user.access.esign_list %}
+                <div class="card shadow border-dark">
+                    <div class="card-body">
+                        <ul class="list-unstyled">
+                            {% ifequal esign_count_expires 0 %}
+                                <li class="border-bottom border-grey">Действующие <span class="float-right">{{ esign_count_current }}</span></li>
+                            {% else %}
+                                <li class="border-bottom border-grey list-group-item-danger">Действующие (истекают) <span class="float-right">{{ esign_count_current }} ({{ esign_count_expires }})</span></li>
+                            {% endifequal %}
+                            <li class="border-bottom border-grey">Продленые <span class="float-right">{{ esign_count_extended }}</span></li>
+                            <li class="border-bottom border-grey">Истекшие <span class="float-right">{{ esign_count_expired }}</span></li>
+                            <li class="border-bottom border-grey">Аннулированные <span class="float-right">{{ esign_count_terminate }}</span></li>
+                        </ul>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{% url 'esign_list' %}" class="btn btn-outline-primary" title="Перейти к подписям"><i class="fas fa-file-contract"></i> Перейти к подписям</a>
+                    </div>
+                </div>
+            {% endif %}
         </div>
     </main>
 {% endblock %}

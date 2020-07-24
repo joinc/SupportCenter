@@ -6,6 +6,7 @@ from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
+from Esign.views import get_count_esign
 
 
 ######################################################################################################################
@@ -14,7 +15,16 @@ from Profile.models import UserProfile
 @login_required
 def index(request):
     # Главная страница
-    context = {'current_user': get_object_or_404(UserProfile, user=request.user), }
+    current_user = get_object_or_404(UserProfile, user=request.user)
+    esign_count_current, esign_count_expires, esign_count_expired, esign_count_extended, esign_count_terminate = get_count_esign(current_user)
+    context = {
+        'current_user': current_user,
+        'esign_count_current': esign_count_current,
+        'esign_count_expires': esign_count_expires,
+        'esign_count_expired': esign_count_expired,
+        'esign_count_extended': esign_count_extended,
+        'esign_count_terminate': esign_count_terminate,
+    }
     return render(request, 'index.html', context)
 
 
