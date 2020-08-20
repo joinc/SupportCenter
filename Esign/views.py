@@ -12,6 +12,7 @@ from uuid import uuid4
 import fsb795
 import mimetypes
 
+
 ######################################################################################################################
 
 
@@ -42,28 +43,6 @@ def esign_check_current(esign_list) -> None:
             else:
                 esign_change_status(esign, is_current=True, is_expires=True)
             esign.save()
-
-
-######################################################################################################################
-
-
-def get_count_esign(current_user):
-    if current_user.access.esign_moderator:
-        return (
-            Certificate.objects.filter(is_current=True).count(),
-            Certificate.objects.filter(is_expires=True).count(),
-            Certificate.objects.filter(is_expired=True).count(),
-            Certificate.objects.filter(is_extended=True).count(),
-            Certificate.objects.filter(is_terminate=True).count()
-        )
-    else:
-        return (
-            Certificate.objects.filter(is_current=True).filter(owner__organization=current_user.organization).count(),
-            Certificate.objects.filter(is_expires=True).filter(owner__organization=current_user.organization).count(),
-            Certificate.objects.filter(is_expired=True).filter(owner__organization=current_user.organization).count(),
-            Certificate.objects.filter(is_extended=True).filter(owner__organization=current_user.organization).count(),
-            Certificate.objects.filter(is_terminate=True).filter(owner__organization=current_user.organization).count()
-        )
 
 
 ######################################################################################################################

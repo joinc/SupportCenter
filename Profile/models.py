@@ -1,13 +1,13 @@
 from django.db import models
 from django.contrib.auth.models import User
-from Main.models import Organization
+from Main.models import Organization, Department
 
 ######################################################################################################################
 
 
 class AccessRole(models.Model):
     title = models.CharField(
-        'Название роли',
+        verbose_name='Название роли',
         max_length=124,
         default='',
     )
@@ -35,6 +35,10 @@ class AccessRole(models.Model):
         verbose_name='Модерировать электронные подписи',
         default=False,
     )
+    organization_edit = models.BooleanField(
+        verbose_name='Добавлять, изменять, удалять организации и отделы',
+        default=False,
+    )
 
     def __str__(self):
         return '{0}'.format(self.title)
@@ -58,7 +62,16 @@ class UserProfile(models.Model):
         Organization,
         verbose_name='Организация',
         null=True,
+        default=None,
         related_name='Organization',
+        on_delete=models.SET_NULL,
+    )
+    department = models.ForeignKey(
+        Department,
+        verbose_name='Отдел',
+        null=True,
+        default=None,
+        related_name='Department',
         on_delete=models.SET_NULL,
     )
     blocked = models.BooleanField(

@@ -45,7 +45,6 @@ class Certificate(models.Model):
         verbose_name='Продляет сертификат',
         null=True,
         default=None,
-
         related_name='EsignRenew',
         on_delete=models.SET_NULL,
     )
