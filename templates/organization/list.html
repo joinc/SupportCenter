@@ -3,6 +3,10 @@
 {% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
+    <script src='{% static "js/select2.min.js" %}'></script>
+    <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
@@ -11,17 +15,17 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Структура</li>
+                        <li class="breadcrumb-item active" aria-current="page">Список организаций</li>
                     </ol>
                 </nav>
             </div>
             <div class="col-auto mr-0 text-right">
-                {% if current_user.access.user_edit %}
-                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить нового пользователя"><i class="fas fa-plus-square"></i> Добавить организацию</button>
+                {% if current_user.access.organization_edit %}
+                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</button>
                 {% endif %}
             </div>
         </div>
-        <h3>Структура:</h3>
+        <h3>Список организаций:</h3>
         <table class="table table-hover table-sm">
             {% for org in org_list %}
                 <tr>
@@ -31,9 +35,7 @@
                         </div>
                     </td>
                     <td class="text-right ">
-                        <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить нового пользователя"><i class="fas fa-plus-square"></i> Добавить отдел</button>
-                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить нового пользователя"><i class="fas fa-pen-square"></i> Редактировать</button>
-                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить нового пользователя"><i class="fas fa-minus-square"></i> Удалить</button>
+                        <a href="{% url 'organization_show' org.id %}" class="btn btn-outline-secondary" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
                     </td>
                 </tr>
             {% endfor %}
@@ -65,8 +67,13 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-2">
-                                    <h6>{{ form_organization.parent_organization.label}}:</h6>
-                                    {{ form_organization.parent_organization }}
+                                    <h6>Вышестоящая организация:</h6>
+                                    <select name="parent_organization" class="custom-select" id="id_parent_organization">
+                                        <option></option>
+                                        {% for org in org_list %}
+                                            <option value="{{ org.id }}">{{ org.short_title }}</option>
+                                        {% endfor %}
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -80,4 +87,14 @@
         </div>
         <!-- /Окно создания нового пользователя -->
     {% endif %}
+    <script>
+        $(document).ready(function() {
+            $('select[name=parent_organization]').select2({
+                allowClear: true,
+                placeholder: "Выберите вышестоящую организацию",
+                theme: "bootstrap4",
+                language: "ru"
+            });
+        });
+    </script>
 {% endblock %}

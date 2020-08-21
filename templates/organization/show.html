@@ -1,0 +1,63 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_title %}Главная{% endblock %}
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="row">
+            <div class="col-auto mr-auto">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
+                        <li class="breadcrumb-item"><a href="{% url 'organization_list' %}">Список организаций</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ organization.short_title }}</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
+            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+                <h4>{{ organization.short_title }}:</h4>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h5 class="border-bottom border-gray">{{ organization.short_title }}&nbsp;</h5>
+                        <small class="form-text text-muted">Краткое наименование</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h5 class="border-bottom border-gray">{{ organization.long_title }}&nbsp;</h5>
+                        <small class="form-text text-muted">Полное наименование</small>
+                    </div>
+                </div>
+                {% if organization.parent_organization %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <h5 class="border-bottom border-gray">{{ organization.parent_organization }}</h5>
+                            <small class="form-text text-muted">Вышестоящая организация</small>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="card-footer text-right">
+                {% if not profile.user.is_superuser %}
+                    {% if current_user == profile or current_user.access.user_edit %}
+                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
+                    {% endif %}
+                    {% if current_user.access.user_edit %}
+                        <a href="" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
+                        {% if profile.blocked %}
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
+                        {% else %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
+                        {% endif %}
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </main>
+{% endblock %}

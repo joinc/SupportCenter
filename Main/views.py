@@ -6,9 +6,10 @@ from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
-from Main.models import Organization, Department
+from Main.models import Organization
 from Esign.classes import EsignCount
 from Main.forms import FormOrganization
+from Main.tools import get_current_user
 
 
 ######################################################################################################################
@@ -17,7 +18,7 @@ from Main.forms import FormOrganization
 @login_required
 def index(request):
     # Главная страница
-    current_user = get_object_or_404(UserProfile, user=request.user)
+    current_user = get_current_user(request)
     esign_count = EsignCount(current_user)
     context = {
         'current_user': current_user,
@@ -68,26 +69,40 @@ def logout(request):
 
 
 @login_required
-def structure(request):
-    current_user = get_object_or_404(UserProfile, user=request.user)
+def organization_list(request):
+    current_user = get_current_user(request)
     context = {
         'current_user': current_user,
         'org_list': list(Organization.objects.values('id', 'short_title').filter(is_deleted=False)),
         'form_organization': FormOrganization(),
     }
-    if request.POST and current_user.access.user_edit:
+    if request.POST and current_user.access.organization_edit:
         if 'addorg' in request.POST:
             short_title = request.POST['short_title']
             long_title = request.POST['long_title']
-            parent_organization = int(request.POST['parent_organization'])
+            parent_organization = request.POST['parent_organization']
             organization = Organization()
             organization.short_title = short_title
             organization.long_title = long_title
-            if parent_organization != 0:
-                organization.parent_organization_id = parent_organization
+            if parent_organization:
+                organization.parent_organization_id = int(parent_organization)
             organization.save()
+            context['form_organization'] = FormOrganization()
             return redirect(reverse('structure'))
-    return render(request, 'structure.html', context)
+    return render(request, 'organization/list.html', context)
+
+
+######################################################################################################################
+
+
+def organization_show(request, organization_id):
+    organization = get_object_or_404(Organization, id=organization_id)
+    current_user = get_object_or_404(UserProfile, user=request.user)
+    context = {
+        'current_user': current_user,
+        'organization': organization,
+    }
+    return render(request, 'organization/show.html', context)
 
 
 ######################################################################################################################

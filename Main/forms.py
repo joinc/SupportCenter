@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Main.models import Organization
 
 ######################################################################################################################
 
@@ -28,21 +27,6 @@ class FormOrganization(forms.Form):
             }
         ),
         required=True,
-    )
-    parent_organization = forms.ChoiceField(
-        label='Вышестоящая организация',
-        widget=forms.Select(
-            attrs={
-                'class': 'custom-select',
-            }
-        ),
-        choices=[[0, '----- Выберите вышестоящую организацию -----']] + list(
-            map(
-                lambda x: [x['id'], x['short_title']],
-                list(Organization.objects.values('id', 'short_title').all())
-            )
-        ),
-        required=False,
     )
 
 

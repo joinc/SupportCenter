@@ -9,11 +9,12 @@ urlpatterns = [
     path('', views.index, name='index', ),
     path('login/', views.login, name='login', ),
     path('logout/', views.logout, name='logout', ),
-    path('structure/', views.structure, name='structure', ),
+    path('organization/', views.organization_list, name='organization_list', ),
+    path('organization/<int:organization_id>/show/', views.organization_show, name='organization_show', ),
     path('profile/', include('Profile.urls')),
     path('esign/', include('Esign.urls')),
 
-    path('organization/list/', microservice.organization_all, name='organization_all', ),
+    # path('organization/list/', microservice.organization_all, name='organization_all', ),
     # path('organization/list/<str:org_title>', microservice.organization_list, name='organization_list', ),
 ]
 

@@ -8,6 +8,7 @@ from Main.models import Organization
 from Profile.models import UserProfile, AccessRole
 from Profile.forms import FormUser, FormPassword, FormAccess, FormUserSearch
 from Main.decorators import access_user_edit, access_user_list
+from Main.tools import get_current_user
 
 
 ######################################################################################################################
@@ -67,7 +68,7 @@ def profile_create(request, context):
 @login_required
 @access_user_list
 def profile_list(request):
-    current_user = get_object_or_404(UserProfile, user=request.user)
+    current_user = get_current_user(request)
     context = {
         'current_user': current_user,
         'profiles_total': UserProfile.objects.count(),
@@ -107,7 +108,7 @@ def profile_list(request):
 @access_user_list
 def profile_show(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
-    current_user = get_object_or_404(UserProfile, user=request.user)
+    current_user = get_current_user(request)
     context = {
         'current_user': current_user,
         'profile': profile,
@@ -150,9 +151,8 @@ def profile_edit(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
     if profile.user.is_superuser:
         return redirect(reverse('index'))
-    current_user = get_object_or_404(UserProfile, user=request.user)
     context = {
-        'current_user': current_user,
+        'current_user': get_current_user(request),
         'profile': profile,
         'form_user': FormUser(
             initial={
