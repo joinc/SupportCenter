@@ -67,13 +67,8 @@
                             </div>
                             <div class="row">
                                 <div class="col-md-12 mb-2">
-                                    <h6>Вышестоящая организация:</h6>
-                                    <select name="parent_organization" class="custom-select" id="id_parent_organization">
-                                        <option></option>
-                                        {% for org in org_list %}
-                                            <option value="{{ org.id }}">{{ org.short_title }}</option>
-                                        {% endfor %}
-                                    </select>
+                                    <h6>{{ form_organization.parent_organization.label }}:</h6>
+                                    {{ form_organization.parent_organization }}
                                 </div>
                             </div>
                         </div>

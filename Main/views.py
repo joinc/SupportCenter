@@ -10,6 +10,7 @@ from Main.models import Organization
 from Esign.classes import EsignCount
 from Main.forms import FormOrganization
 from Main.tools import get_current_user
+from Main.decorators import access_organization_edit
 
 
 ######################################################################################################################
@@ -87,22 +88,45 @@ def organization_list(request):
             if parent_organization:
                 organization.parent_organization_id = int(parent_organization)
             organization.save()
-            context['form_organization'] = FormOrganization()
-            return redirect(reverse('structure'))
+            return redirect(reverse('organization_list'))
     return render(request, 'organization/list.html', context)
 
 
 ######################################################################################################################
 
 
+@login_required
 def organization_show(request, organization_id):
-    organization = get_object_or_404(Organization, id=organization_id)
-    current_user = get_object_or_404(UserProfile, user=request.user)
     context = {
-        'current_user': current_user,
-        'organization': organization,
+        'current_user': get_current_user(request),
+        'organization': get_object_or_404(Organization, id=organization_id),
     }
     return render(request, 'organization/show.html', context)
+
+
+######################################################################################################################
+
+
+@access_organization_edit
+def organization_delete(request, organization_id):
+    organization = get_object_or_404(Organization, id=organization_id)
+    organization.is_deleted = True
+    organization.save()
+    return redirect(reverse('organization_list'))
+
+
+######################################################################################################################
+
+
+@access_organization_edit
+def organization_edit(request, organization_id):
+    organization = get_object_or_404(Organization, id=organization_id)
+    context = {
+        'current_user': get_current_user(request),
+        'organization': organization,
+        'form_organization': FormOrganization(instance=organization),
+    }
+    return render(request, 'organization/edit.html', context)
 
 
 ######################################################################################################################

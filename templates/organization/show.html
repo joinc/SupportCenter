@@ -44,20 +44,33 @@
                 {% endif %}
             </div>
             <div class="card-footer text-right">
-                {% if not profile.user.is_superuser %}
-                    {% if current_user == profile or current_user.access.user_edit %}
-                        <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
-                    {% endif %}
-                    {% if current_user.access.user_edit %}
-                        <a href="" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
-                        {% if profile.blocked %}
-                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
-                        {% else %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
-                        {% endif %}
-                    {% endif %}
+                {% if current_user.access.organization_edit %}
+                    <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
+                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
                 {% endif %}
             </div>
         </div>
     </main>
+    {% if current_user.access.organization_edit %}
+        <!-- Окно запроса подтверждения на удаление -->
+        <div class="modal fade" id="ModalOrgDelete" tabindex="-1" role="dialog" aria-labelledby="ModalOrgDeleteTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <form method='post' action='{% url 'organization_delete' organization.id %}' >
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalOrgDeleteTitle">Удалить организацию</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">Вы действительно хотите удалить организацию <strong>{{ organization }}</strong>?</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-danger" type="submit">Удалить</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <!-- /Окно запроса подтверждения на удаление -->
+    {% endif %}
 {% endblock %}
