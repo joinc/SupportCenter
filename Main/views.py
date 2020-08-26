@@ -8,7 +8,7 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
 from Main.models import Organization
 from Esign.classes import EsignCount
-from Main.forms import FormOrganization
+from Main.forms import FormOrganization, FormOrganizationList
 from Main.tools import get_current_user
 from Main.decorators import access_organization_edit
 
@@ -74,8 +74,9 @@ def organization_list(request):
     current_user = get_current_user(request)
     context = {
         'current_user': current_user,
-        'org_list': list(Organization.objects.values('id', 'short_title').filter(is_deleted=False)),
+        'org_list': list(Organization.objects.values('id', 'short_title').all()),
         'form_organization': FormOrganization(),
+        'form_organization_list': FormOrganizationList(),
     }
     if request.POST and current_user.access.organization_edit:
         if 'addorg' in request.POST:
@@ -110,8 +111,7 @@ def organization_show(request, organization_id):
 @access_organization_edit
 def organization_delete(request, organization_id):
     organization = get_object_or_404(Organization, id=organization_id)
-    organization.is_deleted = True
-    organization.save()
+    organization.delete()
     return redirect(reverse('organization_list'))
 
 
@@ -125,6 +125,7 @@ def organization_edit(request, organization_id):
         'current_user': get_current_user(request),
         'organization': organization,
         'form_organization': FormOrganization(instance=organization),
+        'form_organization_list': FormOrganizationList(instance=organization),
     }
     return render(request, 'organization/edit.html', context)
 

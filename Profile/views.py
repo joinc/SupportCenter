@@ -6,9 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from Main.models import Organization
 from Profile.models import UserProfile, AccessRole
-from Profile.forms import FormUser, FormPassword, FormAccess, FormUserSearch
+from Profile.forms import FormUser, FormPassword, FormUserSearch, FormAccessList
 from Main.decorators import access_user_edit, access_user_list
 from Main.tools import get_current_user
+from Main.forms import FormOrganizationList
 
 
 ######################################################################################################################
@@ -22,7 +23,7 @@ def profile_create(request, context):
     password1 = request.POST['password1']
     password2 = request.POST['password2']
     access_role = request.POST['access_role']
-    organization = request.POST['organization']
+    organization = request.POST['parent_organization']
     initial = {
         'email': email,
         'username': username,
@@ -75,7 +76,7 @@ def profile_list(request):
         'form_user': FormUser(),
         'form_password': FormPassword(),
         'form_user_search': FormUserSearch(),
-
+        'form_organization_lis': FormOrganizationList(),
     }
     if request.POST and current_user.access.user_edit:
         if "adduser" in request.POST:
@@ -150,7 +151,9 @@ def profile_show(request, profile_id):
 def profile_edit(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
     if profile.user.is_superuser:
-        return redirect(reverse('index'))
+        return redirect(reverse('profile_list'))
+    access_role_list = list(map(lambda x: [x['id'], x['title']], list(AccessRole.objects.values('id', 'title').filter(is_sample=True))))
+    print(access_role_list, )
     context = {
         'current_user': get_current_user(request),
         'profile': profile,
@@ -161,25 +164,18 @@ def profile_edit(request, profile_id):
                 'last_name': profile.user.last_name,
                 'first_name': profile.user.first_name,
                 'access_role': profile.access.id,
-                'organization': profile.organization.id,
             }
         ),
-        'form_access': FormAccess(
-            initial={
-                'access_user_list': profile.access.user_list,
-                'access_user_edit': profile.access.user_edit,
-                'access_esign_list': profile.access.esign_list,
-                'access_esign_edit': profile.access.esign_edit,
-                'access_esign_moderator': profile.access.esign_moderator,
-            }
-        ),
+        # 'form_organization_list': FormOrganizationList(instance=profile.organization),
+        'form_organization_list': FormOrganizationList(initial={'parent_organization': profile.organization}),
+        'form_access_list': FormAccessList(instance=profile.access),
         'sample': profile.access.is_sample,
     }
     if request.POST:
         email = request.POST['email']
         last_name = request.POST['last_name']
         first_name = request.POST['first_name']
-        organization = request.POST['organization']
+        organization = request.POST['parent_organization']
         access_choice = request.POST.get('access_choice', 'sample')
         access_role = request.POST['access_role']
         profile.user.email = email
@@ -192,11 +188,11 @@ def profile_edit(request, profile_id):
         else:
             # Если выбраны отдельные права, то создается новая роль с этими правами
             access = AccessRole(
-                user_list=bool(request.POST.get('access_user_list', False)),
-                user_edit=bool(request.POST.get('access_user_edit', False)),
-                esign_list=bool(request.POST.get('access_esign_list', False)),
-                esign_edit=bool(request.POST.get('access_esign_edit', False)),
-                esign_moderator=bool(request.POST.get('access_esign_moderator', False)),
+                user_list=bool(request.POST.get('user_list', False)),
+                user_edit=bool(request.POST.get('user_edit', False)),
+                esign_list=bool(request.POST.get('esign_list', False)),
+                esign_edit=bool(request.POST.get('esign_edit', False)),
+                esign_moderator=bool(request.POST.get('esign_moderator', False)),
                 title=profile.user.username,
             )
             access.save()

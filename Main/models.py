@@ -23,10 +23,6 @@ class Organization(models.Model):
         related_name='ParentOrg',
         on_delete=models.SET_NULL,
     )
-    is_deleted = models.BooleanField(
-        verbose_name='Удалена',
-        default=False,
-    )
     create_date = models.DateTimeField(
         verbose_name='Дата создания организации',
         auto_now_add=True,

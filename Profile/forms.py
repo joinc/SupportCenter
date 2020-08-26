@@ -1,8 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Main.models import Organization
-from Profile.models import AccessRole
+from Profile.models import AccessRole, UserProfile
 
 ######################################################################################################################
 
@@ -35,52 +34,49 @@ class FormPassword(forms.Form):
 ######################################################################################################################
 
 
-class FormAccess(forms.Form):
-    access_user_list = forms.BooleanField(
-        label='Просматривать список пользователей',
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'custom-control-input',
-            }
-        ),
-        required=False,
-    )
-    access_user_edit = forms.BooleanField(
-        label='Редактировать пользователя',
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'custom-control-input',
-            }
-        ),
-        required=False,
-    )
-    access_esign_list = forms.BooleanField(
-        label='Просматривать список электронных подписей',
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'custom-control-input',
-            }
-        ),
-        required=False,
-    )
-    access_esign_edit = forms.BooleanField(
-        label='Добавлять, изменять, удалять электронные подписи',
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'custom-control-input',
-            }
-        ),
-        required=False,
-    )
-    access_esign_moderator = forms.BooleanField(
-        label='Модерировать электронные подписи',
-        widget=forms.CheckboxInput(
-            attrs={
-                'class': 'custom-control-input',
-            }
-        ),
-        required=False,
-    )
+class FormAccessList(forms.ModelForm):
+    class Meta:
+        model = AccessRole
+        fields = [
+            'user_list',
+            'user_edit',
+            'esign_list',
+            'esign_edit',
+            'esign_moderator',
+            'organization_edit',
+        ]
+        widgets = {
+            'user_list': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'user_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_list': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_moderator': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'organization_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+        }
 
 
 ######################################################################################################################
@@ -145,21 +141,6 @@ class FormUser(forms.Form):
                 'class': 'form-control',
                 'placeholder': 'Введите электронный адрес',
             }
-        ),
-        required=True,
-    )
-    organization = forms.ChoiceField(
-        label='Организация',
-        widget=forms.Select(
-            attrs={
-                'class': 'custom-select',
-            }
-        ),
-        choices=list(
-            map(
-                lambda x: [x['id'], x['short_title']],
-                list(Organization.objects.values('id', 'short_title').all())
-            )
         ),
         required=True,
     )

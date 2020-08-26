@@ -9,7 +9,7 @@ from Main.models import Organization
 class FormOrganization(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ['short_title', 'long_title', 'parent_organization']
+        fields = ['short_title', 'long_title', ]
         widgets = {
             'short_title': forms.TextInput(
                 attrs={
@@ -25,11 +25,22 @@ class FormOrganization(forms.ModelForm):
                     'placeholder': 'Введите полное название',
                 }
             ),
+        }
+
+
+######################################################################################################################
+
+
+class FormOrganizationList(forms.ModelForm):
+    class Meta:
+        model = Organization
+        fields = ['parent_organization', ]
+        widgets = {
             'parent_organization': forms.Select(
                 attrs={
-                    'class': 'custom-select',
+                    'class': 'form-control',
                 }
-            )
+            ),
         }
 
 
