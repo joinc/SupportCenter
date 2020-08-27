@@ -16,15 +16,14 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'organization_list' %}">Список организаций</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'organization_show' organization.id %}">{{ organization.short_title }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Редактировать</li>
+                        <li class="breadcrumb-item active" aria-current="page">Добавить</li>
                     </ol>
                 </nav>
             </div>
         </div>
         <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <h4>Редактирование организации - {{ organization }}:</h4>
+            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+                <h4>Добавление организации:</h4>
             </div>
             <form method='post' action='' class="mb-0">
                 {% csrf_token %}
@@ -32,8 +31,8 @@
                     {% for field in form_organization %}
                         <div class="row">
                             <div class="col-md-12 mb-2">
+                                <h6>{{ field.label }}:</h6>
                                 {{ field }}
-                                <small class="form-text text-muted">{{ field.label }}</small>
                             </div>
                         </div>
                     {% endfor %}

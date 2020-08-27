@@ -4,17 +4,46 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from Main.models import Organization
+from Organization.models import Organization
 from Profile.models import UserProfile, AccessRole
-from Profile.forms import FormUser, FormPassword, FormUserSearch, FormAccessList
+from Profile.forms import FormUser, FormPassword, FormUserSearch, FormAccessList, FormOrganization
 from Main.decorators import access_user_edit, access_user_list
 from Main.tools import get_current_user
-from Main.forms import FormOrganizationList
 
 
 ######################################################################################################################
 
 
+@login_required
+@access_user_list
+def profile_list(request):
+    current_user = get_current_user(request)
+    context = {
+        'current_user': current_user,
+        'profiles_total': UserProfile.objects.count(),
+        'form_user': FormUser(),
+        'form_password': FormPassword(),
+        'form_user_search': FormUserSearch(),
+        'form_organization': FormOrganization(),
+    }
+    if request.POST:
+        if "adduser" in request.POST:
+            context = profile_create(request, context)
+            profiles_list = UserProfile.objects.all()[:20]
+        if "search" in request.POST:
+            return profile_search(request, context)
+    else:
+        profiles_list = UserProfile.objects.all()[:20]
+    context['profiles_count'] = len(profiles_list)
+    context['profiles_list'] = profiles_list
+
+    return render(request, 'profile/list.html', context)
+
+
+######################################################################################################################
+
+
+@access_user_edit
 def profile_create(request, context):
     username = request.POST['username']
     email = request.POST['email']
@@ -23,14 +52,13 @@ def profile_create(request, context):
     password1 = request.POST['password1']
     password2 = request.POST['password2']
     access_role = request.POST['access_role']
-    organization = request.POST['parent_organization']
+    organization = request.POST['organization']
     initial = {
         'email': email,
         'username': username,
         'last_name': last_name,
         'first_name': first_name,
         'access_role': access_role,
-        'organization': organization,
     }
     if User.objects.filter(username=username).exists():
         del initial['username']
@@ -59,6 +87,7 @@ def profile_create(request, context):
         new_profile.save()
         return context
     context['form_user'] = FormUser(initial=initial)
+    context['form_organization'] = FormOrganization(initial={'organization': organization})
     context['show_form_user'] = True
     return context
 
@@ -66,40 +95,22 @@ def profile_create(request, context):
 ######################################################################################################################
 
 
-@login_required
 @access_user_list
-def profile_list(request):
-    current_user = get_current_user(request)
-    context = {
-        'current_user': current_user,
-        'profiles_total': UserProfile.objects.count(),
-        'form_user': FormUser(),
-        'form_password': FormPassword(),
-        'form_user_search': FormUserSearch(),
-        'form_organization_lis': FormOrganizationList(),
-    }
-    if request.POST and current_user.access.user_edit:
-        if "adduser" in request.POST:
-            context = profile_create(request, context)
-            profiles_list = UserProfile.objects.all()[:20]
-        if "search" in request.POST:
-            search_string = request.POST.get('find', '')
-            if search_string != '':
-                profiles_list = (list(UserProfile.objects.filter(user__username__contains=search_string))
-                                 + list(UserProfile.objects.filter(user__last_name__contains=search_string)))[:20]
-                context['form_user_search'] = FormUserSearch(
-                    initial={
-                        'find': search_string,
-                    }
-                )
-            else:
-                return redirect(reverse('profile_list', ))
+def profile_search(request, context):
+    search_string = request.POST.get('find', '')
+    if search_string != '':
+        profiles_list = (list(UserProfile.objects.filter(user__username__contains=search_string))
+                         + list(UserProfile.objects.filter(user__last_name__contains=search_string)))[:20]
+        context['form_user_search'] = FormUserSearch(
+            initial={
+                'find': search_string,
+            }
+        )
+        context['profiles_count'] = len(profiles_list)
+        context['profiles_list'] = profiles_list
+        return render(request, 'profile/list.html', context)
     else:
-        profiles_list = UserProfile.objects.all()[:20]
-    context['profiles_count'] = len(profiles_list)
-    context['profiles_list'] = profiles_list
-
-    return render(request, 'profile/list.html', context)
+        return redirect(reverse('profile_list'))
 
 
 ######################################################################################################################
@@ -152,25 +163,7 @@ def profile_edit(request, profile_id):
     profile = get_object_or_404(UserProfile, id=profile_id)
     if profile.user.is_superuser:
         return redirect(reverse('profile_list'))
-    access_role_list = list(map(lambda x: [x['id'], x['title']], list(AccessRole.objects.values('id', 'title').filter(is_sample=True))))
-    print(access_role_list, )
-    context = {
-        'current_user': get_current_user(request),
-        'profile': profile,
-        'form_user': FormUser(
-            initial={
-                'email': profile.user.email,
-                'username': profile.user.username,
-                'last_name': profile.user.last_name,
-                'first_name': profile.user.first_name,
-                'access_role': profile.access.id,
-            }
-        ),
-        # 'form_organization_list': FormOrganizationList(instance=profile.organization),
-        'form_organization_list': FormOrganizationList(initial={'parent_organization': profile.organization}),
-        'form_access_list': FormAccessList(instance=profile.access),
-        'sample': profile.access.is_sample,
-    }
+
     if request.POST:
         email = request.POST['email']
         last_name = request.POST['last_name']
@@ -206,7 +199,25 @@ def profile_edit(request, profile_id):
         profile.user.save()
         profile.save()
         return redirect(reverse('profile_show', args=(profile_id, )))
-    return render(request, 'profile/edit.html', context)
+    else:
+        context = {
+            'current_user': get_current_user(request),
+            'profile': profile,
+            'form_user': FormUser(
+                initial={
+                    'email': profile.user.email,
+                    'username': profile.user.username,
+                    'last_name': profile.user.last_name,
+                    'first_name': profile.user.first_name,
+                    'access_role': profile.access.id,
+                }
+            ),
+            # 'form_organization_list': FormOrganizationList(instance=profile.organization),
+            'form_organization': FormOrganization(initial={'organization': profile.organization}),
+            'form_access_list': FormAccessList(instance=profile.access),
+            'sample': profile.access.is_sample,
+        }
+        return render(request, 'profile/edit.html', context)
 
 
 ######################################################################################################################

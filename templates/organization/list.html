@@ -3,12 +3,6 @@
 {% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-    {% if current_user.access.user_edit %}
-        <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
-        <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
-        <script src='{% static "js/select2.min.js" %}'></script>
-        <script src='{% static "js/locales/select2.ru.js" %}'></script>
-    {% endif %}
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
@@ -23,75 +17,30 @@
             </div>
             <div class="col-auto mr-0 text-right">
                 {% if current_user.access.organization_edit %}
-                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalOrgAdd" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</button>
+                    <a href="{% url 'organization_create' %}" class="btn btn-outline-primary" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</a>
                 {% endif %}
             </div>
         </div>
-        <h3>Список организаций:</h3>
-        <table class="table table-hover table-sm">
-            {% for org in org_list %}
-                <tr>
-                    <td>
-                        <div class="mt-2">
-                            <strong class="text-gray-dark">{{ org.short_title }}</strong>
-                        </div>
-                    </td>
-                    <td class="text-right ">
-                        <a href="{% url 'organization_show' org.id %}" class="btn btn-outline-secondary" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
-    </main>
-    {% if current_user.access.user_edit %}
-        <!-- Окно создания новой организации -->
-        <div class="modal fade" id="ModalOrgAdd" tabindex="-1" role="dialog" aria-labelledby="ModalOrgAddTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content text-left">
-                    <form method='post' action=''>
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="ModalOrgAddTitle">Добавление новой организации</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>{{ form_organization.short_title.label }}:</h6>
-                                    {{ form_organization.short_title }}
+        <div class="shadow card border-dark mb-3">
+            <div class="card-header">
+                <h4>Список организаций:</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-sm table-borderless">
+                    {% for organization in organization_list %}
+                        <tr>
+                            <td>
+                                <div class="mt-2">
+                                    <strong class="text-gray-dark">{{ organization.short_title }}</strong>
                                 </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>{{ form_organization.long_title.label }}:</h6>
-                                    {{ form_organization.long_title }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>{{ form_organization_list.parent_organization.label }}:</h6>
-                                    {{ form_organization_list.parent_organization }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit" name="addorg">Добавить</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не добавлять</button>
-                        </div>
-                    </form>
-                </div>
+                            </td>
+                            <td class="text-right ">
+                                <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
             </div>
         </div>
-        <!-- /Окно создания нового пользователя -->
-        <script>
-            $(document).ready(function() {
-                $('select[name=parent_organization]').select2({
-                    allowClear: true,
-                    placeholder: "Выберите вышестоящую организацию",
-                    theme: "bootstrap4",
-                    language: "ru"
-                });
-            });
-        </script>
-    {% endif %}
+    </main>
 {% endblock %}

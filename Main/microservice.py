@@ -2,7 +2,7 @@
 
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
-from .models import Organization
+from Organization.models import Organization
 
 
 ######################################################################################################################

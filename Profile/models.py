@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from Main.models import Organization, Department
+from Organization.models import Organization, Department
 
 ######################################################################################################################
 

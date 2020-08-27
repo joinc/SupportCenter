@@ -9,10 +9,7 @@ urlpatterns = [
     path('', views.index, name='index', ),
     path('login/', views.login, name='login', ),
     path('logout/', views.logout, name='logout', ),
-    path('organization/', views.organization_list, name='organization_list', ),
-    path('organization/<int:organization_id>/show/', views.organization_show, name='organization_show', ),
-    path('organization/<int:organization_id>/edit/', views.organization_edit, name='organization_edit', ),
-    path('organization/<int:organization_id>/delete/', views.organization_delete, name='organization_delete', ),
+    path('organization', include('Organization.urls')),
     path('profile/', include('Profile.urls')),
     path('esign/', include('Esign.urls')),
 

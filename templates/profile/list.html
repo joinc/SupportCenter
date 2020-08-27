@@ -121,12 +121,15 @@
                                     <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
                                 </div>
                             </div>
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>Организация:</h6>
-                                    {{ form_organization_lis.parent_organization }}
+                            {% for field in form_organization %}
+                                <div class="row">
+                                    <div class="col-md-12 mb-2">
+                                        <h6>{{ field.label }}:</h6>
+                                        {{ field }}
+                                         <small class="form-text text-muted">{{ field.help_text }}</small>
+                                    </div>
                                 </div>
-                            </div>
+                            {% endfor %}
                             <div class="row">
                                 <div class="col-md-12 mb-2">
                                     <h6>{{ form_user.access_role.label}}:</h6>
@@ -145,22 +148,18 @@
         <!-- /Окно создания нового пользователя -->
         <script>
             $(document).ready(function() {
-                $('select[name=parent_organization]').select2({
+                $('select[name=organization]').select2({
                     allowClear: true,
                     placeholder: "Выберите организацию",
                     theme: "bootstrap4",
                     language: "ru"
                 });
+                {% if show_form_user %}
+                    $('#ModalUserAdd').modal('show');
+                {% endif %}
             });
         </script>
     {% endif %}
 
-    {% if show_form_user %}
-        <script type="text/javascript">
-            $(document).ready(function(){
-                $('#ModalUserAdd').modal('show');
-            });
-        </script>
-    {% endif %}
 
 {% endblock %}

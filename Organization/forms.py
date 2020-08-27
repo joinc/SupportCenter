@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Main.models import Organization
+from Organization.models import Organization
 
 ######################################################################################################################
 
@@ -9,7 +9,11 @@ from Main.models import Organization
 class FormOrganization(forms.ModelForm):
     class Meta:
         model = Organization
-        fields = ['short_title', 'long_title', ]
+        fields = [
+            'short_title',
+            'long_title',
+            'parent_organization',
+        ]
         widgets = {
             'short_title': forms.TextInput(
                 attrs={
@@ -25,17 +29,6 @@ class FormOrganization(forms.ModelForm):
                     'placeholder': 'Введите полное название',
                 }
             ),
-        }
-
-
-######################################################################################################################
-
-
-class FormOrganizationList(forms.ModelForm):
-    class Meta:
-        model = Organization
-        fields = ['parent_organization', ]
-        widgets = {
             'parent_organization': forms.Select(
                 attrs={
                     'class': 'form-control',

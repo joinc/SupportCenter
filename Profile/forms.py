@@ -37,6 +37,7 @@ class FormPassword(forms.Form):
 class FormAccessList(forms.ModelForm):
     class Meta:
         model = AccessRole
+        # exclude = ['title']
         fields = [
             'user_list',
             'user_edit',
@@ -46,36 +47,41 @@ class FormAccessList(forms.ModelForm):
             'organization_edit',
         ]
         widgets = {
-            'user_list': forms.CheckboxInput(
+            '__all__': forms.CheckboxInput(
                 attrs={
                     'class': 'custom-control-input',
                 }
-            ),
-            'user_edit': forms.CheckboxInput(
-                attrs={
-                    'class': 'custom-control-input',
-                }
-            ),
-            'esign_list': forms.CheckboxInput(
-                attrs={
-                    'class': 'custom-control-input',
-                }
-            ),
-            'esign_edit': forms.CheckboxInput(
-                attrs={
-                    'class': 'custom-control-input',
-                }
-            ),
-            'esign_moderator': forms.CheckboxInput(
-                attrs={
-                    'class': 'custom-control-input',
-                }
-            ),
-            'organization_edit': forms.CheckboxInput(
-                attrs={
-                    'class': 'custom-control-input',
-                }
-            ),
+            )
+            # 'user_list': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
+            # 'user_edit': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
+            # 'esign_list': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
+            # 'esign_edit': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
+            # 'esign_moderator': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
+            # 'organization_edit': forms.CheckboxInput(
+            #     attrs={
+            #         'class': 'custom-control-input',
+            #     }
+            # ),
         }
 
 
@@ -97,6 +103,32 @@ class FormUserSearch(forms.Form):
 
 
 ######################################################################################################################
+
+class FormOrganization(forms.ModelForm):
+    class Meta:
+        model = UserProfile
+        fields = [
+            'organization',
+            'access',
+        ]
+        widgets = {
+            'organization': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                }
+            ),
+            'access': forms.Select(
+                attrs={
+                    'class': 'custom-select',
+                }
+            ),
+        }
+        labels = {
+            'organization': 'Организация',
+        }
+        help_texts = {
+            'organization': 'Это help text',
+        }
 
 
 class FormUser(forms.Form):

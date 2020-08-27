@@ -6,11 +6,8 @@ from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
-from Main.models import Organization
 from Esign.classes import EsignCount
-from Main.forms import FormOrganization, FormOrganizationList
 from Main.tools import get_current_user
-from Main.decorators import access_organization_edit
 
 
 ######################################################################################################################
@@ -64,70 +61,6 @@ def logout(request):
     # Выход пользователя
     auth.logout(request)
     return redirect(reverse('index'))
-
-
-######################################################################################################################
-
-
-@login_required
-def organization_list(request):
-    current_user = get_current_user(request)
-    context = {
-        'current_user': current_user,
-        'org_list': list(Organization.objects.values('id', 'short_title').all()),
-        'form_organization': FormOrganization(),
-        'form_organization_list': FormOrganizationList(),
-    }
-    if request.POST and current_user.access.organization_edit:
-        if 'addorg' in request.POST:
-            short_title = request.POST['short_title']
-            long_title = request.POST['long_title']
-            parent_organization = request.POST['parent_organization']
-            organization = Organization()
-            organization.short_title = short_title
-            organization.long_title = long_title
-            if parent_organization:
-                organization.parent_organization_id = int(parent_organization)
-            organization.save()
-            return redirect(reverse('organization_list'))
-    return render(request, 'organization/list.html', context)
-
-
-######################################################################################################################
-
-
-@login_required
-def organization_show(request, organization_id):
-    context = {
-        'current_user': get_current_user(request),
-        'organization': get_object_or_404(Organization, id=organization_id),
-    }
-    return render(request, 'organization/show.html', context)
-
-
-######################################################################################################################
-
-
-@access_organization_edit
-def organization_delete(request, organization_id):
-    organization = get_object_or_404(Organization, id=organization_id)
-    organization.delete()
-    return redirect(reverse('organization_list'))
-
-
-######################################################################################################################
-
-
-@access_organization_edit
-def organization_edit(request, organization_id):
-    organization = get_object_or_404(Organization, id=organization_id)
-    context = {
-        'current_user': get_current_user(request),
-        'organization': organization,
-        'form_organization': FormOrganization(instance=organization),
-        'form_organization_list': FormOrganizationList(instance=organization),
-    }
-    return render(request, 'organization/edit.html', context)
 
 
 ######################################################################################################################

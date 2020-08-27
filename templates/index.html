@@ -9,8 +9,10 @@
         <div class="card-columns">
             {% if current_user.access.esign_list %}
                 <div class="card shadow border-dark">
+                    <div class="card-header">
+                        <h4>Учет электронных подписей:</h4>
+                    </div>
                     <div class="card-body">
-                        <h5 class="card-title">Учет электронных подписей:</h5>
                         <ul class="list-unstyled">
                             {% ifequal esign_count_expires 0 %}
                                 <li class="border-bottom border-grey">Действующие <span class="float-right">{{ esign_count_current }}</span></li>
