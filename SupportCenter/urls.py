@@ -9,7 +9,7 @@ urlpatterns = [
     path('', views.index, name='index', ),
     path('login/', views.login, name='login', ),
     path('logout/', views.logout, name='logout', ),
-    path('organization', include('Organization.urls')),
+    path('organization/', include('Organization.urls')),
     path('profile/', include('Profile.urls')),
     path('esign/', include('Esign.urls')),
 

@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from Organization.models import Organization
 from Profile.models import UserProfile, AccessRole
-from Profile.forms import FormUser, FormPassword, FormUserSearch, FormAccessList, FormOrganization
+from Profile.forms import FormUser, FormPassword, FormSearchUser, FormAccessList, FormOrganization, FormCreateUser
 from Main.decorators import access_user_edit, access_user_list
 from Main.tools import get_current_user
 
@@ -23,7 +23,7 @@ def profile_list(request):
         'profiles_total': UserProfile.objects.count(),
         'form_user': FormUser(),
         'form_password': FormPassword(),
-        'form_user_search': FormUserSearch(),
+        'form_search_user': FormSearchUser(),
         'form_organization': FormOrganization(),
     }
     if request.POST:
@@ -41,6 +41,18 @@ def profile_list(request):
 
 
 ######################################################################################################################
+
+def profile_create_new(request):
+    current_user = get_current_user(request)
+    context = {
+        'current_user': current_user,
+        'form_create_user': FormCreateUser(),
+    }
+    if request.POST:
+        pass
+    else:
+        pass
+    return render(request, 'profile/create.html', context)
 
 
 @access_user_edit
@@ -101,7 +113,7 @@ def profile_search(request, context):
     if search_string != '':
         profiles_list = (list(UserProfile.objects.filter(user__username__contains=search_string))
                          + list(UserProfile.objects.filter(user__last_name__contains=search_string)))[:20]
-        context['form_user_search'] = FormUserSearch(
+        context['form_search_user'] = FormSearchUser(
             initial={
                 'find': search_string,
             }
@@ -128,11 +140,9 @@ def profile_show(request, profile_id):
     }
     if request.POST and current_user.access.user_edit:
         if 'blockuser' in request.POST:
-            profile.blocked = True
-            profile.save()
+            profile.block()
         elif 'unblockuser' in request.POST:
-            profile.blocked = False
-            profile.save()
+            profile.unblock()
         elif 'changepassword' in request.POST:
             password1 = request.POST['password1']
             password2 = request.POST['password2']

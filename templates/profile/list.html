@@ -3,12 +3,6 @@
 {% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-    {% if current_user.access.user_edit %}
-        <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
-        <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
-        <script src='{% static "js/select2.min.js" %}'></script>
-        <script src='{% static "js/locales/select2.ru.js" %}'></script>
-    {% endif %}
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
@@ -23,143 +17,56 @@
             </div>
             <div class="col-auto mr-0 text-right">
                 {% if current_user.access.user_edit %}
-                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalUserAdd" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить</button>
+                    <a href="{% url 'profile_create' %}" class="btn btn-outline-primary" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить</a>
                 {% endif %}
             </div>
         </div>
-        <h3>Список пользователей:</h3>
-        {% if profiles_count %}
-            <div class="alert alert-info alert-dismissible fade show" role="alert">Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        <div class="shadow card border-dark mb-3">
+            <div class="card-header">
+                <h4>Список пользователей:</h4>
             </div>
-        {% endif %}
-        <form method='post' action=''>
-            {% csrf_token %}
-            <div class="input-group">
-                <div class="input-group-prepend">
-                    <span class="input-group-text">Поиск пользователей</span>
+            <div class="card-body">
+                <div class="alert alert-{% if profiles_count %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+                    {% if profiles_count %}
+                        Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
+                    {% else %}
+                        Совпадений в логине или фамилии пользователей не найдено, всего пользователей - {{ profiles_total }}.
+                    {% endif %}
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
-                {{ form_user_search.find }}
-                <div class="input-group-append">
-                    <button class="btn btn-info" type="submit" name="search">Поиск</button>
-                </div>
-            </div>
-        </form>
-        <table class="table table-hover table-sm">
-            {% for u in profiles_list %}
-                <tr{% if u.blocked %} class="table-danger"{% endif %}>
-                    <td>
-                        <div class="mb-0 small">
-                            <strong class="text-gray-dark">{{ u.user.get_full_name }}</strong>
-                            <span class="d-block">@{{ u.user.get_username }}</span>
+                <form method='post' action=''>
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Поиск пользователей</span>
                         </div>
-                    </td>
-                    <td class="pt-2">
-                        {% if u.blocked %}Заблокирован{% endif %}
-                    </td>
-                    <td class="text-right ">
-                        <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
-                    </td>
-                </tr>
-            {% endfor %}
-        </table>
+                        {{ form_search_user.find }}
+                        <div class="input-group-append">
+                            <button class="btn btn-info" type="submit" name="search">Поиск</button>
+                        </div>
+                    </div>
+                </form>
+                <table class="table table-hover table-sm">
+                    {% for u in profiles_list %}
+                        <tr{% if u.blocked %} class="table-danger"{% endif %}>
+                            <td>
+                                <div class="mb-0 small">
+                                    <strong class="text-gray-dark">{{ u.user.get_full_name }}</strong>
+                                    <span class="d-block">@{{ u.user.get_username }}</span>
+                                </div>
+                            </td>
+                            <td class="pt-2">
+                                {% if u.blocked %}Заблокирован{% endif %}
+                            </td>
+                            <td class="text-right ">
+                                <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
     </main>
-    {% if current_user.access.user_edit %}
-        <!-- Окно создания нового пользователя -->
-        <div class="modal fade" id="ModalUserAdd" tabindex="-1" role="dialog" aria-labelledby="ModalUserAddTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content text-left">
-                    <form method='post' action=''>
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h4 class="modal-title" id="ModalUserAddTitle">Добавление нового пользователя</h4>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">
-                            {% for message in messages %}
-                                <div class="mb-3">
-                                    <div class="alert alert-danger" role="alert">{{ message }}</div>
-                                </div>
-                            {% endfor %}
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.first_name.label }}:</h6>
-                                    {{ form_user.first_name }}
-                                    <small class="form-text text-muted">На русском языке.</small>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.last_name.label }}:</h6>
-                                    {{ form_user.last_name }}
-                                    <small class="form-text text-muted">На русском языке.</small>
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.username.label }}:</h6>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend"><span class="input-group-text">@</span></div>
-                                        {{ form_user.username }}
-                                    </div>
-                                    <small class="form-text text-muted">Обязательное поле. Только английские буквы.</small>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_user.email.label }}:</h6>
-                                    {{ form_user.email }}
-                                </div>
-                            </div>
-                            <div class="row">
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_password.password1.label}}:</h6>
-                                    {{ form_password.password1 }}
-                                    <small class="form-text text-muted">Пароль не должен совпадать с логином и состоять только из цифр. Пароль должен содержать как минимум 8 символов.</small>
-                                </div>
-                                <div class="col-md-6 mb-2">
-                                    <h6>{{ form_password.password2.label }}:</h6>
-                                    {{ form_password.password2 }}
-                                    <small class="form-text text-muted">Для подтверждения введите, пожалуйста, пароль ещё раз.</small>
-                                </div>
-                            </div>
-                            {% for field in form_organization %}
-                                <div class="row">
-                                    <div class="col-md-12 mb-2">
-                                        <h6>{{ field.label }}:</h6>
-                                        {{ field }}
-                                         <small class="form-text text-muted">{{ field.help_text }}</small>
-                                    </div>
-                                </div>
-                            {% endfor %}
-                            <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>{{ form_user.access_role.label}}:</h6>
-                                    {{ form_user.access_role }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="modal-footer">
-                            <button class="btn btn-primary" type="submit" name="adduser">Добавить</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не добавлять</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!-- /Окно создания нового пользователя -->
-        <script>
-            $(document).ready(function() {
-                $('select[name=organization]').select2({
-                    allowClear: true,
-                    placeholder: "Выберите организацию",
-                    theme: "bootstrap4",
-                    language: "ru"
-                });
-                {% if show_form_user %}
-                    $('#ModalUserAdd').modal('show');
-                {% endif %}
-            });
-        </script>
-    {% endif %}
-
-
 {% endblock %}

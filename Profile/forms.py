@@ -2,6 +2,7 @@
 
 from django import forms
 from Profile.models import AccessRole, UserProfile
+from django.contrib.auth.models import User
 
 ######################################################################################################################
 
@@ -34,6 +35,76 @@ class FormPassword(forms.Form):
 ######################################################################################################################
 
 
+class FormCreateUser(forms.ModelForm):
+    password2 = forms.CharField(
+        label='Подтверждение нового пароля',
+        widget=forms.TextInput(
+            attrs={
+                'type': 'password',
+                'class': 'form-control',
+                'autocomplete': 'off',
+            }
+        ),
+        help_text='Для подтверждения введите, пожалуйста, пароль ещё раз.',
+        required=True,
+    )
+
+    class Meta:
+        model = User
+        fields = [
+            'first_name',
+            'last_name',
+            'email',
+            'username',
+            'password',
+        ]
+        labels = {
+            'username': 'Логин пользователя',
+        }
+        widgets = {
+            'first_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Введите имя пользователя',
+                }
+            ),
+            'last_name': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Введите фамилию пользователя',
+                }
+            ),
+            'username': forms.TextInput(
+                attrs={
+                    'class': 'form-control',
+                    'placeholder': 'Введите логин пользователя',
+                }
+            ),
+            'email': forms.TextInput(
+                attrs={
+                    'type': 'email',
+                    'class': 'form-control',
+                    'placeholder': 'Введите электронный адрес',
+                }
+            ),
+            'password': forms.TextInput(
+                attrs={
+                    'type': 'password',
+                    'class': 'form-control',
+                    'autocomplete': 'off',
+                }
+            ),
+        }
+        help_texts = {
+            'username': 'Обязательное поле. Только английские буквы.',
+            'password': 'Пароль не должен совпадать с логином и состоять только из цифр. '
+                        'Пароль должен содержать как минимум 8 символов.',
+        }
+
+
+######################################################################################################################
+
+
 class FormAccessList(forms.ModelForm):
     class Meta:
         model = AccessRole
@@ -47,48 +118,43 @@ class FormAccessList(forms.ModelForm):
             'organization_edit',
         ]
         widgets = {
-            '__all__': forms.CheckboxInput(
+            'user_list': forms.CheckboxInput(
                 attrs={
                     'class': 'custom-control-input',
                 }
-            )
-            # 'user_list': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
-            # 'user_edit': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
-            # 'esign_list': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
-            # 'esign_edit': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
-            # 'esign_moderator': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
-            # 'organization_edit': forms.CheckboxInput(
-            #     attrs={
-            #         'class': 'custom-control-input',
-            #     }
-            # ),
+            ),
+            'user_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_list': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'esign_moderator': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
+            'organization_edit': forms.CheckboxInput(
+                attrs={
+                    'class': 'custom-control-input',
+                }
+            ),
         }
 
 
 ######################################################################################################################
 
 
-class FormUserSearch(forms.Form):
+class FormSearchUser(forms.Form):
     find = forms.CharField(
         label='Поиск пользователя',
         widget=forms.TextInput(
@@ -103,6 +169,7 @@ class FormUserSearch(forms.Form):
 
 
 ######################################################################################################################
+
 
 class FormOrganization(forms.ModelForm):
     class Meta:
@@ -126,9 +193,9 @@ class FormOrganization(forms.ModelForm):
         labels = {
             'organization': 'Организация',
         }
-        help_texts = {
-            'organization': 'Это help text',
-        }
+
+
+######################################################################################################################
 
 
 class FormUser(forms.Form):

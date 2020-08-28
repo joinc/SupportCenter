@@ -95,6 +95,14 @@ class UserProfile(models.Model):
         null=True,
     )
 
+    def block(self):
+        self.blocked = True
+        self.save()
+
+    def unblock(self):
+        self.blocked = False
+        self.save()
+
     def __str__(self):
         return '{0}'.format(self.user.get_full_name())
 

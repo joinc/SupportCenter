@@ -17,8 +17,8 @@
                 </nav>
             </div>
         </div>
-        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+        <div class="shadow card border-dark mb-3">
+            <div class="card-header">
                 <h4>{{ organization.short_title }}:</h4>
             </div>
             <div class="card-body">
@@ -43,12 +43,12 @@
                     </div>
                 {% endif %}
             </div>
-            <div class="card-footer text-right">
-                {% if current_user.access.organization_edit %}
+            {% if current_user.access.organization_edit %}
+                <div class="card-footer text-right">
                     <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
                     <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
-                {% endif %}
-            </div>
+                </div>
+            {% endif %}
         </div>
     </main>
     {% if current_user.access.organization_edit %}

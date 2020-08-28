@@ -19,7 +19,6 @@ def organization_list(request):
         context = {
             'current_user': get_current_user(request),
             'organization_list': list(Organization.objects.values('id', 'short_title').all()),
-            'form_organization': FormOrganization(),
         }
         return render(request, 'organization/list.html', context)
 
