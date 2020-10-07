@@ -7,15 +7,14 @@ Esign/migrations/
 Esign/migrations/__init__.py
 Esign/__init__.py
 Main/migrations/
-Main/migrations/__init__.py
 Main/__init__.py
 Organization/migrations/
-Organization/migrations/__init__.py
 Organization/__init__.py
 Profile/migrations/
-Profile/migrations/__init__.py
 Profile/__init__.py
 SupportCenter/settings.py
 SupportCenter/__init__.py
+Workplace/migrations/
+Workplace/__init__.py
 manage.py
 db.sqlite3
