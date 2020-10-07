@@ -4,11 +4,26 @@ from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
-from Organization.models import Organization
 from Profile.models import UserProfile, AccessRole
-from Profile.forms import FormUser, FormPassword, FormSearchUser, FormAccessList, FormOrganization, FormCreateUser
+from Profile.forms import FormChangePassword, FormSearchUser, FormAccessList, FormOrganization, FormCreateUser, FormEditUser, FormAccessRole
 from Main.decorators import access_user_edit, access_user_list
 from Main.tools import get_current_user
+
+
+######################################################################################################################
+
+
+def check_password(username, password1, password2):
+    message_list = []
+    if password1 != password2:
+        message_list.append('Пароли не совпадают.')
+    if len(password1) < 8:
+        message_list.append('Длина пароля менее 8 символов.')
+    if password1.isdigit():
+        message_list.append('Пароль состоит только из цифр.')
+    if password1 == username:
+        message_list.append('Пароль совпадает с логином.')
+    return message_list
 
 
 ######################################################################################################################
@@ -20,11 +35,9 @@ def profile_list(request):
     current_user = get_current_user(request)
     context = {
         'current_user': current_user,
+        'title': 'Список пользователей',
         'profiles_total': UserProfile.objects.count(),
-        'form_user': FormUser(),
-        'form_password': FormPassword(),
         'form_search_user': FormSearchUser(),
-        'form_organization': FormOrganization(),
     }
     if request.POST:
         if "adduser" in request.POST:
@@ -36,72 +49,44 @@ def profile_list(request):
         profiles_list = UserProfile.objects.all()[:20]
     context['profiles_count'] = len(profiles_list)
     context['profiles_list'] = profiles_list
-
     return render(request, 'profile/list.html', context)
 
 
 ######################################################################################################################
 
-def profile_create_new(request):
-    current_user = get_current_user(request)
-    context = {
-        'current_user': current_user,
-        'form_create_user': FormCreateUser(),
-    }
-    if request.POST:
-        pass
-    else:
-        pass
-    return render(request, 'profile/create.html', context)
-
 
 @access_user_edit
-def profile_create(request, context):
-    username = request.POST['username']
-    email = request.POST['email']
-    last_name = request.POST['last_name']
-    first_name = request.POST['first_name']
-    password1 = request.POST['password1']
-    password2 = request.POST['password2']
-    access_role = request.POST['access_role']
-    organization = request.POST['organization']
-    initial = {
-        'email': email,
-        'username': username,
-        'last_name': last_name,
-        'first_name': first_name,
-        'access_role': access_role,
+def profile_create(request):
+    context = {
+        'current_user': get_current_user(request),
     }
-    if User.objects.filter(username=username).exists():
-        del initial['username']
-        messages.info(request, 'Пользователь ' + username + ' уже существует.')
-    elif password1 != password2:
-        messages.info(request, 'Пароли не совпадают.')
-    elif len(password2) < 8:
-        messages.info(request, 'Длина пароля менее 8 символов.')
-    elif password2.isdigit():
-        messages.info(request, 'Пароль состоит только из цифр.')
-    elif password2 == username:
-        messages.info(request, 'Пароль совпадает с логином.')
+    if request.POST:
+        formset = FormCreateUser(request.POST)
+        username = formset['username'].value()
+        password1 = formset['password'].value()
+        password2 = formset['password2'].value()
+        initial = {
+            'email': formset['email'].value(),
+            'username': username,
+            'last_name': formset['last_name'].value(),
+            'first_name': formset['first_name'].value(),
+        }
+        message_list = check_password(username, password1, password2)
+        if formset.is_valid() and not message_list:
+            formset.save()
+            profile = UserProfile(user=get_object_or_404(User, username=username))
+            profile.save()
+            return redirect(reverse('profile_edit', args=(profile.id, )))
+        else:
+            if User.objects.filter(username=username).exists():
+                del initial['username']
+                message_list.append('Пользователь ' + username + ' уже существует.')
+        for message in message_list:
+            messages.info(request, message)
+        context['form_create_user'] = FormCreateUser(initial=initial)
     else:
-        new_user = User.objects.create_user(
-            username=username,
-            email=email,
-            password=password2,
-            first_name=first_name,
-            last_name=last_name,
-        )
-        new_user.save()
-        new_profile = UserProfile()
-        new_profile.user = new_user
-        new_profile.organization = get_object_or_404(Organization, id=organization)
-        new_profile.access = get_object_or_404(AccessRole, id=access_role)
-        new_profile.save()
-        return context
-    context['form_user'] = FormUser(initial=initial)
-    context['form_organization'] = FormOrganization(initial={'organization': organization})
-    context['show_form_user'] = True
-    return context
+        context['form_create_user'] = FormCreateUser()
+    return render(request, 'profile/create.html', context)
 
 
 ######################################################################################################################
@@ -136,7 +121,8 @@ def profile_show(request, profile_id):
     context = {
         'current_user': current_user,
         'profile': profile,
-        'form_password': FormPassword(),
+        'title': 'Пользователь ' + profile.__str__(),
+        'form_password': FormChangePassword(),
     }
     if request.POST and current_user.access.user_edit:
         if 'blockuser' in request.POST:
@@ -146,20 +132,13 @@ def profile_show(request, profile_id):
         elif 'changepassword' in request.POST:
             password1 = request.POST['password1']
             password2 = request.POST['password2']
-            message = None
-            if password1 != password2:
-                message = 'Пароли не совпадают.'
-            elif len(password2) < 8:
-                message = 'Длина пароля менее 8 символов.'
-            elif password2.isdigit():
-                message = 'Пароль состоит только из цифр.'
-            elif password2 == profile.user.username:
-                message = 'Пароль совпадает с логином.'
-            if message:
-                messages.info(request, message)
+            message_list = check_password(profile.user.username, password1, password2)
+            if message_list:
+                for message in message_list:
+                    messages.info(request, message)
                 context['show_password'] = True
             else:
-                profile.user.set_password(password2)
+                profile.user.set_password(password1)
                 profile.user.save()
     return render(request, 'profile/show.html', context)
 
@@ -175,58 +154,46 @@ def profile_edit(request, profile_id):
         return redirect(reverse('profile_list'))
 
     if request.POST:
-        email = request.POST['email']
-        last_name = request.POST['last_name']
-        first_name = request.POST['first_name']
-        organization = request.POST['parent_organization']
+        formset_user = FormEditUser(request.POST, instance=profile.user)
+        formset_user.save()
+        formset_organization = FormOrganization(request.POST, instance=profile)
+        formset_organization.save()
         access_choice = request.POST.get('access_choice', 'sample')
-        access_role = request.POST['access_role']
-        profile.user.email = email
-        profile.user.first_name = first_name
-        profile.user.last_name = last_name
-        profile.organization = get_object_or_404(Organization, id=organization)
         if access_choice == 'sample':
             # Если выбрана определенная роль, то присваивается эта роль
+            access_role = request.POST['access_role']
             access = get_object_or_404(AccessRole, id=access_role)
         else:
             # Если выбраны отдельные права, то создается новая роль с этими правами
-            access = AccessRole(
-                user_list=bool(request.POST.get('user_list', False)),
-                user_edit=bool(request.POST.get('user_edit', False)),
-                esign_list=bool(request.POST.get('esign_list', False)),
-                esign_edit=bool(request.POST.get('esign_edit', False)),
-                esign_moderator=bool(request.POST.get('esign_moderator', False)),
-                title=profile.user.username,
-            )
-            access.save()
-        if profile.access.is_sample:
-            # Если роль была шаблонная, то она просто меняется на новую
-            profile.access = access
-        else:
+            access = AccessRole(title=profile.user.username)
+            formset_access = FormAccessList(request.POST, instance=access)
+            formset_access.save()
+        if profile.access and not profile.access.is_sample:
             # Если роль была не шаблонная, то она сначала удаляется, чтобы не накапливать бесхозные роли
             profile.access.delete()
-            profile.access = access
-        profile.user.save()
+        profile.access = access
         profile.save()
         return redirect(reverse('profile_show', args=(profile_id, )))
     else:
         context = {
             'current_user': get_current_user(request),
             'profile': profile,
-            'form_user': FormUser(
-                initial={
-                    'email': profile.user.email,
-                    'username': profile.user.username,
-                    'last_name': profile.user.last_name,
-                    'first_name': profile.user.first_name,
-                    'access_role': profile.access.id,
-                }
-            ),
-            # 'form_organization_list': FormOrganizationList(instance=profile.organization),
-            'form_organization': FormOrganization(initial={'organization': profile.organization}),
-            'form_access_list': FormAccessList(instance=profile.access),
-            'sample': profile.access.is_sample,
+            'title': 'Редактирование профиля ' + profile.__str__(),
+            'form_edit_user': FormEditUser(instance=profile.user),
         }
+        if profile.access:
+            if profile.access.is_sample:
+                context['form_access_role'] = FormAccessRole(initial={'access_role': profile.access.id})
+            else:
+                context['form_access_role'] = FormAccessRole()
+            context['form_access_list'] = FormAccessList(instance=profile.access)
+        else:
+            context['form_access_role'] = FormAccessRole()
+            context['form_access_list'] = FormAccessList()
+        if profile.organization:
+            context['form_organization'] = FormOrganization(initial={'organization': profile.organization})
+        else:
+            context['form_organization'] = FormOrganization()
         return render(request, 'profile/edit.html', context)
 
 

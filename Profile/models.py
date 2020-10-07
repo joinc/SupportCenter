@@ -12,7 +12,7 @@ class AccessRole(models.Model):
         default='',
     )
     is_sample = models.BooleanField(
-        verbose_name="Это шаблом роли",
+        verbose_name="Это шаблон роли",
         default=False,
     )
     user_list = models.BooleanField(

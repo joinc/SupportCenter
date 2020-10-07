@@ -1,5 +1,6 @@
 from django.db import models
 from Profile.models import UserProfile
+import fsb795
 
 ######################################################################################################################
 
@@ -81,6 +82,24 @@ class Certificate(models.Model):
         auto_now_add=True,
         null=True,
     )
+
+    def parse_file(self):
+        certificate = fsb795.Certificate(self.file_sign.path)
+        if certificate.pyver == '':
+            return False
+        else:
+            iss, vlad_is = certificate.issuerCert()
+            self.issuer = iss['CN']
+            sub, vlad_sub = certificate.subjectCert()
+            self.entity = sub['CN']
+            serial = str(hex(certificate.serialNumber()))
+            # Убираем из серийного номера символ (x) - обозначение шестнадцатеричной строки
+            serial = serial[0] + serial[2:]
+            self.serial = serial
+            valid = certificate.validityCert()
+            self.valid_from = valid['not_before']
+            self.valid_for = valid['not_after']
+            return True
 
     def __str__(self):
         return '{0}'.format(self.entity)

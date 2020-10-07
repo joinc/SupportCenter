@@ -3,10 +3,10 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from django.http import HttpResponse
-from Profile.models import UserProfile
 from Esign.models import Certificate
 from Esign.forms import FormUpload
 from Main.decorators import access_esign_list, access_esign_edit
+from Main.tools import get_current_user
 from datetime import datetime, timedelta
 from uuid import uuid4
 import fsb795
@@ -52,37 +52,24 @@ def esign_check_current(esign_list) -> None:
 @access_esign_list
 def esign_get_list(request):
     """ Список электронных подписей """
-    current_user = get_object_or_404(UserProfile, user=request.user)
+    current_user = get_current_user(request)
     if request.POST and request.FILES:
         esign = Certificate(owner=current_user)
         file = request.FILES['file']
         esign.file_sign.save(uuid4().hex, file)
-        cert = fsb795.Certificate(esign.file_sign.path)
-        if cert.pyver == '':
-            esign.file_sign.delete()
-            esign.delete()
-        else:
-            iss, vlad_is = cert.issuerCert()
-            esign.issuer = iss['CN']
-            sub, vlad_sub = cert.subjectCert()
-            esign.entity = sub['CN']
-            serial = str(hex(cert.serialNumber()))
-            # Убираем из серийного номера символ (x) - обозначение шестнадцатеричной строки
-            serial = serial[0] + serial[2:]
-            esign.serial = serial
-            valid = cert.validityCert()
-            esign.valid_from = valid['not_before']
-            esign.valid_for = valid['not_after']
+        if esign.parse_file():
             if request.POST.get('select', '0') == '1':
                 renew = request.POST.get('renew', '0')
                 if renew != '0':
                     esign_extended = get_object_or_404(Certificate, id=int(renew))
                     esign.renew = esign_extended
-                    esign.save()
                     esign_extended.extended = esign
                     esign_extended.save()
                     esign_change_status(esign_extended, is_extended=True, is_delete_file=True)
             esign.save()
+        else:
+            esign.file_sign.delete()
+            esign.delete()
         return redirect(reverse('esign_list'))
     else:
         if current_user.access.esign_moderator:
@@ -118,8 +105,8 @@ def esign_get_list(request):
 @login_required
 @access_esign_edit
 def esign_show(request, esign_id):
-    """ Список электронных подписей """
-    current_user = get_object_or_404(UserProfile, user=request.user)
+    """ Отображение выбранной электронной подписи """
+    current_user = get_current_user(request)
     esign = get_object_or_404(Certificate, id=esign_id)
     context = {
         'current_user': current_user,
@@ -153,7 +140,7 @@ def esign_terminate(request, esign_id):
 @login_required
 @access_esign_edit
 def esign_download(request, esign_id):
-    """ Смена статуса сертификата на Аннулирован """
+    """ Скачивание файла электронной подписи """
     esign = get_object_or_404(Certificate, id=esign_id)
     response = HttpResponse(esign.file_sign.file)
     file_type = mimetypes.guess_type(esign.file_sign.name)

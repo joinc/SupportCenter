@@ -1,0 +1,149 @@
+from django.db import models
+
+######################################################################################################################
+
+
+ADDRESS_CHOICES = (
+    (0, 'Яковлева, 6'),
+    (1, 'Тарская, 11')
+)
+
+
+######################################################################################################################
+
+
+class TypeEquipment(models.Model):
+    title = models.CharField(
+        verbose_name='Тип оборудования',
+        max_length=124,
+        default='',
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания типа оборудования',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'title',
+        verbose_name = 'Тип оборудования'
+        verbose_name_plural = 'Типы оборудования'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Placement(models.Model):
+    address = models.SmallIntegerField(
+        verbose_name='Адрес',
+        choices=ADDRESS_CHOICES,
+        default=0,
+    )
+    cabinet = models.CharField(
+        verbose_name='Кабинет',
+        max_length=8,
+        default='',
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания расположения',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}, каб. {1}'.format(self.get_address_display(), self.cabinet)
+
+    class Meta:
+        ordering = 'address', 'cabinet',
+        verbose_name = 'Располежение'
+        verbose_name_plural = 'Расположения'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Workplace(models.Model):
+    title = models.CharField(
+        verbose_name='Название',
+        max_length=124,
+        default='',
+    )
+    placement = models.ForeignKey(
+        Placement,
+        verbose_name='Расположение',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='Replacement',
+        on_delete=models.SET_NULL,
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания организации',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'title',
+        verbose_name = 'Рабочее место'
+        verbose_name_plural = 'Рабочие места'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Equipment(models.Model):
+    title = models.CharField(
+        verbose_name='Название',
+        max_length=124,
+        default='',
+    )
+    inventory_number = models.CharField(
+        verbose_name='Инвентарный номер',
+        max_length=124,
+        default='',
+    )
+    type = models.ForeignKey(
+        TypeEquipment,
+        verbose_name='Тип оборудования',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='TypeEquipment',
+        on_delete=models.SET_NULL,
+    )
+    workplace = models.ForeignKey(
+        Workplace,
+        verbose_name='Рабочее место',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='Workplace',
+        on_delete=models.SET_NULL,
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания оборудования',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'title',
+        verbose_name = 'Оборудование'
+        verbose_name_plural = 'Оборудования'
+        managed = True
+
+
+######################################################################################################################

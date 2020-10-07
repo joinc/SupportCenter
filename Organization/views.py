@@ -18,6 +18,7 @@ def organization_list(request):
     else:
         context = {
             'current_user': get_current_user(request),
+            'title': 'Список организаций',
             'organization_list': list(Organization.objects.values('id', 'short_title').all()),
         }
         return render(request, 'organization/list.html', context)
@@ -77,6 +78,7 @@ def organization_edit(request, organization_id):
     else:
         context = {
             'current_user': get_current_user(request),
+            'title': 'Редактирование организации',
             'organization': organization,
             'form_organization': FormOrganization(instance=organization),
         }

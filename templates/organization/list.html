@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
+{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
@@ -11,7 +11,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Список организаций</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
                     </ol>
                 </nav>
             </div>
@@ -23,19 +23,17 @@
         </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>Список организаций:</h4>
+                <h4>{{ title }}:</h4>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-sm table-borderless">
                     {% for organization in organization_list %}
                         <tr>
                             <td>
-                                <div class="mt-2">
-                                    <strong class="text-gray-dark">{{ organization.short_title }}</strong>
-                                </div>
+                                <strong class="text-gray-dark">{{ organization.short_title }}</strong>
                             </td>
                             <td class="text-right ">
-                                <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
+                                <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary btn-sm" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
                             </td>
                         </tr>
                     {% endfor %}

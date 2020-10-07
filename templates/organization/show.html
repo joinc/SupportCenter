@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
+{% block html_title %}{{ organization.short_title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}

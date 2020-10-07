@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
+{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
     <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
@@ -16,65 +16,62 @@
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
                         <li class="breadcrumb-item"><a href="{% url 'profile_list' %}">Список пользователей</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'profile_show' profile.id %}">{{ profile }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Редактировать</li>
+                        <li class="breadcrumb-item"><a href="{% url 'profile_show' profile.id %}">Пользователь {{ profile }}</a></li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
                     </ol>
                 </nav>
             </div>
         </div>
-        <h3>Редактировать профиль пользователя:</h3>
         <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
             <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
-                <strong class="text-gray-dark">{{ profile }}</strong>
-                @{{ profile.user }}
+                <h4>{{ title }}:</h4>
             </div>
             <form method='post' action='' class="mb-0">
                 <div class="card-body">
                     {% csrf_token %}
                     <div class="row">
                         <div class="col-md-6 mb-2">
-                            <h6>{{ form_user.first_name.label }}:</h6>
-                            {{ form_user.first_name }}
-                            <small class="form-text text-muted">На русском языке.</small>
+                            <h6>{{ form_edit_user.first_name.label }}:</h6>
+                            {{ form_edit_user.first_name }}
                         </div>
                         <div class="col-md-6 mb-2">
-                            <h6>{{ form_user.last_name.label }}:</h6>
-                            {{ form_user.last_name }}
-                            <small class="form-text text-muted">На русском языке.</small>
+                            <h6>{{ form_edit_user.last_name.label }}:</h6>
+                            {{ form_edit_user.last_name }}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-2">
-                            <h6>{{ form_user.username.label }}:</h6>
+                            <h6>Логин пользователя:</h6>
                             <div class="input-group">
                                 <div class="input-group-prepend"><span class="input-group-text">@</span></div>
-                                {{ form_user.username }}
+                                <input disabled value="{{ profile.user.username }}" class="form-control">
                             </div>
                         </div>
                         <div class="col-md-6 mb-2">
-                            <h6>{{ form_user.email.label }}:</h6>
-                            {{ form_user.email }}
+                            <h6>{{ form_edit_user.email.label }}:</h6>
+                            {{ form_edit_user.email }}
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mb-2">
-                            <h6>Организация:</h6>
-                            {{ form_organization_list.parent_organization }}
+                            <h6>{{ form_organization.organization.label }}:</h6>
+                            {{ form_organization.organization }}
                         </div>
                     </div>
+                    <h6>Доступ:</h6>
                     <div class="row">
                         <div class="col-md-12 mb-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" id="sample" value="sample"{% if sample %} checked{% endif %}>
-                                <label class="form-check-label" for="sample">{{ form_user.access_role.label}}:</label>
-                                {{ form_user.access_role }}
+                                <input class="form-check-input" type="radio" name="access_choice" id="sample" value="sample"{% if profile.access.is_sample %} checked{% endif %}>
+                                <label class="form-check-label" for="sample">{{ form_access_role.access_role.label }}:</label>
+                                {{ form_access_role.access_role }}
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mb-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" id="nosample" value="nosample"{% if not sample %} checked{% endif %}>
+                                <input class="form-check-input" type="radio" name="access_choice" id="nosample" value="nosample"{% if not profile.access.is_sample %} checked{% endif %}>
                                 <label class="form-check-label" for="nosample">Права:</label>
                                 {% for checkbox in form_access_list %}
                                     <div class="custom-control custom-checkbox">
@@ -94,8 +91,7 @@
     </main>
     <script type="text/javascript">
         $(document).ready(function(){
-            $('#id_username').prop("disabled", true);
-            $('select[name=parent_organization]').select2({
+            $('select[name=organization]').select2({
                 allowClear: true,
                 placeholder: "Выберите организацию",
                 theme: "bootstrap4",

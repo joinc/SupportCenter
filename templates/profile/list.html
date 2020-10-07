@@ -1,6 +1,6 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
+{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
@@ -11,7 +11,7 @@
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb">
                         <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Список пользователей</li>
+                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
                     </ol>
                 </nav>
             </div>
@@ -23,7 +23,7 @@
         </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>Список пользователей:</h4>
+                <h4>{{ title }}:</h4>
             </div>
             <div class="card-body">
                 <div class="alert alert-{% if profiles_count %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
@@ -48,20 +48,21 @@
                         </div>
                     </div>
                 </form>
-                <table class="table table-hover table-sm">
-                    {% for u in profiles_list %}
-                        <tr{% if u.blocked %} class="table-danger"{% endif %}>
-                            <td>
-                                <div class="mb-0 small">
-                                    <strong class="text-gray-dark">{{ u.user.get_full_name }}</strong>
-                                    <span class="d-block">@{{ u.user.get_username }}</span>
-                                </div>
+                <table class="table table-hover table-sm table-borderless">
+                    {% for profile in profiles_list %}
+                        <tr{% if profile.blocked %} class="table-danger"{% endif %}>
+                            <td class="small">
+                                <strong class="text-gray-dark">{{ profile.user.get_full_name }}</strong>
+                                <span class="d-block">@{{ profile.user.get_username }}</span>
                             </td>
-                            <td class="pt-2">
-                                {% if u.blocked %}Заблокирован{% endif %}
+                            <td title="{{ profile.organization }}">
+                                {{ profile.organization|truncatechars:40 }}
+                            </td>
+                            <td>
+                                {% if profile.blocked %}Заблокирован{% endif %}
                             </td>
                             <td class="text-right ">
-                                <a href="{% url 'profile_show' u.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
+                                <a href="{% url 'profile_show' profile.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти в профиль пользователя"><i class="fas fa-user"></i> Перейти в профиль</a>
                             </td>
                         </tr>
                     {% endfor %}

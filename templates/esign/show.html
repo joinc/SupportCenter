@@ -67,9 +67,9 @@
                 <div class="row">
                     <div class="col-auto mr-auto">
                         {% if esign.is_extended %}
-                            Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом
+                            Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом</a>.
                         {% endif %}
-                            Разместил {{ esign.owner }}
+                        Разместил <a href="{% url 'profile_show' esign.owner.id %}">{{ esign.owner }}</a>.
                     </div>
                     <div class="col-auto">
                         {% if esign.file_sign %}
