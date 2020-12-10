@@ -80,7 +80,7 @@
                         {% if esign.file_sign %}
                             <a href="{% url 'esign_file_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
                         {% endif %}
-                        {% if esign.status == 0 %}
+                        {% if not esign.is_terminate %}
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
                         {% endif %}
                     </div>
@@ -88,7 +88,7 @@
             </div>
         </div>
     </main>
-    {% if esign.status == 0 %}
+    {% if not esign.is_terminate %}
         <!-- Окно запроса подтверждения на аннулирование -->
         <div class="modal fade" id="ModalEsignTerminate" tabindex="-1" role="dialog" aria-labelledby="ModalEsignTerminateTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
@@ -110,7 +110,7 @@
         </div>
         <!-- /Окно запроса подтверждения на аннулирование -->
     {% endif %}
-    <!-- Окно запроса подтверждения на удаление -->
+    <!-- Окно запроса подтверждения на аннулирование -->
     <div class="modal fade" id="ModalEsignDelete" tabindex="-1" role="dialog" aria-labelledby="ModalEsignDeleteTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
             <div class="modal-content">
@@ -129,5 +129,5 @@
             </div>
         </div>
     </div>
-    <!-- /Окно запроса подтверждения на удаление -->
+    <!-- /Окно запроса подтверждения на аннулирование -->
 {% endblock %}

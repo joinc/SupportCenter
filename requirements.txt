@@ -1,8 +1,8 @@
-asgiref==3.2.10
-Django==3.0.8
+asgiref==3.3.1
+Django==3.1.4
 fsb795==1.5.2
 pyasn1==0.4.8
 pyasn1-modules==0.2.8
-pytz==2020.1
+pytz==2020.4
 six==1.15.0
-sqlparse==0.3.1
+sqlparse==0.4.1

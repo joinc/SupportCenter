@@ -14,14 +14,13 @@
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled">
-                            {% ifequal esign_count_expires 0 %}
-                                <li class="border-bottom border-grey">Действующие <span class="float-right">{{ esign_count_current }}</span></li>
-                            {% else %}
-                                <li class="border-bottom border-grey list-group-item-danger">Действующие (истекают) <span class="float-right">{{ esign_count_current }} ({{ esign_count_expires }})</span></li>
-                            {% endifequal %}
-                            <li class="border-bottom border-grey">Продленые <span class="float-right">{{ esign_count_extended }}</span></li>
-                            <li class="border-bottom border-grey">Истекшие <span class="float-right">{{ esign_count_expired }}</span></li>
-                            <li class="border-bottom border-grey">Аннулированные <span class="float-right">{{ esign_count_terminate }}</span></li>
+                            {% for status_number, status_name, esign_count in esign_count_list %}
+                                {% if status_number == 0 %}
+                                    <li class="border-bottom border-grey {% ifnotequal esign_expires_count 0 %}list-group-item-danger{% endifnotequal %}">{{ status_name }} (истекают) <span class="float-right">{{ esign_count }} ({{ esign_expires_count }})</span></li>
+                                {% else %}
+                                    <li class="border-bottom border-grey">{{ status_name }} <span class="float-right">{{ esign_count }} </span></li>
+                                {% endif %}
+                            {% endfor %}
                         </ul>
                     </div>
                     <div class="card-footer">

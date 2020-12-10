@@ -6,8 +6,8 @@ from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
-from Esign.classes import EsignCount
-from Main.tools import get_current_user
+from Esign.tools import get_esign_count, get_esign_expires_count
+from .tools import get_current_user
 
 
 ######################################################################################################################
@@ -15,17 +15,20 @@ from Main.tools import get_current_user
 
 @login_required
 def index(request):
-    # Главная страница
+    """
+    Отображение главной страницы
+    :param request:
+    :return:
+    """
     current_user = get_current_user(request)
-    esign_count = EsignCount(current_user)
     context = {
         'current_user': current_user,
-        'esign_count_current': esign_count.get_current_count(),
-        'esign_count_expires': esign_count.get_expires_count(),
-        'esign_count_expired': esign_count.get_expired_count(),
-        'esign_count_extended': esign_count.get_extended_count(),
-        'esign_count_terminate': esign_count.get_terminate_count(),
     }
+    if current_user.access.esign_list:
+        esign_count_list = get_esign_count(current_user=current_user)
+        esign_expires_count = get_esign_expires_count(current_user=current_user)
+        context['esign_expires_count'] = esign_expires_count
+        context['esign_count_list'] = esign_count_list
     return render(request, 'index.html', context)
 
 
@@ -33,7 +36,11 @@ def index(request):
 
 
 def login(request):
-    # Вход пользователя
+    """
+    Вход пользователя
+    :param request:
+    :return:
+    """
     if request.POST:
         username = request.POST['username']
         password = request.POST['password']
@@ -58,7 +65,11 @@ def login(request):
 
 
 def logout(request):
-    # Выход пользователя
+    """
+    Выход пользователя
+    :param request:
+    :return:
+    """
     auth.logout(request)
     return redirect(reverse('index'))
 

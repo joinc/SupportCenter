@@ -1,6 +1,8 @@
 from django.db import models
 from Profile.models import UserProfile
-import fsb795
+from .choices import STATUS_CHOICES
+from .certificate import Certificate as cert
+import json
 
 ######################################################################################################################
 
@@ -36,8 +38,13 @@ class Certificate(models.Model):
         related_name='UserProfile',
         on_delete=models.SET_NULL,
     )
+    file_name = models.CharField(
+        verbose_name='Имя файла подписи',
+        max_length=256,
+        default='cert',
+    )
     file_sign = models.FileField(
-        verbose_name='Прикрепленный файл',
+        verbose_name='Прикрепленный файл подписи',
         upload_to='sign/%Y/%m/%d',
         null=True,
     )
@@ -57,25 +64,10 @@ class Certificate(models.Model):
         related_name='EsignExtended',
         on_delete=models.SET_NULL,
     )
-    is_current = models.BooleanField(
-        verbose_name='Действует',
-        default=True,
-    )
-    is_expires = models.BooleanField(
-        verbose_name='Истекает',
-        default=False,
-    )
-    is_expired = models.BooleanField(
-        verbose_name='Истек',
-        default=False,
-    )
-    is_extended = models.BooleanField(
-        verbose_name='Продлен',
-        default=False,
-    )
-    is_terminate = models.BooleanField(
-        verbose_name='Аннулирован',
-        default=False,
+    status = models.SmallIntegerField(
+        verbose_name='Статус сертификата',
+        choices=STATUS_CHOICES,
+        default=0,
     )
     create_date = models.DateTimeField(
         verbose_name='Дата создания учетной записи',
@@ -84,18 +76,15 @@ class Certificate(models.Model):
     )
 
     def parse_file(self):
-        certificate = fsb795.Certificate(self.file_sign.path)
-        if certificate.pyver == '':
+        certificate = cert(self.file_sign.path)
+        if not certificate.cert_format:
             return False
         else:
             iss, vlad_is = certificate.issuerCert()
             self.issuer = iss['CN']
             sub, vlad_sub = certificate.subjectCert()
             self.entity = sub['CN']
-            serial = str(hex(certificate.serialNumber()))
-            # Убираем из серийного номера символ (x) - обозначение шестнадцатеричной строки
-            serial = serial[0] + serial[2:]
-            self.serial = serial
+            self.serial = certificate.get_serial_number()
             valid = certificate.validityCert()
             self.valid_from = valid['not_before']
             self.valid_for = valid['not_after']
@@ -105,7 +94,7 @@ class Certificate(models.Model):
         return '{0}'.format(self.entity)
 
     class Meta:
-        ordering = 'is_terminate', 'is_extended', 'valid_for',
+        ordering = 'status', 'valid_for',
         verbose_name = 'Сертификат'
         verbose_name_plural = 'Сертификаты'
         managed = True
