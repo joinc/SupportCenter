@@ -10,9 +10,8 @@ from .models import Certificate
 from .forms import FormUpload
 from .certificate import Certificate as cert
 from .choices import STATUS_CHOICES
-from .tools import get_esign, get_esign_list, change_status_esign, check_status_esign
+from .tools import get_esign, get_list_esign, change_status_esign, check_status_esign
 import mimetypes
-
 
 ######################################################################################################################
 
@@ -28,22 +27,23 @@ def esign_list(request):
     if current_user.access.esign_list:
         list_cert = []
         for status in STATUS_CHOICES:
-            list_esign = get_esign_list(current_user=current_user, status=status[0], all_organization=True)
+            list_esign = get_list_esign(current_user=current_user, status=status[0], all_organization=True)
             list_cert.append((status[0], status[1], list_esign))
-        list_current_esign = get_esign_list(current_user=current_user, status=0, all_organization=False)
+        list_current_esign = get_list_esign(current_user=current_user, status=0, all_organization=False)
         if check_status_esign(list_current_esign):
-            list_current_esign = get_esign_list(current_user=current_user, status=0, all_organization=False)
+            list_current_esign = get_list_esign(current_user=current_user, status=0, all_organization=False)
         context = {
             'current_user': current_user,
             'form_upload': FormUpload(),
             'list_cert': list_cert,
-            'date_warning': datetime.now().date() + timedelta(days=30),
-            'date_danger': datetime.now().date() + timedelta(days=7),
+            'date_warning': datetime.now().date() + timedelta(days=31),
+            'date_danger': datetime.now().date() + timedelta(days=8),
             'list_current_esign': list_current_esign,
         }
         return render(request, 'esign/list.html', context)
     else:
         return redirect(reverse('index'))
+
 
 ######################################################################################################################
 

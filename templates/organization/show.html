@@ -42,6 +42,16 @@
                         </div>
                     </div>
                 {% endif %}
+                {% if organization.address.all %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            {% for address in organization.address.all %}
+                                <h5 class="border-bottom border-gray">{{ address }}</h5>
+                            {% endfor %}
+                            <small class="form-text text-muted">Адрес{% if organization.address.all.count > 1 %}а{% endif %} организации</small>
+                        </div>
+                    </div>
+                {% endif %}
             </div>
             {% if current_user.access.organization_edit %}
                 <div class="card-footer text-right">

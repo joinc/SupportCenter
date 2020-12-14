@@ -27,7 +27,7 @@ def get_esign(request, esign_id):
 ######################################################################################################################
 
 
-def get_esign_list(current_user, status=0, all_organization=False):
+def get_list_esign(current_user, status=0, all_organization=False):
     """
     Получение списка Сертификатов с определенным статусом
     :param current_user:
@@ -49,7 +49,7 @@ def get_esign_list(current_user, status=0, all_organization=False):
 ######################################################################################################################
 
 
-def get_esign_count(current_user):
+def get_count_esign(current_user):
     """
     Получение количества сертификатов, в зависимости от статуса
     :param current_user:

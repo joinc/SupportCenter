@@ -29,10 +29,15 @@
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray mb-0">{{ esign.entity }}</h5>
-                        <small class="form-text text-muted mt-0 mb-3">Кому выдан</small>
+                        <h5 class="border-bottom border-gray">{{ esign.entity }}</h5>
+                        <small class="form-text text-muted">Кому выдан</small>
                         {% if sub %}
-                            <table class="table table-sm table-hover">
+                            <table class="table table-sm table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Информация о субъекте:</th>
+                                    </tr>
+                                </thead>
                                 {% for key,val in sub.items %}
                                     <tr>
                                         <td>{{ key }}</td>
@@ -43,10 +48,15 @@
                         {% endif %}
                     </div>
                     <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray mb-0">{{ esign.issuer }}</h5>
-                        <small class="form-text text-muted mt-0 mb-3">Кем выдан</small>
+                        <h5 class="border-bottom border-gray">{{ esign.issuer }}</h5>
+                        <small class="form-text text-muted">Кем выдан</small>
                         {% if iss %}
-                            <table class="table table-sm table-hover">
+                            <table class="table table-sm table-borderless table-hover">
+                                <thead>
+                                    <tr>
+                                        <th colspan="2">Информация об издателе:</th>
+                                    </tr>
+                                </thead>
                                 {% for key,val in iss.items %}
                                     <tr>
                                         <td>{{ key }}</td>

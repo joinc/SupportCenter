@@ -2,7 +2,6 @@ from django.db import models
 from Profile.models import UserProfile
 from .choices import STATUS_CHOICES
 from .certificate import Certificate as cert
-import json
 
 ######################################################################################################################
 

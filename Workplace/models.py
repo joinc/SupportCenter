@@ -3,10 +3,41 @@ from django.db import models
 ######################################################################################################################
 
 
-ADDRESS_CHOICES = (
-    (0, 'Яковлева, 6'),
-    (1, 'Тарская, 11')
-)
+class Address(models.Model):
+    index = models.CharField(
+        verbose_name='Индекс',
+        max_length=24,
+        default='',
+    )
+    locality = models.CharField(
+        verbose_name='Населенный пункт',
+        max_length=256,
+        default='',
+    )
+    street = models.CharField(
+        verbose_name='Название улицы',
+        max_length=124,
+        default='',
+    )
+    house = models.CharField(
+        verbose_name='Номер дома',
+        max_length=8,
+        default='',
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания адреса расположения',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}, {1}, {2}, {3}'.format(self.index, self.locality, self.street, self.house)
+
+    class Meta:
+        ordering = 'street', 'house',
+        verbose_name = 'Адрес расположения'
+        verbose_name_plural = 'Адреса расположения'
+        managed = True
 
 
 ######################################################################################################################
@@ -38,10 +69,14 @@ class TypeEquipment(models.Model):
 
 
 class Placement(models.Model):
-    address = models.SmallIntegerField(
-        verbose_name='Адрес',
-        choices=ADDRESS_CHOICES,
-        default=0,
+    address = models.ForeignKey(
+        Address,
+        verbose_name='Адрес расположения',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='AddressPlacement',
+        on_delete=models.SET_NULL,
     )
     cabinet = models.CharField(
         verbose_name='Кабинет',
@@ -55,7 +90,7 @@ class Placement(models.Model):
     )
 
     def __str__(self):
-        return '{0}, каб. {1}'.format(self.get_address_display(), self.cabinet)
+        return '{0}, каб. {1}'.format(self.address, self.cabinet)
 
     class Meta:
         ordering = 'address', 'cabinet',
@@ -79,7 +114,7 @@ class Workplace(models.Model):
         null=True,
         blank=True,
         default=None,
-        related_name='Replacement',
+        related_name='Placement',
         on_delete=models.SET_NULL,
     )
     create_date = models.DateTimeField(

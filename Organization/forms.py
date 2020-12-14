@@ -13,6 +13,7 @@ class FormOrganization(forms.ModelForm):
             'short_title',
             'long_title',
             'parent_organization',
+            'address',
         ]
         widgets = {
             'short_title': forms.TextInput(
@@ -30,6 +31,11 @@ class FormOrganization(forms.ModelForm):
                 }
             ),
             'parent_organization': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                }
+            ),
+            'address': forms.SelectMultiple(
                 attrs={
                     'class': 'form-control',
                 }

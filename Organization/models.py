@@ -1,4 +1,5 @@
 from django.db import models
+from Workplace.models import Address
 
 ######################################################################################################################
 
@@ -22,6 +23,11 @@ class Organization(models.Model):
         default=None,
         related_name='ParentOrg',
         on_delete=models.SET_NULL,
+    )
+    address = models.ManyToManyField(
+        Address,
+        verbose_name='Адрес организации',
+        related_name='AddressOrganization',
     )
     create_date = models.DateTimeField(
         verbose_name='Дата создания организации',

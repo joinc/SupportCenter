@@ -47,6 +47,9 @@ def organization_create(request):
 
 @login_required
 def organization_show(request, organization_id):
+    organization = get_object_or_404(Organization, id=organization_id)
+    address_list = organization.address.all()
+    print(address_list, )
     context = {
         'current_user': get_current_user(request),
         'organization': get_object_or_404(Organization, id=organization_id),

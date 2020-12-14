@@ -6,7 +6,7 @@ from django.contrib.auth.models import auth
 from django.conf import settings
 from django.shortcuts import render, get_object_or_404, redirect, reverse
 from Profile.models import UserProfile
-from Esign.tools import get_esign_count, get_esign_expires_count
+from Esign.tools import get_count_esign, get_esign_expires_count
 from .tools import get_current_user
 
 
@@ -25,7 +25,7 @@ def index(request):
         'current_user': current_user,
     }
     if current_user.access.esign_list:
-        esign_count_list = get_esign_count(current_user=current_user)
+        esign_count_list = get_count_esign(current_user=current_user)
         esign_expires_count = get_esign_expires_count(current_user=current_user)
         context['esign_expires_count'] = esign_expires_count
         context['esign_count_list'] = esign_count_list
