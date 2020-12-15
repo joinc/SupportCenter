@@ -3,6 +3,10 @@
 {% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
+    <script src='{% static "js/select2.min.js" %}'></script>
+    <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
@@ -26,11 +30,11 @@
                 <h4>{{ title }}:</h4>
             </div>
             <div class="card-body">
-                <div class="alert alert-{% if profiles_count %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-                    {% if profiles_count %}
-                        Отображается пользователей - {{ profiles_count }}, всего пользователей - {{ profiles_total }}.
+                <div class="alert alert-{% if list_profile %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
+                    {% if list_profile %}
+                        Отображается пользователей - {{ list_profile | length }}, всего пользователей - {{ total_profile }}.
                     {% else %}
-                        Совпадений в логине или фамилии пользователей не найдено, всего пользователей - {{ profiles_total }}.
+                        Совпадений в логине или фамилии пользователей не найдено.
                     {% endif %}
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
@@ -43,13 +47,14 @@
                             <span class="input-group-text">Поиск пользователей</span>
                         </div>
                         {{ form_search_user.find }}
+                        {{ form_organization_user.organization }}
                         <div class="input-group-append">
                             <button class="btn btn-info" type="submit" name="search">Поиск</button>
                         </div>
                     </div>
                 </form>
                 <table class="table table-hover table-sm table-borderless">
-                    {% for profile in profiles_list %}
+                    {% for profile in list_profile %}
                         <tr{% if profile.blocked %} class="table-danger"{% endif %}>
                             <td class="small">
                                 <strong class="text-gray-dark">{{ profile.user.get_full_name }}</strong>
@@ -70,4 +75,14 @@
             </div>
         </div>
     </main>
+    <script>
+        $(document).ready(function() {
+            $('select[name=organization]').select2({
+                allowClear: true,
+                placeholder: "Выберите организацию",
+                theme: "bootstrap4",
+                language: "ru"
+            });
+        });
+    </script>
 {% endblock %}

@@ -3,6 +3,8 @@ __pycache__/
 venv/
 upload/
 static/
+Equipment/migrations/
+Equipment/__init__.py
 Esign/migrations/
 Esign/migrations/__init__.py
 Esign/__init__.py

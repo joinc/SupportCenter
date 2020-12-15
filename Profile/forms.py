@@ -216,7 +216,6 @@ class FormOrganization(forms.ModelForm):
             'organization': forms.Select(
                 attrs={
                     'class': 'custom-select',
-                    'required': 'true',
                 }
             ),
         }

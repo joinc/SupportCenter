@@ -53,12 +53,20 @@
                     </div>
                 {% endif %}
             </div>
-            {% if current_user.access.organization_edit %}
-                <div class="card-footer text-right">
-                    <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
-                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
+            <div class="card-footer">
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <a href="{% url 'profile_list_org' organization.id %}" class="btn btn-outline-primary" title="Перейти к списку пользователей организации"><i class="fas fa-user-friends"></i> Список пользователей</a>
+                    </div>
+                    {% if current_user.access.organization_edit %}
+                        <div class="col-auto mr-0 text-right">
+                            <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
+                        </div>
+                    {% endif %}
                 </div>
-            {% endif %}
+            </div>
+
         </div>
     </main>
     {% if current_user.access.organization_edit %}

@@ -44,7 +44,7 @@
                 </div>
                 <div class="row">
                     <div class="col mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.organization }}</h5>
+                        <h5 class="border-bottom border-gray"><a href="{% url 'organization_show' profile.organization.id %}">{{ profile.organization }}</a></h5>
                         <small class="form-text text-muted">Организация</small>
                     </div>
                 </div>
