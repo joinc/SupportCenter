@@ -1,29 +1,30 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Список электронных подписей</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="col-auto mr-0 text-right">
-                {% if current_user.access.esign_edit %}
-                    <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalSignAdd" title="Добавить нового файл электронной подписи"><i class="fas fa-file-signature"></i> Добавить</button>
-                {% endif %}
-            </div>
-        </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>Список электронных подписей:</h4>
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        {% if current_user.access.esign_edit %}
+                            <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalSignAdd" title="Добавить новый файл электронной подписи"><i class="fas fa-file-signature"></i> Добавить</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">

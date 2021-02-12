@@ -1,54 +1,70 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}{{ organization.short_title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'organization_list' %}" class="nav-link">Список организаций</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'organization_list' %}">Список организаций</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ organization.short_title }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
                 <h4>{{ organization.short_title }}:</h4>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-12 mb-2">
-                        <h5 class="border-bottom border-gray">{{ organization.short_title }}&nbsp;</h5>
-                        <small class="form-text text-muted">Краткое наименование</small>
+                    <div class="col-md-12 mb-3">
+                        <h5>{{ organization.short_title }}</h5>
+                        <small class="form-text text-muted border-top">Краткое наименование</small>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col-md-12 mb-2">
-                        <h5 class="border-bottom border-gray">{{ organization.long_title }}&nbsp;</h5>
-                        <small class="form-text text-muted">Полное наименование</small>
+                    <div class="col-md-12 mb-3">
+                        <h5>{{ organization.long_title }}</h5>
+                        <small class="form-text text-muted border-top">Полное наименование</small>
                     </div>
                 </div>
                 {% if organization.parent_organization %}
                     <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <h5 class="border-bottom border-gray">{{ organization.parent_organization }}</h5>
-                            <small class="form-text text-muted">Вышестоящая организация</small>
+                        <div class="col-md-12 mb-3">
+                            <h5>{{ organization.parent_organization }}</h5>
+                            <small class="form-text text-muted border-top">Вышестоящая организация</small>
                         </div>
                     </div>
                 {% endif %}
-                {% if organization.address.all %}
+                {% if list_address %}
                     <div class="row">
-                        <div class="col-md-12 mb-2">
-                            {% for address in organization.address.all %}
-                                <h5 class="border-bottom border-gray">{{ address }}</h5>
+                        <div class="col-md-12 mb-3">
+                            <h5>
+                            {% for address in list_address %}
+                                <p class="mb-1">{{ address.address }}</p>
                             {% endfor %}
-                            <small class="form-text text-muted">Адрес{% if organization.address.all.count > 1 %}а{% endif %} организации</small>
+                            </h5>
+                            <small class="form-text text-muted border-top">Адрес{% if list_address.count > 1 %}а{% endif %} организации</small>
+                        </div>
+                    </div>
+                {% endif %}
+                {% if list_subnet %}
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <h5>
+                            {% for subnet in list_subnet %}
+                                <p class="mb-1">{{ subnet.subnet }}</p>
+                            {% endfor %}
+                            </h5>
+                            <small class="form-text text-muted border-top">Подсет{% if list_address.count > 1 %}и{% else %}ь{% endif %} организации</small>
                         </div>
                     </div>
                 {% endif %}

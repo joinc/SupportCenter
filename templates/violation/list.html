@@ -20,21 +20,19 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.organization_edit %}
-                            <a href="{% url 'organization_create' %}" class="btn btn-outline-primary" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</a>
-                        {% endif %}
+                        <a href="{% url 'violation_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
                     </div>
                 </div>
             </div>
             <div class="card-body">
                 <table class="table table-hover table-sm table-borderless">
-                    {% for organization in organization_list %}
+                    {% for violation in list_violation %}
                         <tr>
                             <td>
-                                <strong class="text-gray-dark">{{ organization.short_title }}</strong>
+                                <h5>Отчет от {{ violation.date_violation|date:"d E Y" }} года</h5>
                             </td>
                             <td class="text-right ">
-                                <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary btn-sm" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
+                                <a href="{% url 'violation_show' violation.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к отчету"><i class="fas fa-list-alt"></i> Перейти к отчету</a>
                             </td>
                         </tr>
                     {% endfor %}

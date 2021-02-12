@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'violation_list' %}" class="nav-link">Список отчетов об инцидентах</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="shadow card border-dark mb-3">
+            <div class="card-header">
+                <h4>{{ title }}:</h4>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover table-sm table-borderless">
+                    <thead>
+                    <tr>
+                        <th scope="col">IP-адрес</th>
+                        <th scope="col">Организации</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for violator, list_organization in list_violator %}
+                            <tr>
+                                <td class="small">
+                                    <h5>{{ violator.ip_violator }}</h5>
+                                </td>
+                                <td class="small">
+                                    {% for organization in list_organization %}
+                                        <span class="d-block"><a href="{% url 'organization_show' organization.organization.id %}">{{ organization.organization }}</a></span>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-right ">
+                                    <a href="{% url 'violator_show' violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+{% endblock %}

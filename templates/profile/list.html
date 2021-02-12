@@ -1,6 +1,5 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
     <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
@@ -8,26 +7,28 @@
     <script src='{% static "js/select2.min.js" %}'></script>
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="col-auto mr-0 text-right">
-                {% if current_user.access.user_edit %}
-                    <a href="{% url 'profile_create' %}" class="btn btn-outline-primary" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить</a>
-                {% endif %}
-            </div>
-        </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>{{ title }}:</h4>
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        {% if current_user.access.user_edit %}
+                            <a href="{% url 'profile_create' %}" class="btn btn-outline-primary" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить пользователя</a>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="alert alert-{% if list_profile %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
@@ -40,7 +41,7 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form method='post' action=''>
+                <form method='post' action='{% url 'profile_list' %}'>
                     {% csrf_token %}
                     <div class="input-group">
                         <div class="input-group-prepend">

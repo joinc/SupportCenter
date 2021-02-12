@@ -2,7 +2,7 @@
 
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, get_object_or_404, redirect, reverse
-from Organization.models import Organization
+from Organization.models import Organization, AddressOrg, SubnetOrg
 from Organization.forms import FormOrganization
 from Main.tools import get_current_user
 from Main.decorators import access_organization_edit
@@ -29,6 +29,11 @@ def organization_list(request):
 
 @access_organization_edit
 def organization_create(request):
+    """
+
+    :param request:
+    :return:
+    """
     if request.POST:
         formset = FormOrganization(request.POST)
         if formset.is_valid():
@@ -37,6 +42,7 @@ def organization_create(request):
     else:
         context = {
             'current_user': get_current_user(request),
+            'title': 'Добавление организации',
             'form_organization': FormOrganization(),
         }
         return render(request, 'organization/create.html', context)
@@ -48,11 +54,12 @@ def organization_create(request):
 @login_required
 def organization_show(request, organization_id):
     organization = get_object_or_404(Organization, id=organization_id)
-    address_list = organization.address.all()
-    print(address_list, )
     context = {
         'current_user': get_current_user(request),
-        'organization': get_object_or_404(Organization, id=organization_id),
+        'title': organization.short_title,
+        'organization': organization,
+        'list_address': AddressOrg.objects.filter(organization=organization),
+        'list_subnet': SubnetOrg.objects.filter(organization=organization),
     }
     return render(request, 'organization/show.html', context)
 

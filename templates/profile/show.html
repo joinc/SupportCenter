@@ -1,56 +1,57 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'profile_list' %}" class="nav-link">Список пользователей</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'profile_list' %}">Список пользователей</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
         <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
             <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
                 <h4>{{ title }}:</h4>
             </div>
             <div class="card-body">
                 <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.user.first_name }}&nbsp;</h5>
-                        <small class="form-text text-muted">Имя</small>
+                    <div class="col-md-6 mb-3">
+                        <h5>{{ profile.user.first_name }}</h5>
+                        <small class="form-text text-muted border-top">Имя</small>
                     </div>
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.user.last_name }}&nbsp;</h5>
-                        <small class="form-text text-muted">Фамилия</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.user.username }}</h5>
-                        <small class="form-text text-muted">Логин</small>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ profile.user.email }}</h5>
-                        <small class="form-text text-muted">Адрес электронной почты</small>
+                    <div class="col-md-6 mb-3">
+                        <h5>{{ profile.user.last_name }}</h5>
+                        <small class="form-text text-muted border-top">Фамилия</small>
                     </div>
                 </div>
                 <div class="row">
-                    <div class="col mb-2">
-                        <h5 class="border-bottom border-gray"><a href="{% url 'organization_show' profile.organization.id %}">{{ profile.organization }}</a></h5>
-                        <small class="form-text text-muted">Организация</small>
+                    <div class="col-md-6 mb-3">
+                        <h5>{{ profile.user.username }}</h5>
+                        <small class="form-text text-muted border-top">Логин</small>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <h5>{{ profile.user.email }}</h5>
+                        <small class="form-text text-muted border-top">Адрес электронной почты</small>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col mb-3">
+                        <h5><a href="{% url 'organization_show' profile.organization.id %}">{{ profile.organization }}</a></h5>
+                        <small class="form-text text-muted border-top">Организация</small>
                     </div>
                 </div>
             </div>
             <div class="card-footer text-right">
-                &nbsp;
                 {% if not profile.user.is_superuser %}
                     {% if current_user == profile or current_user.access.user_edit %}
                         <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>

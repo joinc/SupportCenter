@@ -5,7 +5,9 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from Profile.models import UserProfile, AccessRole
-from Profile.forms import FormChangePassword, FormSearchUser, FormAccessList, FormOrganization, FormCreateUser, FormEditUser, FormAccessRole
+from Profile.tools import get_list_profile, check_password
+from Profile.forms import FormChangePassword, FormSearchUser, FormAccessList, FormOrganization, FormCreateUser, \
+    FormEditUser, FormAccessRole
 from Main.decorators import access_user_edit, access_user_list
 from Main.tools import get_current_user
 from Organization.models import Organization
@@ -13,25 +15,14 @@ from Organization.models import Organization
 ######################################################################################################################
 
 
-def check_password(username, password1, password2):
-    message_list = []
-    if password1 != password2:
-        message_list.append('Пароли не совпадают.')
-    if len(password1) < 8:
-        message_list.append('Длина пароля менее 8 символов.')
-    if password1.isdigit():
-        message_list.append('Пароль состоит только из цифр.')
-    if password1 == username:
-        message_list.append('Пароль совпадает с логином.')
-    return message_list
-
-
-######################################################################################################################
-
-
 @login_required
 @access_user_list
 def profile_list(request):
+    """
+    Отображение списка пользователей
+    :param request:
+    :return:
+    """
     current_user = get_current_user(request)
     context = {
         'current_user': current_user,
@@ -39,14 +30,13 @@ def profile_list(request):
     }
     if request.POST:
         string_search = request.POST.get('find', '')
-        org_search = request.POST.get('organization', 0)
-        org_search = int(org_search) if org_search.isdigit() else 0
-        total_profile, list_profile = get_list_profile(string_search=string_search, org_search=org_search)
+        organization_search = request.POST.get('organization', 0)
+        organization_search = int(organization_search) if organization_search.isdigit() else 0
+        total_profile, list_profile = get_list_profile(username=string_search, organization=organization_search)
         context['form_search_user'] = FormSearchUser(initial={'find': string_search})
-        context['form_organization_user'] = FormOrganization(initial={'organization': org_search})
+        context['form_organization_user'] = FormOrganization(initial={'organization': organization_search})
     else:
-        total_profile = UserProfile.objects.all().count()
-        list_profile = UserProfile.objects.all()[:20]
+        total_profile, list_profile = get_list_profile(username='', organization=0)
         context['form_search_user'] = FormSearchUser()
         context['form_organization_user'] = FormOrganization()
     context['total_profile'] = total_profile
@@ -54,12 +44,21 @@ def profile_list(request):
     return render(request, 'profile/list.html', context)
 
 
+######################################################################################################################
+
+
 @login_required
 @access_user_list
-def profile_list_org(request, organization_id):
+def profile_list_organization(request, organization_id):
+    """
+    Отображение списка пользователей для конкретной организации
+    :param request:
+    :param organization_id:
+    :return:
+    """
     current_user = get_current_user(request)
     organization = get_object_or_404(Organization, id=organization_id)
-    total_profile, list_profile = get_list_profile(string_search='', org_search=organization_id)
+    total_profile, list_profile = get_list_profile(username='', organization=organization_id)
     context = {
         'current_user': current_user,
         'title': 'Список пользователей',
@@ -70,13 +69,20 @@ def profile_list_org(request, organization_id):
     }
     return render(request, 'profile/list.html', context)
 
+
 ######################################################################################################################
 
 
 @access_user_edit
 def profile_create(request):
+    """
+    Создание профиля пользователя
+    :param request:
+    :return:
+    """
     context = {
         'current_user': get_current_user(request),
+        'title': 'Добавление нового пользователя',
     }
     if request.POST:
         formset = FormCreateUser(request.POST)
@@ -113,6 +119,12 @@ def profile_create(request):
 @login_required
 @access_user_list
 def profile_show(request, profile_id):
+    """
+    Отображение профиля пользователя
+    :param request:
+    :param profile_id:
+    :return:
+    """
     profile = get_object_or_404(UserProfile, id=profile_id)
     current_user = get_current_user(request)
     context = {
@@ -146,9 +158,15 @@ def profile_show(request, profile_id):
 @login_required
 @access_user_edit
 def profile_edit(request, profile_id):
+    """
+    Редактирование профиля пользователя
+    :param request:
+    :param profile_id:
+    :return:
+    """
     profile = get_object_or_404(UserProfile, id=profile_id)
     if profile.user.is_superuser:
-        return redirect(reverse('profile_list'))
+        return redirect(reverse('profile_show', args=(profile_id, )))
 
     if request.POST:
         formset_user = FormEditUser(request.POST, instance=profile.user)
@@ -192,78 +210,6 @@ def profile_edit(request, profile_id):
         else:
             context['form_organization'] = FormOrganization()
         return render(request, 'profile/edit.html', context)
-
-
-######################################################################################################################
-
-
-def get_list_profile(string_search='', org_search=0):
-    if string_search:
-        if org_search:
-            # Когда идет поиск по имени пользователя и выбрана организация
-            total_profile = UserProfile.objects.filter(
-                user__username__contains=string_search,
-                organization=org_search
-            ).count()
-            if total_profile < 20:
-                list_profile = list(
-                    UserProfile.objects.filter(
-                        user__username__contains=string_search,
-                        organization=org_search
-                    )[:total_profile]
-                )
-                list_profile.extend(
-                    UserProfile.objects.filter(
-                        user__last_name__contains=string_search,
-                        organization=org_search
-                    )[:20 - total_profile]
-                )
-            else:
-                list_profile = UserProfile.objects.filter(
-                    user__username__contains=string_search
-                )[:20]
-            total_profile = total_profile + UserProfile.objects.filter(
-                user__last_name__contains=string_search,
-                organization=org_search
-            ).count()
-
-        else:
-            # Когда идет поиск только по имени пользователя
-            total_profile = UserProfile.objects.filter(
-                user__username__contains=string_search
-            ).count()
-            if total_profile < 20:
-                list_profile = list(
-                    UserProfile.objects.filter(
-                        user__username__contains=string_search
-                    )[:20]
-                )
-                list_profile.extend(
-                    UserProfile.objects.filter(
-                        user__last_name__contains=string_search
-                    )[:20 - total_profile]
-                )
-            else:
-                list_profile = UserProfile.objects.filter(
-                    user__username__contains=string_search
-                )[:20]
-            total_profile = total_profile + UserProfile.objects.filter(
-                user__last_name__contains=string_search
-            ).count()
-    else:
-        if org_search:
-            # Когда идет поиск только по организации
-            total_profile = UserProfile.objects.filter(
-                organization=org_search
-            ).count()
-            list_profile = UserProfile.objects.filter(
-                organization=org_search
-            )[:20]
-        else:
-            # Когда идет поиск с пустым запросом (без имени и организации)
-            total_profile = UserProfile.objects.all().count()
-            list_profile = UserProfile.objects.all()[:20]
-    return [total_profile, list_profile]
 
 
 ######################################################################################################################

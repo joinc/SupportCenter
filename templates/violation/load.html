@@ -1,0 +1,44 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'violation_list' %}" class="nav-link">Список отчетов об инцидентах</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="shadow card border-dark mb-3">
+            <form method='post' class="mb-0" action='{% url 'violation_create' %}' enctype='multipart/form-data'>
+                {% csrf_token %}
+                <div class="card-header">
+                    <h4>{{ title }}:</h4>
+                </div>
+                <div class="card-body">
+                    {% for form in form_violation %}
+                        <div class="row">
+                            <div class="col-md-12 mb-3">
+                                <h5>{{ form }}</h5>
+                                <small class="form-text text-muted border-top">{{ form.label }}</small>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit"><i class="fas fa-upload"></i> Загрузить</button>
+                </div>
+            </form>
+        </div>
+    </main>
+{% endblock %}

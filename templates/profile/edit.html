@@ -1,6 +1,5 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}{{ title }}{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
     <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
@@ -8,20 +7,28 @@
     <script src='{% static "js/select2.min.js" %}'></script>
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'profile_list' %}" class="nav-link">Список пользователей</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'profile_show' profile.id %}" class="nav-link">Пользователь {{ profile }}</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'profile_list' %}">Список пользователей</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'profile_show' profile.id %}">Пользователь {{ profile }}</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ title }}</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
         <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
             <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
                 <h4>{{ title }}:</h4>

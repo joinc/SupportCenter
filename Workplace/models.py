@@ -182,3 +182,28 @@ class Equipment(models.Model):
 
 
 ######################################################################################################################
+
+
+class Subnet(models.Model):
+    subnet = models.CharField(
+        verbose_name='Подсеть',
+        max_length=24,
+        default='',
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания подсети',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.subnet)
+
+    class Meta:
+        ordering = 'subnet',
+        verbose_name = 'Подсеть'
+        verbose_name_plural = 'Подсети'
+        managed = True
+
+
+######################################################################################################################

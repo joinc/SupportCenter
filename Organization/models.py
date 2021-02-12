@@ -1,5 +1,5 @@
 from django.db import models
-from Workplace.models import Address
+from Workplace.models import Address, Subnet
 
 ######################################################################################################################
 
@@ -23,11 +23,6 @@ class Organization(models.Model):
         default=None,
         related_name='ParentOrg',
         on_delete=models.SET_NULL,
-    )
-    address = models.ManyToManyField(
-        Address,
-        verbose_name='Адрес организации',
-        related_name='AddressOrganization',
     )
     create_date = models.DateTimeField(
         verbose_name='Дата создания организации',
@@ -95,5 +90,64 @@ class Department(models.Model):
         verbose_name = 'Отдел'
         verbose_name_plural = 'Отделы'
         managed = True
+
+
+######################################################################################################################
+
+
+class AddressOrg(models.Model):
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name='Организация',
+        null=True,
+        related_name='OrganizationAddress',
+        on_delete=models.SET_NULL,
+    )
+    address = models.ForeignKey(
+        Address,
+        verbose_name='Адрес организации',
+        null=True,
+        related_name='AddressOrganization',
+        on_delete=models.SET_NULL,
+    )
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.organization, self.address)
+
+    class Meta:
+        ordering = 'organization',
+        verbose_name = 'Адрес орагизации'
+        verbose_name_plural = 'Адреса организаций'
+        managed = True
+
+
+######################################################################################################################
+
+
+class SubnetOrg(models.Model):
+    organization = models.ForeignKey(
+        Organization,
+        verbose_name='Организация',
+        null=True,
+        related_name='OrganizationSubnet',
+        on_delete=models.SET_NULL,
+    )
+    subnet = models.ForeignKey(
+        Subnet,
+        verbose_name='Адрес организации',
+        null=True,
+        related_name='SubnetOrganization',
+        on_delete=models.SET_NULL,
+    )
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.subnet, self.organization)
+
+    class Meta:
+        ordering = 'subnet',
+        verbose_name = 'Подсеть орагизации'
+        verbose_name_plural = 'Подсети организаций'
+        managed = True
+
 
 ######################################################################################################################

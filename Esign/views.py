@@ -34,6 +34,7 @@ def esign_list(request):
             list_current_esign = get_list_esign(current_user=current_user, status=0, all_organization=False)
         context = {
             'current_user': current_user,
+            'title': 'Список электронных подписей',
             'form_upload': FormUpload(),
             'list_cert': list_cert,
             'date_warning': datetime.now().date() + timedelta(days=31),
