@@ -23,12 +23,11 @@ def index(request):
     current_user = get_current_user(request)
     context = {
         'current_user': current_user,
+        'title': 'Главная',
     }
     if current_user.access.signature_list:
-        esign_count_list = get_count_signature(current_user=current_user)
-        esign_expires_count = get_count_expires_signature(current_user=current_user)
-        context['esign_expires_count'] = esign_expires_count
-        context['esign_count_list'] = esign_count_list
+        context['count_signature'] = get_count_signature(current_user=current_user)
+        context['count_expires_signature'] = get_count_expires_signature(current_user=current_user)
     return render(request, 'index.html', context)
 
 

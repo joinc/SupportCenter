@@ -6,7 +6,6 @@ static/
 Equipment/migrations/
 Equipment/__init__.py
 Signature/migrations/
-Signature/migrations/__init__.py
 Signature/__init__.py
 Main/migrations/
 Main/__init__.py
@@ -16,6 +15,8 @@ Profile/migrations/
 Profile/__init__.py
 SupportCenter/settings.py
 SupportCenter/__init__.py
+Violation/migrations/
+Violation/__init__.py
 Workplace/migrations/
 Workplace/__init__.py
 manage.py

@@ -41,19 +41,19 @@
                         <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pills-{{ status_number }}" role="tabpanel" aria-labelledby="pills-{{ status_number }}-tab">
                             <table class="table table-sm table-hover table-borderless">
                                 {% for signature in list_signature %}
-                                    <tr{% if signature.valid_for.date < date_danger and signature.status == 0 %} class="table-danger"{% elif signature.valid_for.date < date_warning and esign.status == 0 %} class="table-warning"{% endif %}>
+                                    <tr{% if signature.valid_for.date < date_danger and signature.status == 0 %} class="table-danger"{% elif signature.valid_for.date < date_warning and signature.status == 0 %} class="table-warning"{% endif %}>
                                         <td>
-                                            {{ esign.entity }}
+                                            {{ signature.entity }}
                                         </td>
                                         <td>
-                                            {{ esign.valid_from|date }} - {{ esign.valid_for|date }}
+                                            {{ signature.valid_from|date }} - {{ signature.valid_for|date }}
                                         </td>
                                         <td>
-                                            <span title="{{ esign.owner.organization }}">{{ esign.owner.organization|truncatechars:40 }}</span>
+                                            <span title="{{ signature.owner.organization }}">{{ signature.owner.organization|truncatechars:40 }}</span>
                                         </td>
                                         <td class="text-right ">
-                                            {% if current_user.access.esign_edit and current_user.organization == esign.owner.organization %}
-                                                <a href="{% url 'esign_show' esign.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
+                                            {% if current_user.access.esign_edit and current_user.organization == signature.owner.organization %}
+                                                <a href="{% url 'signature_show' signature.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
                                             {% endif %}
                                         </td>
                                     </tr>
@@ -70,7 +70,7 @@
         <div class="modal fade" id="ModalSignAdd" tabindex="-1" role="dialog" aria-labelledby="ModalSignAddTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content text-left">
-                    <form method='post' action='{% url 'esign_file_upload' %}' enctype='multipart/form-data'>
+                    <form method='post' action='{% url 'signature_file_upload' %}' enctype='multipart/form-data'>
                         {% csrf_token %}
                         <div class="modal-header">
                             <h4 class="modal-title" id="ModalSignAddTitle">Добавление файла электронной подписи</h4>

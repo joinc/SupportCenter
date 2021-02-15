@@ -23,10 +23,10 @@ class AccessRole(models.Model):
         verbose_name='Добавлять, изменять, удалять пользователей',
         default=False,
     )
-    esign_list = models.BooleanField(
-        verbose_name='Просматривать список электронных подписей',
-        default=False,
-    )
+    # esign_list = models.BooleanField(
+    #     verbose_name='Просматривать список электронных подписей',
+    #     default=False,
+    # )
     esign_edit = models.BooleanField(
         verbose_name='Добавлять, изменять, удалять электронные подписи',
         default=False,
@@ -97,11 +97,11 @@ class UserProfile(models.Model):
 
     def block(self):
         self.blocked = True
-        self.save()
+        self.save(update_fields=['blocked', ])
 
     def unblock(self):
         self.blocked = False
-        self.save()
+        self.save(update_fields=['blocked', ])
 
     def __str__(self):
         return '{0}'.format(self.user.get_full_name())
