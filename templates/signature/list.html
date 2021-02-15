@@ -28,20 +28,20 @@
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    {% for status_number, status_name, list_esign in list_cert %}
+                    {% for status_number, status_name, list_signature in list_certificate %}
                         <li class="nav-item">
                             <a class="nav-link {% if forloop.first %}active{% endif %}" id="pills-{{ status_number }}-tab" data-toggle="pill" href="#pills-{{ status_number }}" role="tab" aria-controls="pills-{{ status_number }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                                {{ status_name }} <span class="badge badge-secondary">{{ list_esign.count }}</span>
+                                {{ status_name }} <span class="badge badge-secondary">{{ list_signature.count }}</span>
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
-                    {% for status_number, status_name, list_esign in list_cert %}
+                    {% for status_number, status_name, list_signature in list_certificate %}
                         <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pills-{{ status_number }}" role="tabpanel" aria-labelledby="pills-{{ status_number }}-tab">
                             <table class="table table-sm table-hover table-borderless">
-                                {% for esign in list_esign %}
-                                    <tr{% if esign.valid_for.date < date_danger and esign.status == 0 %} class="table-danger"{% elif esign.valid_for.date < date_warning and esign.status == 0 %} class="table-warning"{% endif %}>
+                                {% for signature in list_signature %}
+                                    <tr{% if signature.valid_for.date < date_danger and signature.status == 0 %} class="table-danger"{% elif signature.valid_for.date < date_warning and esign.status == 0 %} class="table-warning"{% endif %}>
                                         <td>
                                             {{ esign.entity }}
                                         </td>
@@ -83,7 +83,7 @@
                                     {{ form_upload.file }}
                                 </div>
                             </div>
-                            {% if list_current_esign %}
+                            {% if list_current_signature %}
                                 <div class="row">
                                     <div class="col-md-12 mb-2">
                                         <h6>{{ form_upload.select.label }}:</h6>
@@ -97,8 +97,8 @@
                                         <h6>Выберите сертификат который продляется новым сертификатом:</h6>
                                         <select name="renew" class="custom-select">
                                             <option selected value="0">---</option>
-                                            {% for esign in list_current_esign %}
-                                                <option value="{{ esign.id }}">{{ esign.entity }} ({{ esign.valid_from|date:"d E Y" }} - {{ esign.valid_for|date:"d E Y" }})</option>
+                                            {% for current_signature in list_current_signature %}
+                                                <option value="{{ current_signature.id }}">{{ current_signature.entity }} ({{ current_signature.valid_from|date:"d E Y" }} - {{ current_signature.valid_for|date:"d E Y" }})</option>
                                             {% endfor %}
                                         </select>
                                     </div>

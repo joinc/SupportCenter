@@ -3,23 +3,23 @@
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
 from Main.tools import get_current_user
-from .models import Certificate
-from .choices import STATUS_CHOICES
+from Signature.models import Certificate
+from Signature.choices import STATUS_CHOICES
 
 ######################################################################################################################
 
 
-def get_esign(request, esign_id):
+def get_signature(request: object, signature_id: object) -> object:
     """
     Получение элемента Сертификат, с проверкой прав на чтение данного элемента
     :param request:
-    :param esign_id:
+    :param signature_id:
     :return:
     """
     current_user = get_current_user(request)
-    esign = get_object_or_404(Certificate, id=esign_id)
-    if current_user.access.esign_edit and esign.owner.organization == current_user.organization:
-        return esign
+    signature = get_object_or_404(Certificate, id=signature_id)
+    if current_user.access.esign_edit and signature.owner.organization == current_user.organization:
+        return signature
     else:
         return None
 
@@ -27,103 +27,106 @@ def get_esign(request, esign_id):
 ######################################################################################################################
 
 
-def get_list_esign(current_user, status=0, all_organization=False):
+def get_list_signature(current_user, status=0, all_organization=False):
     """
     Получение списка Сертификатов с определенным статусом
     :param current_user:
     :param status:
-    :param all:
+    :param all_organization:
     :return:
     """
     if all_organization and current_user.access.esign_moderator:
-        esign_list = Certificate.objects.filter(
-            status=status
+        list_signature = Certificate.objects.filter(
+            status=status,
         )
     else:
-        esign_list = Certificate.objects.filter(
+        list_signature = Certificate.objects.filter(
             status=status,
             owner__organization=current_user.organization
         )
-    return esign_list
+    return list_signature
 
 ######################################################################################################################
 
 
-def get_count_esign(current_user):
+def get_count_signature(current_user):
     """
     Получение количества сертификатов, в зависимости от статуса
     :param current_user:
     :return:
     """
-    esign_count_list = []
+    list_count_signature = []
     for status in STATUS_CHOICES:
         if current_user.access.esign_moderator:
-            esign_count = Certificate.objects.filter(
-                status=status[0]
+            count_signature = Certificate.objects.filter(
+                status=status[0],
             ).count()
         else:
-            esign_count = Certificate.objects.filter(
+            count_signature = Certificate.objects.filter(
                 status=status[0],
-                owner__organization=current_user.organization
+                owner__organization=current_user.organization,
             ).count()
-        esign_count_list.append((status[0], status[1], esign_count))
-    return esign_count_list
+        list_count_signature.append((status[0], status[1], count_signature))
+    return list_count_signature
 
 
 ######################################################################################################################
 
 
-def get_esign_expires_count(current_user):
+def get_count_expires_signature(current_user):
     """
     Подсчет сертификатов со сроком истечения менее 30 дней
     :param current_user:
     :return:
     """
     if current_user.access.esign_moderator:
-        esign_expires_count = Certificate.objects.filter(
+        count_expires_signature = Certificate.objects.filter(
             status=0,
             valid_for__lte=datetime.now().date() + timedelta(days=30)
         ).count()
     else:
-        esign_expires_count = Certificate.objects.filter(
+        count_expires_signature = Certificate.objects.filter(
             status=0,
             valid_for__lte=datetime.now().date() + timedelta(days=30),
             owner__organization=current_user.organization
         ).count()
-    return esign_expires_count
+    return count_expires_signature
+
 
 ######################################################################################################################
 
 
-def change_status_esign(esign: Certificate, status=0, file_delete=False) -> None:
+def change_status_signature(signature: Certificate, status=0, file_delete=False) -> bool:
     """
     Процедура по смене статуса сертификата
-    :param esign:
+    :param signature:
     :param status:
     :param file_delete:
-    :return: None
+    :return: bool
     """
     if isinstance(status, int):
-        esign.status = status
+        signature.status = status
         if file_delete:
-            esign.file_name = ''
-            esign.file_sign.delete()
-        esign.save()
+            signature.file_name = ''
+            signature.file_sign.delete()
+        signature.save()
+        return True
+    return False
 
 
 ######################################################################################################################
 
 
-def check_status_esign(esign_list) -> bool:
+def check_status_signature(list_signature) -> bool:
     """
     Процедура проверкти сертификата на актуальность и смена статуса, в зависимости от текущей даты
-    :param esign_list:
-    :return:
+    :param list_signature:
+    :return: bool
     """
     change = False
-    for esign in esign_list:
-        if esign.valid_for.date() < datetime.now().date():
-            change_status_esign(esign, status=2, file_delete=True)
+    for signature in list_signature:
+        if signature.valid_for.date() < datetime.now().date():
+            change_status_signature(signature, status=2, file_delete=True)
             change = True
     return change
 

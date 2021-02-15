@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Esign.choices import SELECT_CHOICES
+from Signature.choices import SELECT_CHOICES
 
 ######################################################################################################################
+
+# class FormUpload1(forms.ModelForm):
 
 
 class FormUpload(forms.Form):

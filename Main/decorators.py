@@ -36,7 +36,7 @@ def access_user_edit(function):
 def access_esign_list(function):
     def _inner(request, *args, **kwargs):
         profile = get_current_user(request)
-        if not profile.access.esign_list:
+        if not profile.access.signature_list:
             return redirect(reverse('index'))
         else:
             return function(request, *args, **kwargs)

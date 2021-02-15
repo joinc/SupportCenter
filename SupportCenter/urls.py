@@ -11,7 +11,7 @@ urlpatterns = [
     path('logout/', views.logout, name='logout', ),
     path('organization/', include('Organization.urls')),
     path('profile/', include('Profile.urls')),
-    path('esign/', include('Esign.urls')),
+    path('signature/', include('Signature.urls')),
     path('violation/', include('Violation.urls')),
 
     # path('organization/list/', microservice.organization_all, name='organization_all', ),

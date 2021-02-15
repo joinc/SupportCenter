@@ -2,5 +2,5 @@ from django.apps import AppConfig
 
 
 class EsignConfig(AppConfig):
-    name = 'Esign'
+    name = 'Signature'
     verbose_name = 'Электронные подписи'

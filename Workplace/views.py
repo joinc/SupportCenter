@@ -6,4 +6,4 @@ def workplace_list(request):
     context = {
         'current_user': get_current_user(request),
     }
-    return render(request, 'esign/list.html', context)
+    return render(request, 'signature/list.html', context)

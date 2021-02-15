@@ -5,9 +5,9 @@ upload/
 static/
 Equipment/migrations/
 Equipment/__init__.py
-Esign/migrations/
-Esign/migrations/__init__.py
-Esign/__init__.py
+Signature/migrations/
+Signature/migrations/__init__.py
+Signature/__init__.py
 Main/migrations/
 Main/__init__.py
 Organization/migrations/
