@@ -2,6 +2,10 @@
 
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
+    <script src='{% static "js/select2.min.js" %}'></script>
+    <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_top_breadcrumb %}
         <li class="nav-item">
@@ -28,17 +32,17 @@
             </div>
             <div class="card-body">
                 <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                    {% for status_number, status_name, list_signature in list_certificate %}
+                    {% for status, list_signature in list_certificate %}
                         <li class="nav-item">
-                            <a class="nav-link {% if forloop.first %}active{% endif %}" id="pills-{{ status_number }}-tab" data-toggle="pill" href="#pills-{{ status_number }}" role="tab" aria-controls="pills-{{ status_number }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
-                                {{ status_name }} <span class="badge badge-secondary">{{ list_signature.count }}</span>
+                            <a class="nav-link {% if forloop.first %}active{% endif %}" id="pills-{{ status.0 }}-tab" data-toggle="pill" href="#pills-{{ status.0 }}" role="tab" aria-controls="pills-{{ status.0 }}" aria-selected="{% if forloop.first %}true{% else %}false{% endif %}">
+                                {{ status.1 }} <span class="badge badge-secondary">{{ list_signature.count }}</span>
                             </a>
                         </li>
                     {% endfor %}
                 </ul>
                 <div class="tab-content" id="pills-tabContent">
-                    {% for status_number, status_name, list_signature in list_certificate %}
-                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pills-{{ status_number }}" role="tabpanel" aria-labelledby="pills-{{ status_number }}-tab">
+                    {% for status, list_signature in list_certificate %}
+                        <div class="tab-pane fade {% if forloop.first %}show active{% endif %}" id="pills-{{ status.0 }}" role="tabpanel" aria-labelledby="pills-{{ status.0 }}-tab">
                             <table class="table table-sm table-hover table-borderless">
                                 {% for signature in list_signature %}
                                     <tr{% if signature.valid_for.date < date_danger and signature.status == 0 %} class="table-danger"{% elif signature.valid_for.date < date_warning and signature.status == 0 %} class="table-warning"{% endif %}>
@@ -68,7 +72,7 @@
     {% if current_user.access.esign_edit %}
         <!-- Окно добавления фала электронной подписи -->
         <div class="modal fade" id="ModalSignAdd" tabindex="-1" role="dialog" aria-labelledby="ModalSignAddTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
                 <div class="modal-content text-left">
                     <form method='post' action='{% url 'signature_file_upload' %}' enctype='multipart/form-data'>
                         {% csrf_token %}
@@ -78,29 +82,30 @@
                         </div>
                         <div class="modal-body">
                             <div class="row">
-                                <div class="col-md-12 mb-2">
-                                    <h6>{{ form_upload.file.label }}:</h6>
-                                    {{ form_upload.file }}
+                                <div class="col-md-12 mb-3">
+                                    {{ form_upload.file_sign }}
+                                    <small class="form-text text-muted border-top">{{ form_upload.file_sign.label }}</small>
                                 </div>
                             </div>
                             {% if list_current_signature %}
                                 <div class="row">
-                                    <div class="col-md-12 mb-2">
-                                        <h6>{{ form_upload.select.label }}:</h6>
-                                        {% for select in form_upload.select %}
-                                            {{ select }}
+                                    <div class="col-md-12 mb-3 form-check">
+                                        {% for status in form_upload.status %}
+                                            <div class="form-check pl-0">
+                                                {{ status }}
+                                            </div>
                                         {% endfor %}
+                                        <small class="form-text text-muted border-top">{{ form_upload.status.label }}</small>
                                     </div>
                                 </div>
                                 <div class="row" id="renew_choice">
                                     <div class="col-md-12 mb-2">
-                                        <h6>Выберите сертификат который продляется новым сертификатом:</h6>
-                                        <select name="renew" class="custom-select">
-                                            <option selected value="0">---</option>
+                                        <select name="renew" class="custom-select" required>
                                             {% for current_signature in list_current_signature %}
                                                 <option value="{{ current_signature.id }}">{{ current_signature.entity }} ({{ current_signature.valid_from|date:"d E Y" }} - {{ current_signature.valid_for|date:"d E Y" }})</option>
                                             {% endfor %}
                                         </select>
+                                        <small class="form-text text-muted">Выберите сертификат который продляется новым сертификатом</small>
                                     </div>
                                 </div>
                             {% endif %}
@@ -117,12 +122,18 @@
         <script type="text/javascript">
             $(document).ready(function(){
                 $('#renew_choice').hide();
+                $('select[name=renew]').select2({
+                    allowClear: true,
+                    placeholder: "Выберите продляемую электронную подпись",
+                    theme: "bootstrap4",
+                    language: "ru"
+                });
             });
-            $('input#id_select_0').click(function () {
+            $('input#id_status_0').click(function () {
                     $('#renew_choice').hide();
                 }
             );
-            $('input#id_select_1').click(function () {
+            $('input#id_status_1').click(function () {
                     $('#renew_choice').show();
                 }
             );

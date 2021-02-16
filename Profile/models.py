@@ -23,15 +23,15 @@ class AccessRole(models.Model):
         verbose_name='Добавлять, изменять, удалять пользователей',
         default=False,
     )
-    # esign_list = models.BooleanField(
-    #     verbose_name='Просматривать список электронных подписей',
-    #     default=False,
-    # )
-    esign_edit = models.BooleanField(
+    signature_list = models.BooleanField(
+        verbose_name='Просматривать список электронных подписей',
+        default=False,
+    )
+    signature_edit = models.BooleanField(
         verbose_name='Добавлять, изменять, удалять электронные подписи',
         default=False,
     )
-    esign_moderator = models.BooleanField(
+    signature_moderator = models.BooleanField(
         verbose_name='Модерировать электронные подписи',
         default=False,
     )
@@ -49,6 +49,27 @@ class AccessRole(models.Model):
         verbose_name_plural = 'Роли'
         managed = True
 
+
+class Permission(models.Model):
+    title = models.CharField(
+        verbose_name='Название доступа',
+        max_length=64,
+        default='',
+    )
+    name = models.CharField(
+        verbose_name='Обозначение',
+        max_length=64,
+        default='',
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'title',
+        verbose_name = 'Право'
+        verbose_name_plural = 'Права'
+        managed = True
 
 ######################################################################################################################
 

@@ -49,7 +49,7 @@ def access_esign_list(function):
 def access_esign_edit(function):
     def _inner(request, *args, **kwargs):
         profile = get_current_user(request)
-        if not profile.access.esign_edit:
+        if not profile.access.signature_edit:
             return redirect(reverse('index'))
         else:
             return function(request, *args, **kwargs)

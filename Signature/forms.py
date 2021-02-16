@@ -2,27 +2,33 @@
 
 from django import forms
 from Signature.choices import SELECT_CHOICES
+from Signature.models import Certificate
 
 ######################################################################################################################
 
-# class FormUpload1(forms.ModelForm):
 
-
-class FormUpload(forms.Form):
-    file = forms.FileField(
-        label='Укажите файл открытой части электронной подписи с расширением .cer',
-        widget=forms.FileInput(
-            attrs={
-                'class': 'form-control-file',
-            }
-        ),
-        required=True,
-    )
-    select = forms.ChoiceField(
-        label='Выберите статус',
+class FormUpload(forms.ModelForm):
+    status = forms.ChoiceField(
+        label='Укажите статус данной электронной подписи',
         widget=forms.RadioSelect(),
         choices=SELECT_CHOICES,
     )
+
+    class Meta:
+        model = Certificate
+        fields = [
+            'file_sign',
+        ]
+        widgets = {
+            'file_sign': forms.FileInput(
+                attrs={
+                    'class': 'form-control-file',
+                }
+            )
+        }
+        labels = {
+            'file_sign': 'Укажите файл открытой части электронной подписи с расширением .cer',
+        }
 
 
 ######################################################################################################################

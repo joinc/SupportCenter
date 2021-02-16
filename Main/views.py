@@ -18,7 +18,7 @@ def index(request):
     """
     Отображение главной страницы
     :param request:
-    :return:
+    :return: HttpResponse
     """
     current_user = get_current_user(request)
     context = {
@@ -28,7 +28,7 @@ def index(request):
     if current_user.access.signature_list:
         context['count_signature'] = get_count_signature(current_user=current_user)
         context['count_expires_signature'] = get_count_expires_signature(current_user=current_user)
-    return render(request, 'index.html', context)
+    return render(request, 'index.html', context=context)
 
 
 ######################################################################################################################
@@ -55,10 +55,15 @@ def login(request):
             messages.info(request, 'Не правильно введенные данные')
             return redirect(reverse('login'))
     else:
+        context = {
+            'title': 'Авторизация',
+        }
         if request.GET.get('next'):
-            return render(request, 'login.html', {'next': request.GET.get('next')})
+            context['next'] = request.GET.get('next')
         else:
-            return render(request, 'login.html', {'next': settings.SUCCESS_URL})
+            context['next'] = settings.SUCCESS_URL
+        return render(request, 'login.html', context)
+
 
 ######################################################################################################################
 
@@ -67,7 +72,7 @@ def logout(request):
     """
     Выход пользователя
     :param request:
-    :return:
+    :return: redirect
     """
     auth.logout(request)
     return redirect(reverse('index'))

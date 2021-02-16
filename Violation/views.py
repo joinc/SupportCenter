@@ -92,14 +92,14 @@ def violation_list(request):
     """
     Список отчетов об инцидентах
     :param request:
-    :return:
+    :return: HttpResponse
     """
     context = {
         'current_user': get_current_user(request),
         'title': 'Список отчетов об инцидентах',
         'list_violation': ReportViolation.objects.all(),
     }
-    return render(request, 'violation/list.html', context)
+    return render(request, 'violation/list.html', context=context)
 
 
 ######################################################################################################################

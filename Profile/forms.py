@@ -185,9 +185,9 @@ class FormAccessList(forms.ModelForm):
         fields = [
             'user_list',
             'user_edit',
-            'esign_list',
-            'esign_edit',
-            'esign_moderator',
+            'signature_list',
+            'signature_edit',
+            'signature_moderator',
             'organization_edit',
         ]
         widgets = {}

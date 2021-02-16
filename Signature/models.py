@@ -1,7 +1,7 @@
 from django.db import models
 from Profile.models import UserProfile
-from .choices import STATUS_CHOICES
-from .certificate import Certificate as cert
+from Signature.choices import STATUS_CHOICES
+from Signature.certificate import Certificate as Cert
 
 ######################################################################################################################
 
@@ -75,7 +75,7 @@ class Certificate(models.Model):
     )
 
     def parse_file(self):
-        certificate = cert(self.file_sign.path)
+        certificate = Cert(self.file_sign.path)
         if not certificate.cert_format:
             return False
         else:

@@ -1,43 +1,47 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url 'signature_list' %}" class="nav-link">Список электронных подписей</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item">
+            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+        </li>
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
         <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'esign_list' %}">Список электронных подписей</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ esign }}</li>
-                    </ol>
-                </nav>
-            </div>
             <div class="col-auto mr-0 text-right">
-                {% if current_user.access.esign_edit %}
-                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignDelete" title="Удалить сертификат"><i class="fas fa-times"></i> Удалить</button>
-                {% endif %}
             </div>
         </div>
-        <div class="shadow card {% if esign.is_terminate %}border-danger{% elif esign.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if esign.is_terminate %}bg-danger{% elif esign.is_extended %}bg-warning{% endif %}">
+        <div class="shadow card {% if signature.is_terminate %}border-danger{% elif signature.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
+            <div class="card-header {% if signature.is_terminate %}bg-danger{% elif signature.is_extended %}bg-warning{% endif %}">
                 <h4>Сертификат электронной подписи:</h4>
             </div>
             <div class="card-body">
                 <div class="row">
                     <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.entity }}</h5>
-                        <small class="form-text text-muted">Кому выдан</small>
-                        {% if sub %}
+                        <h5>{{ signature.entity }}</h5>
+                        <small class="form-text text-muted border-top">Кому выдан</small>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <h5>{{ signature.issuer }}</h5>
+                        <small class="form-text text-muted border-top">Кем выдан</small>
+                    </div>
+                </div>
+                <div class="row">
+                    {% if sub %}
+                        <div class="col-md-6 mb-2">
                             <table class="table table-sm table-borderless table-hover">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Информация о субъекте:</th>
-                                    </tr>
-                                </thead>
                                 {% for key,val in sub.items %}
                                     <tr>
                                         <td>{{ key }}</td>
@@ -45,18 +49,11 @@
                                     </tr>
                                 {% endfor %}
                             </table>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.issuer }}</h5>
-                        <small class="form-text text-muted">Кем выдан</small>
-                        {% if iss %}
+                        </div>
+                    {% endif %}
+                    {% if iss %}
+                        <div class="col-md-6 mb-2">
                             <table class="table table-sm table-borderless table-hover">
-                                <thead>
-                                    <tr>
-                                        <th colspan="2">Информация об издателе:</th>
-                                    </tr>
-                                </thead>
                                 {% for key,val in iss.items %}
                                     <tr>
                                         <td>{{ key }}</td>
@@ -64,52 +61,55 @@
                                     </tr>
                                 {% endfor %}
                             </table>
-                        {% endif %}
-                    </div>
+                        </div>
+                    {% endif %}
                 </div>
                 <div class="row">
                     <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.valid_from|date:"d E Y" }} - {{ esign.valid_for|date:"d E Y" }}</h5>
-                        <small class="form-text text-muted">Срок действия</small>
+                        <h5>{{ signature.valid_from|date:"d E Y" }} - {{ signature.valid_for|date:"d E Y" }}</h5>
+                        <small class="form-text text-muted border-top">Срок действия</small>
                     </div>
                     <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.serial }}</h5>
-                        <small class="form-text text-muted">Серийный номер</small>
+                        <h5>{{ signature.serial }}</h5>
+                        <small class="form-text text-muted border-top">Серийный номер</small>
                     </div>
                 </div>
             </div>
             <div class="card-footer text-right">
                 <div class="row">
                     <div class="col-auto mr-auto">
-                        {% if esign.is_extended %}
-                            Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом</a>.
+                        {% if signature.is_extended %}
+                            Продлен <a href="{% url 'signature_show' signature.extended_id %}">сертификатом</a>.
                         {% endif %}
-                        Разместил <a href="{% url 'profile_show' esign.owner.id %}">{{ esign.owner }}</a>.
+                        Разместил <a href="{% url 'profile_show' signature.owner.id %}">{{ signature.owner }}</a>.
                     </div>
                     <div class="col-auto">
-                        {% if esign.file_sign %}
-                            <a href="{% url 'esign_file_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                        {% if signature.file_sign %}
+                            <a href="{% url 'signature_file_download' signature.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
                         {% endif %}
-                        {% if esign.status == 0 %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
+                        {% if signature.status == 0 %}
+                            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#ModalTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
+                        {% endif %}
+                        {% if current_user.access.signature_edit %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить сертификат"><i class="fas fa-minus-square"></i> Удалить</button>
                         {% endif %}
                     </div>
                 </div>
             </div>
         </div>
     </main>
-    {% if esign.status == 0 %}
+    {% if signature.status == 0 %}
         <!-- Окно запроса подтверждения на аннулирование -->
-        <div class="modal fade" id="ModalEsignTerminate" tabindex="-1" role="dialog" aria-labelledby="ModalEsignTerminateTitle" aria-hidden="true">
+        <div class="modal fade" id="ModalTerminate" tabindex="-1" role="dialog" aria-labelledby="ModalTerminateTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
                 <div class="modal-content">
-                    <form method='post' action='{% url 'esign_terminate' esign.id %}'>
+                    <form method='post' action='{% url 'signature_terminate' signature.id %}'>
                         {% csrf_token %}
                         <div class="modal-header">
-                            <h5 class="modal-title" id="ModalEsignTerminateTitle">Аннулировать сертификат</h5>
+                            <h5 class="modal-title" id="ModalTerminateTitle">Аннулировать сертификат</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
                         </div>
-                        <div class="modal-body">Вы действительно хотите аннулировать сертификат <strong>{{ esign.entity }}</strong> действующий с {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}?</div>
+                        <div class="modal-body">Вы действительно хотите аннулировать сертификат <strong>{{ signature.entity }}</strong> действующий с {{ signature.valid_from|date:"d E Y" }} по {{ signature.valid_for|date:"d E Y" }}?</div>
                         <div class="modal-footer">
                             <button class="btn btn-danger" type="submit">Аннулировать</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Не аннулировать</button>
@@ -120,24 +120,26 @@
         </div>
         <!-- /Окно запроса подтверждения на аннулирование -->
     {% endif %}
-    <!-- Окно запроса подтверждения на удаление -->
-    <div class="modal fade" id="ModalEsignDelete" tabindex="-1" role="dialog" aria-labelledby="ModalEsignDeleteTitle" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-            <div class="modal-content">
-                <form method='post' action='{% url 'esign_delete' esign.id %}'>
-                    {% csrf_token %}
-                    <div class="modal-header bg-danger text-white">
-                        <h5 class="modal-title" id="ModalEsignDeleteTitle">Удалить сертификат</h5>
-                        <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
-                    </div>
-                    <div class="modal-body">Вы действительно хотите удалить сертификат <strong>{{ esign.entity }}</strong> действующий с {{ esign.valid_from|date:"d E Y" }} по {{ esign.valid_for|date:"d E Y" }}?</div>
-                    <div class="modal-footer">
-                        <button class="btn btn-danger" type="submit">Удалить</button>
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
-                    </div>
-                </form>
+    {% if current_user.access.signature_edit %}
+        <!-- Окно запроса подтверждения на удаление -->
+        <div class="modal fade" id="ModalDelete" tabindex="-1" role="dialog" aria-labelledby="ModalDeleteTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+                <div class="modal-content">
+                    <form method='post' action='{% url 'signature_delete' signature.id %}'>
+                        {% csrf_token %}
+                        <div class="modal-header bg-danger text-white">
+                            <h5 class="modal-title" id="ModalDeleteTitle">Удалить сертификат</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">Вы действительно хотите удалить сертификат <strong>{{ signature.entity }}</strong> действующий с {{ signature.valid_from|date:"d E Y" }} по {{ signature.valid_for|date:"d E Y" }}?</div>
+                        <div class="modal-footer">
+                            <button class="btn btn-danger" type="submit">Удалить</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
-    </div>
-    <!-- /Окно запроса подтверждения на удаление -->
+        <!-- /Окно запроса подтверждения на удаление -->
+    {% endif %}
 {% endblock %}

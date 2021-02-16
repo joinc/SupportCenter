@@ -9,7 +9,7 @@ from Signature.choices import STATUS_CHOICES
 ######################################################################################################################
 
 
-def get_signature(request: object, signature_id: object) -> object:
+def get_signature(request: object, signature_id: object) -> Certificate or None:
     """
     Получение элемента Сертификат, с проверкой прав на чтение данного элемента
     :param request:
@@ -27,7 +27,7 @@ def get_signature(request: object, signature_id: object) -> object:
 ######################################################################################################################
 
 
-def get_list_signature(current_user, status=0, all_organization=False):
+def get_list_signature(current_user, status=0, all_organization=False) -> list:
     """
     Получение списка Сертификатов с определенным статусом
     :param current_user:
@@ -46,10 +46,11 @@ def get_list_signature(current_user, status=0, all_organization=False):
         )
     return list_signature
 
+
 ######################################################################################################################
 
 
-def get_count_signature(current_user):
+def get_count_signature(current_user) -> list:
     """
     Получение количества сертификатов, в зависимости от статуса
     :param current_user:
@@ -58,22 +59,22 @@ def get_count_signature(current_user):
     list_count_signature = []
     for status in STATUS_CHOICES:
         if current_user.access.esign_moderator:
-            count_signature = Certificate.objects.filter(
+            count = Certificate.objects.filter(
                 status=status[0],
             ).count()
         else:
-            count_signature = Certificate.objects.filter(
+            count = Certificate.objects.filter(
                 status=status[0],
                 owner__organization=current_user.organization,
             ).count()
-        list_count_signature.append((status[0], status[1], count_signature))
+        list_count_signature.append((status, count))
     return list_count_signature
 
 
 ######################################################################################################################
 
 
-def get_count_expires_signature(current_user):
+def get_count_expires_signature(current_user) -> int:
     """
     Подсчет сертификатов со сроком истечения менее 30 дней
     :param current_user:
@@ -82,13 +83,13 @@ def get_count_expires_signature(current_user):
     if current_user.access.esign_moderator:
         count_expires_signature = Certificate.objects.filter(
             status=0,
-            valid_for__lte=datetime.now().date() + timedelta(days=30)
+            valid_for__lte=datetime.now().date() + timedelta(days=30),
         ).count()
     else:
         count_expires_signature = Certificate.objects.filter(
             status=0,
             valid_for__lte=datetime.now().date() + timedelta(days=30),
-            owner__organization=current_user.organization
+            owner__organization=current_user.organization,
         ).count()
     return count_expires_signature
 

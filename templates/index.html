@@ -1,30 +1,33 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
         <div class="card-columns">
-            {% if current_user.access.esign_list %}
+            {% if count_signature %}
                 <div class="card shadow border-dark">
                     <div class="card-header">
                         <h4>Учет электронных подписей:</h4>
                     </div>
                     <div class="card-body">
                         <ul class="list-unstyled">
-                            {% for status_number, status_name, esign_count in esign_count_list %}
-                                {% if status_number == 0 %}
-                                    <li class="border-bottom border-grey {% ifnotequal esign_expires_count 0 %}list-group-item-danger{% endifnotequal %}">{{ status_name }} (истекают) <span class="float-right">{{ esign_count }} ({{ esign_expires_count }})</span></li>
+                            {% for status, count in count_signature %}
+                                {% if status.0 == 0 %}
+                                    <li class="border-bottom border-grey {% if not count_expires_signature == 0 %}list-group-item-danger{% endif %}">
+                                        {{ status.1 }} (истекают) <span class="float-right">{{ count }} ({{ count_expires_signature }})</span>
+                                    </li>
                                 {% else %}
-                                    <li class="border-bottom border-grey">{{ status_name }} <span class="float-right">{{ esign_count }} </span></li>
+                                    <li class="border-bottom border-grey">
+                                        {{ status.1 }} <span class="float-right">{{ count }} </span>
+                                    </li>
                                 {% endif %}
                             {% endfor %}
                         </ul>
                     </div>
                     <div class="card-footer">
-                        <a href="{% url 'esign_list' %}" class="btn btn-outline-primary" title="Перейти к подписям"><i class="fas fa-file-contract"></i> Перейти к подписям</a>
+                        <a href="{% url 'signature_list' %}" class="btn btn-outline-primary" title="Перейти к подписям"><i class="fas fa-file-contract"></i> Перейти к подписям</a>
                     </div>
                 </div>
             {% endif %}

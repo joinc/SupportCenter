@@ -37,7 +37,7 @@
                         </a>
                         <div class="dropdown-divider"></div>
                         {% if current_user.access.esign_list or current_user.access.esign_moderator %}
-                            <a href="{% url 'esign_list' %}" class="dropdown-item">
+                            <a href="{% url 'signature_list' %}" class="dropdown-item">
                                 <div class="row">
                                     <div class="col-auto mr-auto">Подписи</div>
                                     <div class="col-auto mt-1 text-right"><i class="fas fa-file-contract"></i></div>
