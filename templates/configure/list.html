@@ -1,0 +1,106 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="card-columns">
+            <div class="card shadow border-dark">
+                <div class="card-header">
+                    <h4>Профиль пользователя:</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Список шаблонов разрешений
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="{% url 'preset_list' %}" class="btn btn-sm btn-outline-primary" title="Перейти к списку шаблонов разрешений">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 2
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 3
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card shadow border-dark">
+                <div class="card-header">
+                    <h4>Модуль 2:</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 1
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 2
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 3
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            <div class="card shadow border-dark">
+                <div class="card-header">
+                    <h4>Модуль 3:</h4>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            НАстройка 1
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 2
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                    <div class="row mb-2 border-bottom">
+                        <div class="col-auto mr-auto mb-3">
+                            Настройка 3
+                        </div>
+                        <div class="col-auto mr-0 text-right">
+                            <a href="" class="btn btn-sm btn-outline-primary" title="Добавить нового пользователя">Перейти</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+{% endblock %}

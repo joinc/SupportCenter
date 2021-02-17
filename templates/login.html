@@ -1,6 +1,8 @@
 {% extends "base.html" %}{% load static %}
-{% block html_title %}Авторизация{% endblock %}
-{% block html_head %}<link rel='stylesheet' href='{% static "css/floating-labels.css" %}' type='text/css' />{% endblock %}
+
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/floating-labels.css" %}' type='text/css' />
+{% endblock %}
 {% block html_body %}
     {% if request.user.is_authenticated %}
         <meta http-equiv="REFRESH" content="0;url={% url 'index' %}">

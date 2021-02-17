@@ -4,17 +4,11 @@
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
 {% block html_top_breadcrumb %}
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
         <li class="nav-item active">
             <a href="{% url 'signature_list' %}" class="nav-link">Список электронных подписей</a>
         </li>
         <li class="nav-item">
             <span class="navbar-text">/</span>
-        </li>
-        <li class="nav-item">
-            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
         </li>
 {% endblock %}
 {% block html_body %}

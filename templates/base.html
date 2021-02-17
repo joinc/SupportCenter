@@ -36,7 +36,7 @@
                             </div>
                         </a>
                         <div class="dropdown-divider"></div>
-                        {% if current_user.access.esign_list or current_user.access.esign_moderator %}
+                        {% if current_user.access.signature_list or current_user.access.signature_moderator %}
                             <a href="{% url 'signature_list' %}" class="dropdown-item">
                                 <div class="row">
                                     <div class="col-auto mr-auto">Подписи</div>
@@ -56,10 +56,18 @@
                 </div>
             </div>
             <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a href="{% url 'index' %}" class="nav-link">Главная</a>
-                </li>
+                {% if not request.get_full_path == '/' %}
+                    <li class="nav-item active">
+                        <a href="{% url 'index' %}" class="nav-link">Главная</a>
+                    </li>
+                    <li class="nav-item">
+                        <span class="navbar-text">/</span>
+                    </li>
+                {% endif %}
                 {% block html_top_breadcrumb %}{% endblock %}
+                <li class="nav-item">
+                    <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+                </li>
             </ul>
         </nav>
     {% endif %}

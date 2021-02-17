@@ -2,6 +2,60 @@ from django.db import models
 from django.contrib.auth.models import User
 from Organization.models import Organization, Department
 
+
+######################################################################################################################
+
+class CategoryPermission(models.Model):
+    title = models.CharField(
+        verbose_name='Название категории',
+        max_length=64,
+        default='',
+    )
+
+    def __str__(self):
+        return '{0}'.format(self.title)
+
+    class Meta:
+        ordering = 'title',
+        verbose_name = 'Категория разрешения'
+        verbose_name_plural = 'Категории разрешений'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Permission(models.Model):
+    category = models.ForeignKey(
+        CategoryPermission,
+        verbose_name='Категория разрешения',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='CategoryPermission',
+        on_delete=models.SET_NULL,
+    )
+    title = models.CharField(
+        verbose_name='Название разрешения',
+        max_length=64,
+        default='',
+    )
+    name = models.CharField(
+        verbose_name='Обозначение разрешения',
+        max_length=64,
+        default='',
+    )
+
+    def __str__(self):
+        return '{0} - {1} ({2})'.format(self.category, self.title, self.name)
+
+    class Meta:
+        ordering = 'category', 'title',
+        verbose_name = 'Разрешение'
+        verbose_name_plural = 'Разрешения'
+        managed = True
+
+
 ######################################################################################################################
 
 
@@ -50,16 +104,18 @@ class AccessRole(models.Model):
         managed = True
 
 
-class Permission(models.Model):
+######################################################################################################################
+
+
+class PresetAccess(models.Model):
     title = models.CharField(
-        verbose_name='Название доступа',
+        verbose_name='Название набора прав',
         max_length=64,
         default='',
     )
-    name = models.CharField(
-        verbose_name='Обозначение',
-        max_length=64,
-        default='',
+    is_sample = models.BooleanField(
+        verbose_name="Является шаблонным набором прав",
+        default=False,
     )
 
     def __str__(self):
@@ -67,9 +123,10 @@ class Permission(models.Model):
 
     class Meta:
         ordering = 'title',
-        verbose_name = 'Право'
-        verbose_name_plural = 'Права'
+        verbose_name = 'Набор прав'
+        verbose_name_plural = 'Наборы прав'
         managed = True
+
 
 ######################################################################################################################
 
@@ -131,6 +188,43 @@ class UserProfile(models.Model):
         ordering = 'blocked', 'user',
         verbose_name = 'Профиль'
         verbose_name_plural = 'Профили'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Access(models.Model):
+    permission = models.ForeignKey(
+        Permission,
+        verbose_name='Разрешение',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='AccessPermission',
+        on_delete=models.CASCADE,
+    )
+    preset = models.ForeignKey(
+        PresetAccess,
+        verbose_name='Набор прав',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='PresetAccess',
+        on_delete=models.CASCADE,
+    )
+    value = models.BooleanField(
+        verbose_name='Значение',
+        default=False,
+    )
+
+    def __str__(self):
+        return '[{0}] {1} - {2}'.format(self.preset, self.permission, self.value)
+
+    class Meta:
+        ordering = 'permission',
+        verbose_name = 'Право'
+        verbose_name_plural = 'Права'
         managed = True
 
 

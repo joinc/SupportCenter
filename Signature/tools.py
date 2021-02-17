@@ -18,7 +18,7 @@ def get_signature(request: object, signature_id: object) -> Certificate or None:
     """
     current_user = get_current_user(request)
     signature = get_object_or_404(Certificate, id=signature_id)
-    if current_user.access.esign_edit and signature.owner.organization == current_user.organization:
+    if current_user.access.signature_edit and signature.owner.organization == current_user.organization:
         return signature
     else:
         return None
@@ -35,7 +35,7 @@ def get_list_signature(current_user, status=0, all_organization=False) -> list:
     :param all_organization:
     :return:
     """
-    if all_organization and current_user.access.esign_moderator:
+    if all_organization and current_user.access.signature_moderator:
         list_signature = Certificate.objects.filter(
             status=status,
         )
@@ -58,7 +58,7 @@ def get_count_signature(current_user) -> list:
     """
     list_count_signature = []
     for status in STATUS_CHOICES:
-        if current_user.access.esign_moderator:
+        if current_user.access.signature_moderator:
             count = Certificate.objects.filter(
                 status=status[0],
             ).count()
@@ -80,7 +80,7 @@ def get_count_expires_signature(current_user) -> int:
     :param current_user:
     :return:
     """
-    if current_user.access.esign_moderator:
+    if current_user.access.signature_moderator:
         count_expires_signature = Certificate.objects.filter(
             status=0,
             valid_for__lte=datetime.now().date() + timedelta(days=30),
