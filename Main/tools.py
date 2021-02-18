@@ -7,13 +7,13 @@ from Profile.models import UserProfile
 ######################################################################################################################
 
 
-def get_current_user(request) -> UserProfile:
+def get_current_user(user) -> UserProfile:
     """
 
-    :param request:
+    :param user:
     :return:
     """
-    return get_object_or_404(UserProfile, user=request.user)
+    return get_object_or_404(UserProfile, user=user)
 
 
 ######################################################################################################################

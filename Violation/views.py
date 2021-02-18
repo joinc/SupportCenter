@@ -22,7 +22,7 @@ def violation_load(request):
     :return:
     """
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': 'Загрузка инцидентов',
         'form_violation': FormViolation(),
     }
@@ -95,7 +95,7 @@ def violation_list(request):
     :return: HttpResponse
     """
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': 'Список отчетов об инцидентах',
         'list_violation': ReportViolation.objects.all(),
     }
@@ -113,17 +113,15 @@ def violation_show(request, violation_id):
     :param violation_id:
     :return:
     """
-
     violation = get_object_or_404(ReportViolation, id=violation_id)
     list_violator = []
     for violator in Violator.objects.filter(violation=violation):
         list_violator.append([violator, SubnetOrg.objects.filter(subnet=violator.subnet)])
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': 'Отчет об инцидентах за ' + violation.date_violation.strftime('%d.%m.%Y'),
         'list_violator': list_violator,
     }
-
     return render(request, 'violation/show.html', context)
 
 
@@ -140,7 +138,7 @@ def violator_show(request, violator_id):
     """
     violator = get_object_or_404(Violator, id=violator_id)
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': 'Отчет об инцидентах узла ' + violator.ip_violator,
         'violator': violator,
         'list_incident': Incident.objects.filter(violator=violator),

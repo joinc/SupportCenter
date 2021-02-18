@@ -23,7 +23,7 @@ def profile_list(request):
     :param request:
     :return:
     """
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     context = {
         'current_user': current_user,
         'title': 'Список пользователей',
@@ -56,7 +56,7 @@ def profile_list_organization(request, organization_id):
     :param organization_id:
     :return:
     """
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     organization = get_object_or_404(Organization, id=organization_id)
     total_profile, list_profile = get_list_profile(username='', organization=organization_id)
     context = {
@@ -81,7 +81,7 @@ def profile_create(request):
     :return:
     """
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': 'Добавление нового пользователя',
     }
     if request.POST:
@@ -126,7 +126,7 @@ def profile_show(request, profile_id):
     :return:
     """
     profile = get_object_or_404(UserProfile, id=profile_id)
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     context = {
         'current_user': current_user,
         'profile': profile,
@@ -191,7 +191,7 @@ def profile_edit(request, profile_id):
         return redirect(reverse('profile_show', args=(profile_id, )))
     else:
         context = {
-            'current_user': get_current_user(request),
+            'current_user': get_current_user(user=request.user),
             'profile': profile,
             'title': 'Редактирование профиля ' + profile.__str__(),
             'form_edit_user': FormEditUser(instance=profile.user),

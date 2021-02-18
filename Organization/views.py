@@ -13,15 +13,18 @@ from Main.decorators import access_organization_edit
 
 @login_required
 def organization_list(request):
-    if request.POST:
-        return organization_create(request)
-    else:
-        context = {
-            'current_user': get_current_user(request),
-            'title': 'Список организаций',
-            'organization_list': list(Organization.objects.values('id', 'short_title').all()),
-        }
-        return render(request, 'organization/list.html', context)
+    """
+    Вывод списка организаций
+    TODO: Сделать форму поиска организаций
+    :param request:
+    :return:
+    """
+    context = {
+        'current_user': get_current_user(user=request.user),
+        'title': 'Список организаций',
+        'organization_list': list(Organization.objects.values('id', 'short_title').all()),
+    }
+    return render(request, 'organization/list.html', context)
 
 
 ######################################################################################################################
@@ -30,7 +33,7 @@ def organization_list(request):
 @access_organization_edit
 def organization_create(request):
     """
-
+    Создание новой организации
     :param request:
     :return:
     """
@@ -41,7 +44,7 @@ def organization_create(request):
         return redirect(reverse('organization_list'))
     else:
         context = {
-            'current_user': get_current_user(request),
+            'current_user': get_current_user(user=request.user),
             'title': 'Добавление организации',
             'form_organization': FormOrganization(),
         }
@@ -53,9 +56,15 @@ def organization_create(request):
 
 @login_required
 def organization_show(request, organization_id):
+    """
+    Отображение карточки организации
+    :param request:
+    :param organization_id:
+    :return:
+    """
     organization = get_object_or_404(Organization, id=organization_id)
     context = {
-        'current_user': get_current_user(request),
+        'current_user': get_current_user(user=request.user),
         'title': organization.short_title,
         'organization': organization,
         'list_address': AddressOrg.objects.filter(organization=organization),
@@ -69,6 +78,12 @@ def organization_show(request, organization_id):
 
 @access_organization_edit
 def organization_delete(request, organization_id):
+    """
+    Удаление организации
+    :param request:
+    :param organization_id:
+    :return:
+    """
     organization = get_object_or_404(Organization, id=organization_id)
     organization.delete()
     return redirect(reverse('organization_list'))
@@ -79,6 +94,12 @@ def organization_delete(request, organization_id):
 
 @access_organization_edit
 def organization_edit(request, organization_id):
+    """
+    Редактирование карточки организации
+    :param request:
+    :param organization_id:
+    :return:
+    """
     organization = get_object_or_404(Organization, id=organization_id)
     if request.POST:
         formset = FormOrganization(request.POST, instance=organization)
@@ -87,7 +108,7 @@ def organization_edit(request, organization_id):
         return redirect(reverse('organization_show', args=(organization_id, )))
     else:
         context = {
-            'current_user': get_current_user(request),
+            'current_user': get_current_user(user=request.user),
             'title': 'Редактирование организации',
             'organization': organization,
             'form_organization': FormOrganization(instance=organization),

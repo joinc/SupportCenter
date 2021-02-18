@@ -15,7 +15,16 @@
     <main role="main" class="container-fluid">
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>{{ organization.short_title }}:</h4>
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        {% if current_user.access.organization_edit %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -71,7 +80,6 @@
                     {% if current_user.access.organization_edit %}
                         <div class="col-auto mr-0 text-right">
                             <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
                         </div>
                     {% endif %}
                 </div>

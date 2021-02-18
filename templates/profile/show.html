@@ -14,8 +14,21 @@
 {% block html_body %}
     <main role="main" class="container-fluid">
         <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
-                <h4>{{ title }}:</h4>
+            <div class="card-header {% if profile.blocked %}text-danger{% endif %}">
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        {% if current_user.access.user_edit %}
+                            {% if profile.blocked %}
+                                <button type="button" class="btn btn-outline-success dange" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
+                            {% else %}
+                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -52,11 +65,6 @@
                     {% endif %}
                     {% if current_user.access.user_edit %}
                         <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
-                        {% if profile.blocked %}
-                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
-                        {% else %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
-                        {% endif %}
                     {% endif %}
                 {% endif %}
             </div>

@@ -2,20 +2,16 @@
 
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-    <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
-    <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
-    <script src='{% static "js/select2.min.js" %}'></script>
-    <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_top_breadcrumb %}
         <li class="nav-item active">
-            <a href="{% url 'organization_list' %}" class="nav-link">Список организаций</a>
+            <a href="{% url 'configure_list' %}" class="nav-link">Список конфигураций</a>
         </li>
         <li class="nav-item">
             <span class="navbar-text">/</span>
         </li>
         <li class="nav-item active">
-            <a href="{% url 'organization_show' organization.id %}" class="nav-link">{{ organization.short_title }}</a>
+            <a href="{% url 'preset_list' %}" class="nav-link">Список шаблонов разрешений</a>
         </li>
         <li class="nav-item">
             <span class="navbar-text">/</span>
@@ -23,14 +19,22 @@
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="shadow card border-dark mb-3">
+        <div class="card shadow border-dark">
             <div class="card-header">
                 <h4>{{ title }}:</h4>
             </div>
             <form method='post' action='' class="mb-0">
                 {% csrf_token %}
                 <div class="card-body">
-                    {% for field in form_organization %}
+                    {% for message in messages %}
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    {% for field in form_preset_title %}
                         <div class="row">
                             <div class="col-md-12 mb-2">
                                 <h6>{{ field.label }}:</h6>
@@ -45,14 +49,4 @@
             </form>
         </div>
     </main>
-    <script>
-        $(document).ready(function() {
-            $('select[name=parent_organization]').select2({
-                allowClear: true,
-                placeholder: "Выберите вышестоящую организацию",
-                theme: "bootstrap4",
-                language: "ru"
-            });
-        });
-    </script>
 {% endblock %}

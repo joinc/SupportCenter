@@ -74,7 +74,25 @@ class Certificate(models.Model):
         null=True,
     )
 
+    def is_extended(self) -> bool:
+        """
+        Проверка на статус Истек
+        :return:
+        """
+        return True if (self.status == 2) else False
+
+    def is_terminate(self) -> bool:
+        """
+        Проверка на статус Аннулирован
+        :return:
+        """
+        return True if (self.status == 3) else False
+
     def parse_file(self):
+        """
+
+        :return:
+        """
         certificate = Cert(self.file_sign.path)
         if not certificate.cert_format:
             return False

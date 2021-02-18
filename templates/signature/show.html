@@ -13,13 +13,18 @@
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-0 text-right">
-            </div>
-        </div>
         <div class="shadow card {% if signature.is_terminate %}border-danger{% elif signature.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if signature.is_terminate %}bg-danger{% elif signature.is_extended %}bg-warning{% endif %}">
-                <h4>Сертификат электронной подписи:</h4>
+            <div class="card-header {% if signature.is_terminate %}text-danger{% elif signature.is_extended %}text-warning{% endif %}">
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        {% if current_user.access.signature_edit %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить сертификат"><i class="fas fa-minus-square"></i> Удалить</button>
+                        {% endif %}
+                    </div>
+                </div>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -83,9 +88,6 @@
                         {% endif %}
                         {% if signature.status == 0 %}
                             <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#ModalTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
-                        {% endif %}
-                        {% if current_user.access.signature_edit %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить сертификат"><i class="fas fa-minus-square"></i> Удалить</button>
                         {% endif %}
                     </div>
                 </div>

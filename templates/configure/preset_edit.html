@@ -10,6 +10,12 @@
         <li class="nav-item">
             <span class="navbar-text">/</span>
         </li>
+        <li class="nav-item active">
+            <a href="{% url 'preset_list' %}" class="nav-link">Список шаблонов разрешений</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
@@ -20,27 +26,12 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        <a href="{% url 'preset_create' %}" class="btn btn-outline-primary" title="Добавить новый шаблон"><i class="fas fa-plus-square"></i> Добавить шаблон</a>
+                        <a href="{% url 'preset_delete' preset.id %}" class="btn btn-outline-danger" title="Удалить данный шаблон"><i class="fas fa-minus-square"></i> Удалить шаблон</a>
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-hover table-sm table-borderless">
-                    <tbody>
-                    {% for preset in list_preset %}
-                        <tr>
-                            <td>
-                                <strong>{{ preset }}</strong>
-                            </td>
-                            <td class="text-right ">
-                                <a href="{% url 'preset_edit' preset.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к редактированию шаблона {{ preset }}"><i class="fas fa-edit"></i> Редактировать</a>
-                            </td>
-                        </tr>
-
-                    {% endfor %}
-
-                    </tbody>
-                </table>
+                {{ preset }}
             </div>
         </div>
     </main>

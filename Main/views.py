@@ -20,7 +20,7 @@ def index(request):
     :param request:
     :return: HttpResponse
     """
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     context = {
         'current_user': current_user,
         'title': 'Главная',

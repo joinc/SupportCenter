@@ -17,17 +17,6 @@
 {% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'organization_list' %}">Список организаций</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">Добавление организации</li>
-                    </ol>
-                </nav>
-            </div>
-        </div>
         <div class="shadow card border-dark mb-3">
             <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
                 <h4>Добавление организации:</h4>

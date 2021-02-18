@@ -16,7 +16,7 @@ def get_signature(request: object, signature_id: object) -> Certificate or None:
     :param signature_id:
     :return:
     """
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     signature = get_object_or_404(Certificate, id=signature_id)
     if current_user.access.signature_edit and signature.owner.organization == current_user.organization:
         return signature

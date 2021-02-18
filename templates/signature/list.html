@@ -16,7 +16,7 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.esign_edit %}
+                        {% if current_user.access.signature_edit %}
                             <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalSignAdd" title="Добавить новый файл электронной подписи"><i class="fas fa-file-signature"></i> Добавить</button>
                         {% endif %}
                     </div>
@@ -48,7 +48,7 @@
                                             <span title="{{ signature.owner.organization }}">{{ signature.owner.organization|truncatechars:40 }}</span>
                                         </td>
                                         <td class="text-right ">
-                                            {% if current_user.access.esign_edit and current_user.organization == signature.owner.organization %}
+                                            {% if current_user.access.signature_edit and current_user.organization == signature.owner.organization %}
                                                 <a href="{% url 'signature_show' signature.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к сертификату"><i class="fas fa-file-contract"></i> Перейти к сертификату</a>
                                             {% endif %}
                                         </td>
@@ -61,7 +61,7 @@
             </div>
         </div>
     </main>
-    {% if current_user.access.esign_edit %}
+    {% if current_user.access.signature_edit %}
         <!-- Окно добавления фала электронной подписи -->
         <div class="modal fade" id="ModalSignAdd" tabindex="-1" role="dialog" aria-labelledby="ModalSignAddTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-xl" role="document">

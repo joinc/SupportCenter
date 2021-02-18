@@ -23,7 +23,7 @@ def signature_list(request):
     :param request:
     :return: render signature/list
     """
-    current_user = get_current_user(request)
+    current_user = get_current_user(user=request.user)
     if current_user.access.signature_list:
         list_certificate = []
         for status in STATUS_CHOICES:
@@ -56,8 +56,8 @@ def signature_file_upload(request):
     :param request:
     :return: redirect to signature_list
     """
-    current_user = get_current_user(request)
-    if current_user.access.esign_edit:
+    current_user = get_current_user(user=request.user)
+    if current_user.access.signature_edit:
         if request.POST and request.FILES:
             file_signature = request.FILES['file_sign']
             signature_new = Certificate(
@@ -98,9 +98,8 @@ def signature_show(request, signature_id):
     """
     signature = get_signature(request, signature_id=signature_id)
     if signature:
-        current_user = get_current_user(request)
         context = {
-            'current_user': current_user,
+            'current_user': get_current_user(user=request.user),
             'title': 'Сертификат электронной подписи',
             'signature': signature,
         }

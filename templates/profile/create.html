@@ -10,17 +10,11 @@
     {% endif %}
 {% endblock %}
 {% block html_top_breadcrumb %}
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
         <li class="nav-item active">
             <a href="{% url 'profile_list' %}" class="nav-link">Список пользователей</a>
         </li>
         <li class="nav-item">
             <span class="navbar-text">/</span>
-        </li>
-        <li class="nav-item">
-            <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
         </li>
 {% endblock %}
 {% block html_body %}

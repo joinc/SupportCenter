@@ -9,7 +9,7 @@ from Main.tools import get_current_user
 
 def access_user_list(function):
     def _inner(request, *args, **kwargs):
-        profile = get_current_user(request)
+        profile = get_current_user(user=request.user)
         if not profile.access.user_list:
             return redirect(reverse('index'))
         else:
@@ -22,7 +22,7 @@ def access_user_list(function):
 
 def access_user_edit(function):
     def _inner(request, *args, **kwargs):
-        profile = get_current_user(request)
+        profile = get_current_user(user=request.user)
         if not profile.access.user_edit:
             return redirect(reverse('index'))
         else:
@@ -35,7 +35,7 @@ def access_user_edit(function):
 
 def access_esign_list(function):
     def _inner(request, *args, **kwargs):
-        profile = get_current_user(request)
+        profile = get_current_user(user=request.user)
         if not profile.access.signature_list:
             return redirect(reverse('index'))
         else:
@@ -48,7 +48,7 @@ def access_esign_list(function):
 
 def access_esign_edit(function):
     def _inner(request, *args, **kwargs):
-        profile = get_current_user(request)
+        profile = get_current_user(user=request.user)
         if not profile.access.signature_edit:
             return redirect(reverse('index'))
         else:
@@ -61,7 +61,7 @@ def access_esign_edit(function):
 
 def access_organization_edit(function):
     def _inner(request, *args, **kwargs):
-        profile = get_current_user(request)
+        profile = get_current_user(user=request.user)
         if not profile.access.organization_edit:
             return redirect(reverse('index'))
         else:
