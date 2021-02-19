@@ -26,13 +26,71 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        <a href="{% url 'preset_delete' preset.id %}" class="btn btn-outline-danger" title="Удалить данный шаблон"><i class="fas fa-minus-square"></i> Удалить шаблон</a>
+                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить данный шаблон"><i class="fas fa-minus-square"></i> Удалить шаблон</button>
                     </div>
                 </div>
             </div>
-            <div class="card-body">
-                {{ preset }}
-            </div>
+            <form method='post' action='' class="mb-0">
+                {% csrf_token %}
+                <div class="card-body">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    {% for field in form_preset_title %}
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <h6>{{ field.label }}:</h6>
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <ul class="list-group list-group-flush">
+                                {% for category, list_permission in list_access %}
+                                    <li class="list-group-item">
+                                        <h6>{{ category }}:</h6>
+                                        {% for permission in list_permission %}
+                                            <div class="custom-control custom-checkbox">
+                                                <input type="checkbox" name="{{ permission.1 }}" class="custom-control-input" id="id_{{ permission.1 }}" {% if permission.2 %}checked{% endif %}>
+                                                <label class="custom-control-label" for="id_{{ permission.1 }}">{{ permission.0 }}</label>
+                                            </div>
+                                        {% endfor %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit">Сохранить</button>
+                </div>
+            </form>
         </div>
     </main>
+    <!-- Окно запроса подтверждения на блокировку -->
+    <div class="modal fade" id="ModalDelete" tabindex="-1" role="dialog" aria-labelledby="ModalDeleteTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+            <div class="modal-content">
+                <form method='post' action='{% url 'preset_delete' preset.id %}' >
+                    {% csrf_token %}
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="ModalDeleteTitle">Удалить шаблон разрешений {{ preset }}</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
+                    </div>
+                    <div class="modal-body">Вы действительно хотите удалить шаблон разрешений <strong>{{ preset }}</strong>?</div>
+                    <div class="modal-footer">
+                        <button class="btn btn-danger" type="submit">Удалить шаблон</button>
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Окно запроса подтверждения на блокировку -->
 {% endblock %}

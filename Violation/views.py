@@ -26,7 +26,7 @@ def violation_load(request):
         'title': 'Загрузка инцидентов',
         'form_violation': FormViolation(),
     }
-    return render(request, 'violation/load.html', context)
+    return render(request=request, template_name='violation/load.html', context=context)
 
 
 ######################################################################################################################
@@ -99,7 +99,7 @@ def violation_list(request):
         'title': 'Список отчетов об инцидентах',
         'list_violation': ReportViolation.objects.all(),
     }
-    return render(request, 'violation/list.html', context=context)
+    return render(request=request, template_name='violation/list.html', context=context)
 
 
 ######################################################################################################################
@@ -122,7 +122,7 @@ def violation_show(request, violation_id):
         'title': 'Отчет об инцидентах за ' + violation.date_violation.strftime('%d.%m.%Y'),
         'list_violator': list_violator,
     }
-    return render(request, 'violation/show.html', context)
+    return render(request=request, template_name='violation/show.html', context=context)
 
 
 ######################################################################################################################
@@ -144,7 +144,7 @@ def violator_show(request, violator_id):
         'list_incident': Incident.objects.filter(violator=violator),
     }
 
-    return render(request, 'violation/incident.html', context)
+    return render(request=request, template_name='violation/incident.html', context=context)
 
 
 ######################################################################################################################

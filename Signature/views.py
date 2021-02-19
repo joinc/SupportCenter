@@ -41,7 +41,7 @@ def signature_list(request):
             'date_danger': datetime.now().date() + timedelta(days=8),
             'list_current_signature': list_current_signature,
         }
-        return render(request, 'signature/list.html', context)
+        return render(request=request, template_name='signature/list.html', context=context)
     else:
         return redirect(reverse('index'))
 
@@ -110,7 +110,7 @@ def signature_show(request, signature_id):
                 sub, vlad_sub = certificate.subjectCert()
                 context['iss'] = iss
                 context['sub'] = sub
-        return render(request, 'signature/show.html', context)
+        return render(request=request, template_name='signature/show.html', context=context)
     else:
         return redirect(reverse('signature_list'))
 

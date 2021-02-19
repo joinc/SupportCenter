@@ -22,7 +22,7 @@
                     <div class="col-auto mr-0 text-right">
                         {% if current_user.access.user_edit %}
                             {% if profile.blocked %}
-                                <button type="button" class="btn btn-outline-success dange" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
+                                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
                             {% else %}
                                 <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
                             {% endif %}

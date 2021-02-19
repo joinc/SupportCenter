@@ -28,7 +28,7 @@ def index(request):
     if current_user.access.signature_list:
         context['count_signature'] = get_count_signature(current_user=current_user)
         context['count_expires_signature'] = get_count_expires_signature(current_user=current_user)
-    return render(request, 'index.html', context=context)
+    return render(request=request, template_name='index.html', context=context)
 
 
 ######################################################################################################################
@@ -62,7 +62,7 @@ def login(request):
             context['next'] = request.GET.get('next')
         else:
             context['next'] = settings.SUCCESS_URL
-        return render(request, 'login.html', context)
+        return render(request=request, template_name='login.html', context=context)
 
 
 ######################################################################################################################

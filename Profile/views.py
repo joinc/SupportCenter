@@ -41,7 +41,7 @@ def profile_list(request):
         context['form_organization_user'] = FormOrganization()
     context['total_profile'] = total_profile
     context['list_profile'] = list_profile
-    return render(request, 'profile/list.html', context)
+    return render(request=request, template_name='profile/list.html', context=context)
 
 
 ######################################################################################################################
@@ -67,7 +67,7 @@ def profile_list_organization(request, organization_id):
         'total_profile': total_profile,
         'list_profile': list_profile,
     }
-    return render(request, 'profile/list.html', context)
+    return render(request=request, template_name='profile/list.html', context=context)
 
 
 ######################################################################################################################
@@ -110,7 +110,7 @@ def profile_create(request):
         context['form_create_user'] = FormCreateUser(initial=initial)
     else:
         context['form_create_user'] = FormCreateUser()
-    return render(request, 'profile/create.html', context)
+    return render(request=request, template_name='profile/create.html', context=context)
 
 
 ######################################################################################################################
@@ -149,7 +149,7 @@ def profile_show(request, profile_id):
             else:
                 profile.user.set_password(password1)
                 profile.user.save()
-    return render(request, 'profile/show.html', context)
+    return render(request=request, template_name='profile/show.html', context=context)
 
 
 ######################################################################################################################
@@ -209,7 +209,7 @@ def profile_edit(request, profile_id):
             context['form_organization'] = FormOrganization(initial={'organization': profile.organization})
         else:
             context['form_organization'] = FormOrganization()
-        return render(request, 'profile/edit.html', context)
+        return render(request=request, template_name='profile/edit.html', context=context)
 
 
 ######################################################################################################################

@@ -24,7 +24,7 @@ def organization_list(request):
         'title': 'Список организаций',
         'organization_list': list(Organization.objects.values('id', 'short_title').all()),
     }
-    return render(request, 'organization/list.html', context)
+    return render(request=request, template_name='organization/list.html', context=context)
 
 
 ######################################################################################################################
@@ -48,7 +48,7 @@ def organization_create(request):
             'title': 'Добавление организации',
             'form_organization': FormOrganization(),
         }
-        return render(request, 'organization/create.html', context)
+        return render(request=request, template_name='organization/create.html', context=context)
 
 
 ######################################################################################################################
@@ -70,7 +70,7 @@ def organization_show(request, organization_id):
         'list_address': AddressOrg.objects.filter(organization=organization),
         'list_subnet': SubnetOrg.objects.filter(organization=organization),
     }
-    return render(request, 'organization/show.html', context)
+    return render(request=request, template_name='organization/show.html', context=context)
 
 
 ######################################################################################################################
@@ -113,7 +113,7 @@ def organization_edit(request, organization_id):
             'organization': organization,
             'form_organization': FormOrganization(instance=organization),
         }
-        return render(request, 'organization/edit.html', context)
+        return render(request=request, template_name='organization/edit.html', context=context)
 
 
 ######################################################################################################################
