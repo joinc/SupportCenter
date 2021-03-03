@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Organization.models import Organization
+from Organization.models import Organization, OrganizationAddress, OrganizationSubnet
 
 ######################################################################################################################
 
@@ -13,7 +13,6 @@ class FormOrganization(forms.ModelForm):
             'short_title',
             'long_title',
             'parent_organization',
-            # 'address',
         ]
         widgets = {
             'short_title': forms.TextInput(
@@ -31,6 +30,42 @@ class FormOrganization(forms.ModelForm):
                 }
             ),
             'parent_organization': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                }
+            ),
+        }
+
+
+######################################################################################################################
+
+
+class FormAddress(forms.ModelForm):
+    class Meta:
+        model = OrganizationAddress
+        fields = [
+            'address',
+        ]
+        widgets = {
+            'address': forms.Select(
+                attrs={
+                    'class': 'form-control',
+                }
+            ),
+        }
+
+
+######################################################################################################################
+
+
+class FormSubnet(forms.ModelForm):
+    class Meta:
+        model = OrganizationSubnet
+        fields = [
+            'subnet',
+        ]
+        widgets = {
+            'subnet': forms.Select(
                 attrs={
                     'class': 'form-control',
                 }

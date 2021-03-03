@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Profile.models import AccessRole, UserProfile
+from Profile.models import UserProfile, PresetAccess
 from django.contrib.auth.models import User
-
 
 ######################################################################################################################
 
@@ -157,8 +156,8 @@ class FormEditUser(forms.ModelForm):
 ######################################################################################################################
 
 
-class FormAccessRole(forms.Form):
-    access_role = forms.ChoiceField(
+class FormPresetAccess(forms.Form):
+    preset_access = forms.ChoiceField(
         label='Роль',
         widget=forms.Select(
             attrs={
@@ -168,39 +167,11 @@ class FormAccessRole(forms.Form):
         choices=list(
             map(
                 lambda x: [x['id'], x['title']],
-                list(AccessRole.objects.values('id', 'title').filter(is_sample=True))
+                list(PresetAccess.objects.values('id', 'title').filter(is_sample=True))
             )
         ),
         required=True,
     )
-
-
-######################################################################################################################
-
-
-class FormAccessList(forms.ModelForm):
-    class Meta:
-        model = AccessRole
-        # exclude = ['title']
-        fields = [
-            'user_list',
-            'user_edit',
-            'signature_list',
-            'signature_edit',
-            'signature_moderator',
-            'organization_edit',
-        ]
-        widgets = {}
-        for field in fields:
-            widgets.update(
-                {
-                    field: forms.CheckboxInput(
-                        attrs={
-                            'class': 'custom-control-input',
-                        }
-                    )
-                }
-            )
 
 
 ######################################################################################################################

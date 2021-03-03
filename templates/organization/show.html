@@ -20,7 +20,7 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.organization_edit %}
+                        {% if organization_edit %}
                             <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
                         {% endif %}
                     </div>
@@ -77,7 +77,7 @@
                     <div class="col-auto mr-auto">
                         <a href="{% url 'profile_list_org' organization.id %}" class="btn btn-outline-primary" title="Перейти к списку пользователей организации"><i class="fas fa-user-friends"></i> Список пользователей</a>
                     </div>
-                    {% if current_user.access.organization_edit %}
+                    {% if organization_edit %}
                         <div class="col-auto mr-0 text-right">
                             <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
                         </div>
@@ -87,7 +87,7 @@
 
         </div>
     </main>
-    {% if current_user.access.organization_edit %}
+    {% if organization_edit %}
         <!-- Окно запроса подтверждения на удаление -->
         <div class="modal fade" id="ModalOrgDelete" tabindex="-1" role="dialog" aria-labelledby="ModalOrgDeleteTitle" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

@@ -30,6 +30,14 @@
             <form method='post' action='' class="mb-0">
                 <div class="card-body">
                     {% csrf_token %}
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
                     <div class="row">
                         <div class="col-md-6 mb-2">
                             <h6>{{ form_edit_user.first_name.label }}:</h6>
@@ -63,23 +71,31 @@
                     <div class="row">
                         <div class="col-md-12 mb-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" id="sample" value="sample"{% if profile.access.is_sample %} checked{% endif %}>
-                                <label class="form-check-label" for="sample">{{ form_access_role.access_role.label }}:</label>
-                                {{ form_access_role.access_role }}
+                                <input class="form-check-input" type="radio" name="access_choice" value="sample"{% if profile.preset.is_sample %} checked{% endif %}>
+                                {{ form_preset_access }}
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mb-2">
                             <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" id="nosample" value="nosample"{% if not profile.access.is_sample %} checked{% endif %}>
-                                <label class="form-check-label" for="nosample">Права:</label>
-                                {% for checkbox in form_access_list %}
-                                    <div class="custom-control custom-checkbox">
-                                        {{ checkbox }}
-                                        <label class="custom-control-label" for="id_{{ checkbox.name }}">{{ checkbox.label }}</label>
-                                    </div>
-                                {% endfor %}
+                                <input class="form-check-input" type="radio" name="access_choice" value="not_sample"{% if not profile.preset.is_sample %} checked{% endif %}>
+                                <label>Права:</label>
+                                <div class="card-columns disabled">
+                                    {% for category, list_permission in list_access %}
+                                        <div class="card">
+                                            <div class="card-body">
+                                                <h5 class="card-title">{{ category }}:</h5>
+                                                {% for permission in list_permission %}
+                                                    <div class="custom-control custom-checkbox">
+                                                        <input type="checkbox" name="{{ permission.1 }}" class="custom-control-input" id="id_{{ permission.1 }}" {% if permission.2 %}checked{% endif %}>
+                                                        <label class="custom-control-label" for="id_{{ permission.1 }}">{{ permission.0 }}</label>
+                                                    </div>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -98,6 +114,13 @@
                 theme: "bootstrap4",
                 language: "ru"
             });
+            $('select[name=preset_access]').select2({
+                allowClear: true,
+                placeholder: "Выберите роль доступа",
+                theme: "bootstrap4",
+                language: "ru"
+            });
+
         });
     </script>
 {% endblock %}

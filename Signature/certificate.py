@@ -6,11 +6,10 @@ from pyasn1_modules import rfc2459, pem
 from pyasn1.codec.der import decoder
 from datetime import datetime
 
-
 ######################################################################################################################
 
 
-class Certificate:
+class CertificateFile:
     cert_full = ''
     cert = ''
     cert_format = ''

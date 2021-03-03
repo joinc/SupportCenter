@@ -1,5 +1,9 @@
+# -*- coding: utf-8 -*-
+
 from django.shortcuts import render
-from Main.tools import get_current_user
+from Main.tools import get_profile
+
+######################################################################################################################
 
 
 def workplace_list(request):
@@ -9,6 +13,9 @@ def workplace_list(request):
     :return:
     """
     context = {
-        'current_user': get_current_user(user=request.user),
+        'current_user': get_profile(user=request.user),
     }
     return render(request=request, template_name='signature/list.html', context=context)
+
+
+######################################################################################################################

@@ -11,9 +11,11 @@
                     <div class="col-auto mr-auto">
                         <h4>{{ title }}:</h4>
                     </div>
-                    <div class="col-auto mr-0 text-right">
-                        <a href="{% url 'violation_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
-                    </div>
+                    {% if violation_moderator %}
+                        <div class="col-auto mr-0 text-right">
+                            <a href="{% url 'violation_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
+                        </div>
+                    {% endif %}
                 </div>
             </div>
             <div class="card-body">

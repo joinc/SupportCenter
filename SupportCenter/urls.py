@@ -2,7 +2,7 @@ from django.contrib import admin
 # from django.conf import settings
 # from django.conf.urls.static import static
 from django.urls import path, include
-from Main import views, microservice
+# from Main import views, microservice
 
 urlpatterns = [
     path('admin/', admin.site.urls),

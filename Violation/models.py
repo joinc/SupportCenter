@@ -1,7 +1,7 @@
 from django.db import models
 from uuid import uuid4
 from Workplace.models import Subnet
-from Organization.models import SubnetOrg
+from Organization.models import OrganizationSubnet
 
 ######################################################################################################################
 
@@ -9,11 +9,6 @@ from Organization.models import SubnetOrg
 class ReportViolation(models.Model):
     date_violation = models.DateField(
         verbose_name='Дата отчета',
-    )
-    file_violation = models.FileField(
-        verbose_name='Файл с инцидентами',
-        upload_to='violation/%Y/%m/%d/'+uuid4().hex,
-        null=True,
     )
     create_date = models.DateTimeField(
         verbose_name='Дата создания отчета',
@@ -34,14 +29,48 @@ class ReportViolation(models.Model):
 ######################################################################################################################
 
 
-class Violator(models.Model):
+class FileViolation(models.Model):
+    file = models.FileField(
+        verbose_name='Файл с инцидентами',
+        upload_to='violation/%Y/%m/%d/' + uuid4().hex,
+        null=True,
+    )
     violation = models.ForeignKey(
         ReportViolation,
-        verbose_name='Дата отчета',
+        verbose_name='Отчет об инцидентах',
         null=True,
         blank=True,
         default=None,
-        related_name='DateViolation',
+        related_name='ReportFile',
+        on_delete=models.CASCADE,
+    )
+    create_date = models.DateTimeField(
+        verbose_name='Дата создания файла',
+        auto_now_add=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.violation, self.file)
+
+    class Meta:
+        ordering = 'create_date',
+        verbose_name = 'Файл с инцидентами'
+        verbose_name_plural = 'Файлы с инцидентами'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Violator(models.Model):
+    violation = models.ForeignKey(
+        ReportViolation,
+        verbose_name='Отчет об инцидентах',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='ReportViolator',
         on_delete=models.CASCADE,
     )
     ip_violator = models.CharField(
@@ -60,8 +89,8 @@ class Violator(models.Model):
 
     def get_list_subnet(self):
         list_violator = []
-        for violator in Violator.objects.filter(violation=self):
-            list_violator.append([violator, SubnetOrg.objects.filter(subnet=violator.subnet)])
+        for violator in Violator.objects.filter(violation=self.violation):
+            list_violator.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet)])
 
     def __str__(self):
         return '{0} - {1}'.format(self.ip_violator, self.violation)

@@ -1,0 +1,52 @@
+{% extends "base.html" %}{% load static %}
+
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
+{% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item active">
+            <a href="{% url 'configure_list' %}" class="nav-link">Список конфигураций</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+        <li class="nav-item active">
+            <a href="{% url url_breadcrumb %}" class="nav-link">{{ title_breadcrumb }}</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+{% endblock %}
+{% block html_body %}
+    <main role="main" class="container-fluid">
+        <div class="card shadow border-dark">
+            <div class="card-header">
+                <h4>{{ title }}:</h4>
+            </div>
+            <form method='post' action='' class="mb-0">
+                {% csrf_token %}
+                <div class="card-body">
+                    {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    {% endfor %}
+                    {% for field in formset %}
+                        <div class="row">
+                            <div class="col-md-12 mb-2">
+                                <h6>{{ field.label }}:</h6>
+                                {{ field }}
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div class="card-footer">
+                    <button class="btn btn-primary" type="submit">Сохранить</button>
+                </div>
+            </form>
+        </div>
+    </main>
+{% endblock %}

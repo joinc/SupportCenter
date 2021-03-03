@@ -95,7 +95,7 @@ class Department(models.Model):
 ######################################################################################################################
 
 
-class AddressOrg(models.Model):
+class OrganizationAddress(models.Model):
     organization = models.ForeignKey(
         Organization,
         verbose_name='Организация',
@@ -124,7 +124,7 @@ class AddressOrg(models.Model):
 ######################################################################################################################
 
 
-class SubnetOrg(models.Model):
+class OrganizationSubnet(models.Model):
     organization = models.ForeignKey(
         Organization,
         verbose_name='Организация',

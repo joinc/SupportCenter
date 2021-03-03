@@ -1,7 +1,7 @@
 from django.db import models
 from Profile.models import UserProfile
-from Signature.choices import STATUS_CHOICES
-from Signature.certificate import Certificate as Cert
+from Main.choices import STATUS_SIGNATURE_CHOICES
+from Signature.certificate import CertificateFile
 
 ######################################################################################################################
 
@@ -65,7 +65,7 @@ class Certificate(models.Model):
     )
     status = models.SmallIntegerField(
         verbose_name='Статус сертификата',
-        choices=STATUS_CHOICES,
+        choices=STATUS_SIGNATURE_CHOICES,
         default=0,
     )
     create_date = models.DateTimeField(
@@ -93,7 +93,7 @@ class Certificate(models.Model):
 
         :return:
         """
-        certificate = Cert(self.file_sign.path)
+        certificate = CertificateFile(self.file_sign.path)
         if not certificate.cert_format:
             return False
         else:

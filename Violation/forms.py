@@ -7,11 +7,21 @@ from Violation.models import ReportViolation
 
 
 class FormViolation(forms.ModelForm):
+    files = forms.FileField(
+        label='Выберите файлы отчета об инцидентах в формате csv',
+        widget=forms.ClearableFileInput(
+            attrs={
+                'class': 'form-control-file',
+                'multiple': True
+            }
+        ),
+        required=True,
+    )
+
     class Meta:
         model = ReportViolation
         fields = [
             'date_violation',
-            'file_violation',
         ]
         widgets = {
             'date_violation': forms.DateInput(
@@ -19,19 +29,10 @@ class FormViolation(forms.ModelForm):
                     'type': 'date',
                 }
             ),
-            'file_violation': forms.FileInput(
-                attrs={
-                    'class': 'form-control-file',
-                }
-            ),
         }
         labels = {
             'date_violation': 'Укажите дату формирования отчета об инцидентах',
-            'file_violation': 'Выберите файлы отчета об инцидентах в формате csv',
         }
 
 
 ######################################################################################################################
-
-
-# class FormViolation()

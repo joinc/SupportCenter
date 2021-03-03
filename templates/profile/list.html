@@ -16,7 +16,7 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.user_edit %}
+                        {% if profile_edit %}
                             <a href="{% url 'profile_create' %}" class="btn btn-outline-primary" title="Добавить нового пользователя"><i class="fas fa-user-plus"></i> Добавить пользователя</a>
                         {% endif %}
                     </div>
@@ -53,8 +53,8 @@
                                 <strong class="text-gray-dark">{{ profile.user.get_full_name }}</strong>
                                 <span class="d-block">@{{ profile.user.get_username }}</span>
                             </td>
-                            <td title="{{ profile.organization }}">
-                                {{ profile.organization|truncatechars:40 }}
+                            <td title="{% if profile.organization %}{{ profile.organization }}{% endif %}">
+                                {% if profile.organization %}{{ profile.organization|truncatechars:40 }}{% endif %}
                             </td>
                             <td>
                                 {% if profile.blocked %}Заблокирован{% endif %}

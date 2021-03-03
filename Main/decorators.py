@@ -1,72 +1,31 @@
 # -*- coding: utf-8 -*-
 
 from django.shortcuts import redirect, reverse
-from Main.tools import get_current_user
-
-
-######################################################################################################################
-
-
-def access_user_list(function):
-    def _inner(request, *args, **kwargs):
-        profile = get_current_user(user=request.user)
-        if not profile.access.user_list:
-            return redirect(reverse('index'))
-        else:
-            return function(request, *args, **kwargs)
-    return _inner
-
+from django.contrib import messages
+from django.contrib.auth.models import auth
+from Profile.models import Access, UserProfile
 
 ######################################################################################################################
 
 
-def access_user_edit(function):
-    def _inner(request, *args, **kwargs):
-        profile = get_current_user(user=request.user)
-        if not profile.access.user_edit:
-            return redirect(reverse('index'))
-        else:
-            return function(request, *args, **kwargs)
-    return _inner
-
-
-######################################################################################################################
-
-
-def access_esign_list(function):
-    def _inner(request, *args, **kwargs):
-        profile = get_current_user(user=request.user)
-        if not profile.access.signature_list:
-            return redirect(reverse('index'))
-        else:
-            return function(request, *args, **kwargs)
-    return _inner
-
-
-######################################################################################################################
-
-
-def access_esign_edit(function):
-    def _inner(request, *args, **kwargs):
-        profile = get_current_user(user=request.user)
-        if not profile.access.signature_edit:
-            return redirect(reverse('index'))
-        else:
-            return function(request, *args, **kwargs)
-    return _inner
-
-
-######################################################################################################################
-
-
-def access_organization_edit(function):
-    def _inner(request, *args, **kwargs):
-        profile = get_current_user(user=request.user)
-        if not profile.access.organization_edit:
-            return redirect(reverse('index'))
-        else:
-            return function(request, *args, **kwargs)
-    return _inner
+def permission_required(list_permission):
+    def check_permission(function):
+        def wrapper(request, *args, **kwargs):
+            if request.user.is_authenticated:
+                if UserProfile.objects.filter(user=request.user, blocked=True).exists():
+                    auth.logout(request)
+                    messages.info(request, 'Выша учетная запись заблокирована, обратитесь к администратору.')
+                    return redirect(reverse('login'))
+                for permission in list_permission:
+                    if Access.objects.filter(
+                            permission__name=permission,
+                            preset__PresetAccess_UserProfile__user=request.user,
+                    ).exists():
+                        return function(request, *args, **kwargs)
+                return redirect(reverse('index'))
+            return redirect(reverse('login'))
+        return wrapper
+    return check_permission
 
 
 ######################################################################################################################

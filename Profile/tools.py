@@ -40,66 +40,83 @@ def get_list_profile(username='', organization=0):
             # Когда идет поиск по имени пользователя и выбрана организация
             total_profile = UserProfile.objects.filter(
                 user__username__contains=username,
+                user__is_superuser=False,
                 organization=organization,
             ).count()
+            # Сначала идет поиск по логину, затем к нему добавляется поиск по фамилии, если найдено менее 20 совпадений
             if total_profile < 20:
                 list_profile = list(
                     UserProfile.objects.filter(
                         user__username__contains=username,
+                        user__is_superuser=False,
                         organization=organization,
                     )[:total_profile]
                 )
                 list_profile.extend(
                     UserProfile.objects.filter(
                         user__last_name__contains=username,
+                        user__is_superuser=False,
                         organization=organization,
                     )[:20 - total_profile]
                 )
             else:
                 list_profile = UserProfile.objects.filter(
                     user__username__contains=username,
+                    user__is_superuser=False,
                 )[:20]
             total_profile = total_profile + UserProfile.objects.filter(
                 user__last_name__contains=username,
+                user__is_superuser=False,
                 organization=organization,
             ).count()
-
         else:
             # Когда идет поиск только по имени пользователя
             total_profile = UserProfile.objects.filter(
                 user__username__contains=username,
+                user__is_superuser=False,
             ).count()
+            # Сначала идет поиск по логину, затем к нему добавляется поиск по фамилии, если найдено менее 20 совпадений
             if total_profile < 20:
                 list_profile = list(
                     UserProfile.objects.filter(
                         user__username__contains=username,
+                        user__is_superuser=False,
                     )[:20]
                 )
                 list_profile.extend(
                     UserProfile.objects.filter(
                         user__last_name__contains=username,
+                        user__is_superuser=False,
                     )[:20 - total_profile]
                 )
             else:
                 list_profile = UserProfile.objects.filter(
                     user__username__contains=username,
+                    user__is_superuser=False,
                 )[:20]
             total_profile = total_profile + UserProfile.objects.filter(
                 user__last_name__contains=username,
+                user__is_superuser=False,
             ).count()
     else:
         if organization:
             # Когда идет поиск только по организации
             total_profile = UserProfile.objects.filter(
+                user__is_superuser=False,
                 organization=organization,
             ).count()
             list_profile = UserProfile.objects.filter(
+                user__is_superuser=False,
                 organization=organization,
             )[:20]
         else:
             # Когда идет поиск с пустым запросом (без имени и организации)
-            total_profile = UserProfile.objects.all().count()
-            list_profile = UserProfile.objects.all()[:20]
+            total_profile = UserProfile.objects.filter(
+                user__is_superuser=False,
+            ).count()
+            list_profile = UserProfile.objects.filter(
+                user__is_superuser=False,
+            )[:20]
     return [total_profile, list_profile]
 
 

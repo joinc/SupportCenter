@@ -14,7 +14,7 @@
 {% block html_body %}
     <main role="main" class="container-fluid">
         <div class="shadow card border-dark mb-3">
-            <form method='post' class="mb-0" action='{% url 'violation_create' %}' enctype='multipart/form-data'>
+            <form method='post' class="mb-0" action='{% url 'violation_load' %}' enctype='multipart/form-data'>
                 {% csrf_token %}
                 <div class="card-header">
                     <h4>{{ title }}:</h4>

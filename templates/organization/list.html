@@ -12,7 +12,7 @@
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.organization_edit %}
+                        {% if organization_edit %}
                             <a href="{% url 'organization_create' %}" class="btn btn-outline-primary" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</a>
                         {% endif %}
                     </div>

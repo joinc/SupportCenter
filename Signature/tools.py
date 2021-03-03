@@ -2,23 +2,24 @@
 
 from django.shortcuts import get_object_or_404
 from datetime import datetime, timedelta
-from Main.tools import get_current_user
 from Signature.models import Certificate
-from Signature.choices import STATUS_CHOICES
+from Main.tools import get_profile
+from Main.choices import STATUS_SIGNATURE_CHOICES
 
 ######################################################################################################################
 
 
-def get_signature(request: object, signature_id: object) -> Certificate or None:
+def get_signature(request, signature_id) -> Certificate or None:
     """
     Получение элемента Сертификат, с проверкой прав на чтение данного элемента
     :param request:
     :param signature_id:
     :return:
     """
-    current_user = get_current_user(user=request.user)
+    current_user = get_profile(user=request.user)
     signature = get_object_or_404(Certificate, id=signature_id)
-    if current_user.access.signature_edit and signature.owner.organization == current_user.organization:
+    if current_user.access(list_permission=['signature_edit', ]) \
+            and signature.owner.organization == current_user.organization:
         return signature
     else:
         return None
@@ -35,7 +36,7 @@ def get_list_signature(current_user, status=0, all_organization=False) -> list:
     :param all_organization:
     :return:
     """
-    if all_organization and current_user.access.signature_moderator:
+    if all_organization and current_user.access(list_permission=['signature_moderator', ]):
         list_signature = Certificate.objects.filter(
             status=status,
         )
@@ -57,8 +58,8 @@ def get_count_signature(current_user) -> list:
     :return:
     """
     list_count_signature = []
-    for status in STATUS_CHOICES:
-        if current_user.access.signature_moderator:
+    for status in STATUS_SIGNATURE_CHOICES:
+        if current_user.access(list_permission=['signature_moderator', ]):
             count = Certificate.objects.filter(
                 status=status[0],
             ).count()
@@ -80,7 +81,7 @@ def get_count_expires_signature(current_user) -> int:
     :param current_user:
     :return:
     """
-    if current_user.access.signature_moderator:
+    if current_user.access(list_permission=['signature_moderator', ]):
         count_expires_signature = Certificate.objects.filter(
             status=0,
             valid_for__lte=datetime.now().date() + timedelta(days=30),

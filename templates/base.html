@@ -19,37 +19,18 @@
                 <div class="btn-group mr-2" role="group">
                     <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
-                        {% if current_user.access.user_list %}
+                        {% if current_user %}
+                            <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
                             <div class="dropdown-divider"></div>
-                            <a href="{% url 'profile_list' %}" class="dropdown-item">
-                                <div class="row">
-                                    <div class="col-auto mr-auto">Пользователи</div>
-                                    <div class="col-auto mt-1 text-right"><i class="fas fa-user-friends"></i></div>
-                                </div>
-                            </a>
+                            {% for item in current_user.get_menu %}
+                                <a href="{% url item.1 %}" class="dropdown-item">
+                                    <div class="row">
+                                        <div class="col-auto mr-auto">{{ item.2 }}</div>
+                                        <div class="col-auto mt-1 text-right"><i class="{{ item.3 }}"></i></div>
+                                    </div>
+                                </a>
+                            {% endfor %}
                         {% endif %}
-                        <a href="{% url 'organization_list' %}" class="dropdown-item">
-                            <div class="row">
-                                <div class="col-auto mr-auto">Организации</div>
-                                <div class="col-auto mt-1 text-right"><i class="fas fa-sitemap"></i></div>
-                            </div>
-                        </a>
-                        <div class="dropdown-divider"></div>
-                        {% if current_user.access.signature_list or current_user.access.signature_moderator %}
-                            <a href="{% url 'signature_list' %}" class="dropdown-item">
-                                <div class="row">
-                                    <div class="col-auto mr-auto">Подписи</div>
-                                    <div class="col-auto mt-1 text-right"><i class="fas fa-file-contract"></i></div>
-                                </div>
-                            </a>
-                        {% endif %}
-                        <a href="{% url 'violation_list' %}" class="dropdown-item">
-                            <div class="row">
-                                <div class="col-auto mr-auto">Инциденты</div>
-                                <div class="col-auto mt-1 text-right"><i class="fab fa-galactic-republic"></i></div>
-                            </div>
-                        </a>
                         <div class="dropdown-divider"></div>
                         <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
                     </div>

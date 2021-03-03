@@ -3,28 +3,51 @@
 {% block html_head %}
     <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
 {% endblock %}
+{% block html_top_breadcrumb %}
+        <li class="nav-item active">
+            <a href="{% url 'configure_list' %}" class="nav-link">Список конфигураций</a>
+        </li>
+        <li class="nav-item">
+            <span class="navbar-text">/</span>
+        </li>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
-        <div class="card-columns">
-            {% for title_module, configure_module in list_configure.items %}
-                <div class="card shadow border-dark">
-                    <div class="card-header">
-                        <h4>{{ title_module }}:</h4>
+        <div class="card shadow border-dark">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-auto mr-auto">
+                        <h4>{{ title }}:</h4>
                     </div>
-                    <div class="card-body">
-                        {% for title_configure, link_configure in configure_module.items %}
-                            <div class="row mb-2 border-bottom">
-                                <div class="col-auto mr-auto mb-3">
-                                    {{ title_configure }}
-                                </div>
-                                <div class="col-auto mr-0 text-right">
-                                    <a href="{{ link_configure }}" class="btn btn-sm btn-outline-primary" title="Перейти в {{ title_configure }}">Перейти</a>
-                                </div>
-                            </div>
-                        {% endfor %}
+                    <div class="col-auto mr-0 text-right">
+                        <a href="{% url url_create %}" class="btn btn-outline-primary" title="{{ title_create }}"><i class="fas fa-plus-square"></i> Добавить</a>
                     </div>
                 </div>
-            {% endfor %}
+            </div>
+            <div class="card-body">
+                {% for message in messages %}
+                    <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
+                        {{ message }}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endfor %}
+                <table class="table table-hover table-sm table-borderless">
+                    <tbody>
+                    {% for item in list %}
+                        <tr>
+                            <td>
+                                <strong>{{ item }}</strong>
+                            </td>
+                            <td class="text-right ">
+                                <a href="{% url url_edit item.id %}" class="btn btn-outline-secondary btn-sm" title="{{ title_edit }}"><i class="fas fa-edit"></i> Редактировать</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
         </div>
     </main>
 {% endblock %}
