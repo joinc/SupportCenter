@@ -2,8 +2,6 @@
 
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
-from datetime import datetime
 from ipaddress import IPv4Address, IPv4Network
 from Violation.models import Incident, Violator, ReportViolation, FileViolation
 from Violation.forms import FormViolation
@@ -28,7 +26,7 @@ def violation_list(request):
         'current_user': current_user,
         'title': 'Список отчетов об инцидентах',
         'list_violation': ReportViolation.objects.all(),
-        'violation_moderator': current_user.access(list_permission=['violation_moderator', ])
+        'violation_moderator': current_user.access(list_permission=['violation_moderator', ]),
     }
     return render(request=request, template_name='violation/list.html', context=context)
 
@@ -43,15 +41,12 @@ def violation_create(report_violation):
     """
     list_file_violation = FileViolation.objects.filter(violation=report_violation)
     if list_file_violation:
-        start_time = datetime.now()
         for file_violation in list_file_violation:
             with open(file_violation.file.path) as csv_file:
-                count = 0
                 reader = csv.reader(csv_file, delimiter=';')
                 for index, row in enumerate(list(reader)):
                     if index > 0:
                         if not Incident.objects.filter(id_ids=row[0]).exists():
-                            count = index + 1
                             violator, create = Violator.objects.get_or_create(
                                 violation=report_violation,
                                 ip_violator=row[5],
@@ -80,8 +75,6 @@ def violation_create(report_violation):
                                 message_incident=row[14],
                                 priority=row[15],
                             ).save()
-        delta_time = datetime.now() - start_time
-        print('Потрачено времени {0} для внесения {1} инцидентов.'.format(delta_time, count))
         return True
     return False
 
@@ -123,7 +116,7 @@ def violation_load(request):
 ######################################################################################################################
 
 
-@login_required
+@permission_required(['violation_list', 'violation_edit', 'violation_moderator', ])
 def violation_show(request, violation_id):
     """
     Список нарушителей в отчете об инцидентах
@@ -131,14 +124,27 @@ def violation_show(request, violation_id):
     :param violation_id:
     :return:
     """
+    current_user = get_profile(user=request.user)
     violation = get_object_or_404(ReportViolation, id=violation_id)
-    list_violator = []
-    for violator in Violator.objects.filter(violation=violation):
-        list_violator.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet)])
+    is_moderator = current_user.access(list_permission=['violation_moderator', ])
+    if is_moderator:
+        list_violator = Violator.objects.filter(
+            violation=violation
+        )
+    else:
+        list_violator = Violator.objects.filter(
+            violation=violation,
+            subnet__SubnetOrganization__organization=current_user.organization,
+        )
+    list_violation = []
+    for violator in list_violator:
+        list_violation.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet), ])
     context = {
-        'current_user': get_profile(user=request.user),
+        'current_user': current_user,
         'title': 'Отчет об инцидентах за ' + violation.date_violation.strftime('%d.%m.%Y'),
-        'list_violator': list_violator,
+        'list_violation': list_violation,
+        'violation_moderator': current_user.access(list_permission=['violation_moderator', ]),
+        'violation_edit': current_user.access(list_permission=['violation_edit', ]),
     }
     return render(request=request, template_name='violation/show.html', context=context)
 
@@ -146,7 +152,7 @@ def violation_show(request, violation_id):
 ######################################################################################################################
 
 
-@login_required
+@permission_required(['violation_list', 'violation_edit', 'violation_moderator', ])
 def violator_show(request, violator_id):
     """
     Список нарушителей в отчете об инцидентах
@@ -154,9 +160,20 @@ def violator_show(request, violator_id):
     :param violator_id:
     :return:
     """
+    current_user = get_profile(user=request.user)
+    is_moderator = current_user.access(list_permission=['violation_moderator', ])
+    is_editor = current_user.access(list_permission=['violation_edit', ])
     violator = get_object_or_404(Violator, id=violator_id)
+    if OrganizationSubnet.objects.filter(subnet=violator.subnet, organization=current_user.organization).exists() or is_moderator:
+        if request.POST:
+            ...
+        else:
+            ...
+
+    else:
+        return redirect(reverse('violation_list'))
     context = {
-        'current_user': get_profile(user=request.user),
+        'current_user': current_user,
         'title': 'Отчет об инцидентах узла ' + violator.ip_violator,
         'violator': violator,
         'list_incident': Incident.objects.filter(violator=violator),
