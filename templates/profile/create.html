@@ -1,22 +1,14 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
     <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
     <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
     <script src='{% static "js/select2.min.js" %}'></script>
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
-{% block html_top_breadcrumb %}
-        <li class="nav-item active">
-            <a href="{% url 'profile_list' %}" class="nav-link">Список пользователей</a>
-        </li>
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
                 <h4>Добавление нового пользователя:</h4>
@@ -24,14 +16,6 @@
             <form method='post' action='' class="mb-0">
                 {% csrf_token %}
                 <div class="card-body">
-                    {% for message in messages %}
-                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show" role="alert">
-                            {{ message }}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    {% endfor %}
                     <div class="row">
                         <div class="col-md-6 mb-2">
                             <h6>{{ form_create_user.first_name.label }}:</h6>

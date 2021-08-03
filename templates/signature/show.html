@@ -1,18 +1,8 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-{% endblock %}
-{% block html_top_breadcrumb %}
-        <li class="nav-item active">
-            <a href="{% url 'signature_list' %}" class="nav-link">Список электронных подписей</a>
-        </li>
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="shadow card {% if signature.is_terminate %}border-danger{% elif signature.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
             <div class="card-header {% if signature.is_terminate %}text-danger{% elif signature.is_extended %}text-warning{% endif %}">
                 <div class="row">

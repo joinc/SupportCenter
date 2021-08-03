@@ -1,24 +1,8 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-{% endblock %}
-{% block html_top_breadcrumb %}
-        <li class="nav-item active">
-            <a href="{% url 'violation_list' %}" class="nav-link">Список отчетов об инцидентах</a>
-        </li>
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
-        <li class="nav-item active">
-            <a href="{% url 'violation_show' violator.violation.id %}" class="nav-link">Отчет об инцидентах за {{ violator.violation.date_violation|date:'d.m.Y' }}</a>
-        </li>
-        <li class="nav-item">
-            <span class="navbar-text">/</span>
-        </li>
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
                 <h4>{{ title }}:</h4>

@@ -7,6 +7,9 @@ from Organization.models import OrganizationSubnet
 
 
 class ReportViolation(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     date_violation = models.DateField(
         verbose_name='Дата отчета',
     )
@@ -30,6 +33,9 @@ class ReportViolation(models.Model):
 
 
 class FileViolation(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     file = models.FileField(
         verbose_name='Файл с инцидентами',
         upload_to='violation/%Y/%m/%d/' + uuid4().hex,
@@ -64,14 +70,8 @@ class FileViolation(models.Model):
 
 
 class Violator(models.Model):
-    violation = models.ForeignKey(
-        ReportViolation,
-        verbose_name='Отчет об инцидентах',
-        null=True,
-        blank=True,
-        default=None,
-        related_name='ReportViolator',
-        on_delete=models.CASCADE,
+    id = models.AutoField(
+        primary_key=True,
     )
     ip_violator = models.CharField(
         verbose_name='IP-адрес нарушителя',
@@ -93,10 +93,10 @@ class Violator(models.Model):
             list_violator.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet)])
 
     def __str__(self):
-        return '{0} - {1}'.format(self.ip_violator, self.violation)
+        return '{0}'.format(self.ip_violator)
 
     class Meta:
-        ordering = 'violation', 'ip_violator',
+        ordering = 'ip_violator',
         verbose_name = 'Нарушитель'
         verbose_name_plural = 'Нарушители'
         managed = True
@@ -106,6 +106,9 @@ class Violator(models.Model):
 
 
 class Incident(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     violator = models.ForeignKey(
         Violator,
         verbose_name='IP-адрес нарушителя',
@@ -115,94 +118,55 @@ class Incident(models.Model):
         related_name='IncidentViolator',
         on_delete=models.CASCADE,
     )
-    id_ids = models.CharField(
-        verbose_name='id_ids',
-        max_length=24,
-        default='',
-    )
-    time_stamp = models.CharField(
-        verbose_name='Timestamp',
-        max_length=64,
-        default='',
-    )
-    code_incident = models.CharField(
-        verbose_name='Code',
-        max_length=64,
-        default='',
-    )
-    aggregated = models.CharField(
-        verbose_name='Aggregated',
-        max_length=8,
-        default='',
-    )
-    aggregation_period = models.CharField(
-        verbose_name='Aggregation period',
-        max_length=8,
-        default='',
-    )
-    source_ip = models.CharField(
-        verbose_name='Src IP',
-        max_length=24,
-        default='',
-    )
-    source_port = models.CharField(
-        verbose_name='Src port',
-        max_length=8,
-        default='',
-    )
-    source_MAC = models.CharField(
-        verbose_name='Src MAC',
-        max_length=24,
-        default='',
-    )
-    destination_ip = models.CharField(
-        verbose_name='Dst IP',
-        max_length=24,
-        default='',
-    )
-    destination_port = models.CharField(
-        verbose_name='Dst port',
-        max_length=8,
-        default='',
-    )
-    destination_MAC = models.CharField(
-        verbose_name='Dst MAC',
-        max_length=24,
-        default='',
-    )
-    protocol = models.CharField(
-        verbose_name='Protocol',
-        max_length=8,
-        default='',
-    )
-    protocol_name = models.CharField(
-        verbose_name='Protocol name',
-        max_length=8,
-        default='',
-    )
-    class_incident = models.CharField(
-        verbose_name='Class',
-        max_length=24,
-        default='',
-    )
-    message_incident = models.CharField(
-        verbose_name='Msg',
-        max_length=124,
-        default='',
-    )
-    priority = models.CharField(
-        verbose_name='Priority',
-        max_length=24,
+    incident = models.CharField(
+        verbose_name='Инцидент',
+        max_length=512,
         default='',
     )
 
     def __str__(self):
-        return '{0} - {1}'.format(self.id_ids, self.time_stamp)
+        return '{0}'.format(self.incident)
 
     class Meta:
-        ordering = 'id_ids', 'time_stamp',
+        ordering = 'violator',
         verbose_name = 'Инциент'
         verbose_name_plural = 'Инциденты'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Violation(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
+    violator = models.ForeignKey(
+        Violator,
+        verbose_name='Нарушитель',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='Violator',
+        on_delete=models.CASCADE,
+    )
+    report = models.ForeignKey(
+        ReportViolation,
+        verbose_name='Отчет об инцидентах',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='ReportViolation',
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.report, self.violator)
+
+    class Meta:
+        ordering = 'report', 'id',
+        verbose_name = 'Нарушение'
+        verbose_name_plural = 'Нарушения'
         managed = True
 
 

@@ -3,31 +3,31 @@
 {% block html_body %}
     <main role="main" class="container-fluid">
         {% include "messages.html" %}
-        <div class="card shadow border-dark">
+        <div class="shadow card border-dark mb-3">
             <div class="card-header">
                 <div class="row">
                     <div class="col-auto mr-auto">
                         <h4>{{ title }}:</h4>
                     </div>
                     <div class="col-auto mr-0 text-right">
-                        <a href="{% url url_create %}" class="btn btn-outline-primary" title="{{ title_create }}"><i class="fas fa-plus-square"></i> Добавить</a>
+                        {% if access_edit %}
+                            <a href="{% url 'contract_create' %}" class="btn btn-outline-primary" title="Добавить новый контракт"><i class="fas fa-plus-square"></i> Добавить контракт</a>
+                        {% endif %}
                     </div>
                 </div>
             </div>
             <div class="card-body">
-                <table class="table table-hover table-sm table-borderless">
-                    <tbody>
-                    {% for item in list %}
+                <table class="table table-hover">
+                    {% for contract in list_contract %}
                         <tr>
                             <td>
-                                <strong class="h5">{{ item }}</strong>
+                                <strong class="h5">{{ contract.title }}</strong>
                             </td>
                             <td class="text-right ">
-                                <a href="{% url url_edit item.id %}" class="btn btn-outline-info" title="{{ title_edit }}">Редактировать</a>
+                                <a href="{% url 'contract_show' contract.id %}" class="btn btn-outline-info" title="Просмотр контракта">Просмотр контракта</a>
                             </td>
                         </tr>
                     {% endfor %}
-                    </tbody>
                 </table>
             </div>
         </div>

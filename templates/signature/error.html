@@ -1,11 +1,8 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_title %}Главная{% endblock %}
-{% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="row">
             <div class="col-auto mr-auto">
                 <nav aria-label="breadcrumb">

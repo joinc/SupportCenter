@@ -1,10 +1,8 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="card-columns">
             {% for title_module, configure_module in list_configure.items %}
                 <div class="card shadow border-dark">

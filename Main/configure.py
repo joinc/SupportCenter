@@ -48,6 +48,7 @@ def preset_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список шаблонов разрешений',
+        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
         'list': PresetAccess.objects.filter(is_sample=True, ),
         'url_create': 'preset_create',
         'title_create': 'Добавить новый шаблон',
@@ -70,6 +71,7 @@ def address_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список адресов',
+        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
         'list': Address.objects.all(),
         'url_create': 'address_create',
         'title_create': 'Добавить новый адрес',
@@ -92,6 +94,7 @@ def subnet_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список подсетей',
+        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
         'list': Subnet.objects.all(),
         'url_create': 'subnet_create',
         'title_create': 'Добавить новую подсеть',
@@ -156,8 +159,7 @@ def address_create(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Создание адреса',
-        'url_breadcrumb': 'address_list',
-        'title_breadcrumb': 'Список адресов',
+        'list_breadcrumb': (('address_list', 'Список адресов'),),
         'formset': formset,
     }
     return render(request=request, template_name='configure/create.html', context=context)

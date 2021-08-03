@@ -29,6 +29,7 @@ CATEGORY_PERMISSION = (
     (2, 'Организации'),
     (3, 'Электронные подписи'),
     (4, 'Инциденты'),
+    (5, 'Контракты'),
 )
 
 
@@ -68,6 +69,12 @@ FULL_MENU = (
         'violation_list',
         'Инциденты',
         'fab fa-galactic-republic',
+    ),
+    (
+        ('contract_list', 'contract_edit', 'contract_moderator',),
+        'contract_list',
+        'Контракты',
+        'fas fa-file-signature',
     ),
 )
 

@@ -33,6 +33,7 @@ def violation_list(request):
 
 ######################################################################################################################
 
+
 def violation_create(report_violation):
     """
     Загрузка отчета об инцидентах
@@ -82,6 +83,46 @@ def violation_create(report_violation):
 ######################################################################################################################
 
 
+def violation_create_new(report_violation):
+    """
+    Загрузка отчета об инцидентах
+    :param report_violation:
+    :return:
+    """
+    list_file_violation = FileViolation.objects.filter(violation=report_violation)
+    if list_file_violation:
+        for file_violation in list_file_violation:
+            with open(file_violation.file.path) as csv_file:
+                reader = csv.reader(csv_file, delimiter=';')
+                for index, row in enumerate(list(reader)):
+                    if index > 0:
+                        ...
+                        # Incident_new(
+                        #     violator=violator,
+                        #     line=row,
+                        # ).save()
+                        #
+                        # if not Incident.objects.filter(id_ids=row[0]).exists():
+                        #     violator, create = Violator.objects.get_or_create(
+                        #         violation=report_violation,
+                        #         ip_violator=row[5],
+                        #     )
+                        #     if create:
+                        #         for subnet in Subnet.objects.all():
+                        #             if IPv4Address(violator.ip_violator) in IPv4Network(subnet.subnet):
+                        #                 violator.subnet = subnet
+                        #                 violator.save(update_fields=['subnet'])
+                        #     Incident_new(
+                        #         violator=violator,
+                        #         line=row,
+                        #     ).save()
+        return True
+    return False
+
+
+######################################################################################################################
+
+
 @permission_required(['violation_moderator', ])
 def violation_load(request):
     """
@@ -98,7 +139,8 @@ def violation_load(request):
                 file_violation = FileViolation(violation=report_violation, )
                 file_violation.file.save(file.name, file)
                 file_violation.save()
-            if violation_create(report_violation=report_violation):
+            # if violation_create(report_violation=report_violation):
+            if violation_create_new(report_violation=report_violation):
                 messages.success(request, 'Отчет {0} успешно загружен.'.format(report_violation))
                 return redirect(reverse('violation_list'))
             else:
@@ -127,18 +169,18 @@ def violation_show(request, violation_id):
     current_user = get_profile(user=request.user)
     violation = get_object_or_404(ReportViolation, id=violation_id)
     is_moderator = current_user.access(list_permission=['violation_moderator', ])
-    if is_moderator:
-        list_violator = Violator.objects.filter(
-            violation=violation
-        )
-    else:
-        list_violator = Violator.objects.filter(
-            violation=violation,
-            subnet__SubnetOrganization__organization=current_user.organization,
-        )
+    # if is_moderator:
+    #     list_violator = Violator.objects.filter(
+    #         violation=violation,
+    #     )
+    # else:
+    #     list_violator = Violator.objects.filter(
+    #         violation=violation,
+    #         subnet__SubnetOrganization__organization=current_user.organization,
+    #     )
     list_violation = []
-    for violator in list_violator:
-        list_violation.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet), ])
+    # for violator in list_violator:
+    #     list_violation.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet), ])
     context = {
         'current_user': current_user,
         'title': 'Отчет об инцидентах за ' + violation.date_violation.strftime('%d.%m.%Y'),

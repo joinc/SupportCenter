@@ -3,6 +3,8 @@ __pycache__/
 venv/
 upload/
 static/
+Contract/migrations/
+Contract/__init__.py
 Equipment/migrations/
 Equipment/__init__.py
 Signature/migrations/

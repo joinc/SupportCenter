@@ -8,6 +8,9 @@ from Main.choices import FULL_MENU, CATEGORY_PERMISSION
 
 
 class PresetAccess(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(
         verbose_name='Название шаблона разрешений',
         max_length=64,
@@ -32,6 +35,9 @@ class PresetAccess(models.Model):
 
 
 class Permission(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     category = models.SmallIntegerField(
         verbose_name='Категория разрешения',
         choices=CATEGORY_PERMISSION,
@@ -64,9 +70,14 @@ class Permission(models.Model):
 
 
 class UserProfile(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
+    # OneToOne
+    # primary_key = True,
     )
     organization = models.ForeignKey(
         Organization,
@@ -161,6 +172,9 @@ class UserProfile(models.Model):
 
 
 class Access(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     permission = models.ForeignKey(
         Permission,
         verbose_name='Разрешение',

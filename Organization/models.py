@@ -5,6 +5,9 @@ from Workplace.models import Address, Subnet
 
 
 class Organization(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     short_title = models.CharField(
         verbose_name='Краткое название',
         max_length=124,
@@ -44,6 +47,9 @@ class Organization(models.Model):
 
 
 class Department(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(
         verbose_name='Отдел',
         max_length=124,
@@ -96,6 +102,9 @@ class Department(models.Model):
 
 
 class OrganizationAddress(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     organization = models.ForeignKey(
         Organization,
         verbose_name='Организация',
@@ -125,6 +134,9 @@ class OrganizationAddress(models.Model):
 
 
 class OrganizationSubnet(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     organization = models.ForeignKey(
         Organization,
         verbose_name='Организация',

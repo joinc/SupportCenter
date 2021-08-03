@@ -7,6 +7,9 @@ from Signature.certificate import CertificateFile
 
 
 class Certificate(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     issuer = models.CharField(
         verbose_name='Издатель',
         max_length=124,

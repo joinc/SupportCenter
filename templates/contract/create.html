@@ -1,16 +1,22 @@
 {% extends "base.html" %}{% load static %}
 
+{% block html_head %}
+    <link rel='stylesheet' href='{% static "css/select2.min.css" %}' type='text/css' />
+    <link rel='stylesheet' href='{% static "css/select2-bootstrap4.min.css" %}' type='text/css' />
+    <script src='{% static "js/select2.min.js" %}'></script>
+    <script src='{% static "js/locales/select2.ru.js" %}'></script>
+{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
         {% include "messages.html" %}
-        <div class="card shadow border-dark">
+        <div class="shadow card border-dark mb-3">
             <div class="card-header">
-                <h4>{{ title }}:</h4>
+                <h4>{{ form_contract.name }}:</h4>
             </div>
             <form method='post' action='' class="mb-0">
                 {% csrf_token %}
                 <div class="card-body">
-                    {% for field in formset %}
+                    {% for field in form_contract %}
                         <div class="row">
                             <div class="col-md-12 mb-2">
                                 <h6>{{ field.label }}:</h6>
@@ -25,4 +31,14 @@
             </form>
         </div>
     </main>
+    <script>
+        $(document).ready(function() {
+            $('select[name=parent_organization]').select2({
+                allowClear: true,
+                placeholder: "Выберите вышестоящую организацию",
+                theme: "bootstrap4",
+                language: "ru"
+            });
+        });
+    </script>
 {% endblock %}

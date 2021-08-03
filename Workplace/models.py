@@ -4,6 +4,9 @@ from django.db import models
 
 
 class Address(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     index = models.CharField(
         verbose_name='Индекс',
         max_length=24,
@@ -69,6 +72,9 @@ class TypeEquipment(models.Model):
 
 
 class Placement(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     address = models.ForeignKey(
         Address,
         verbose_name='Адрес расположения',
@@ -103,6 +109,9 @@ class Placement(models.Model):
 
 
 class Workplace(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(
         verbose_name='Название',
         max_length=124,
@@ -137,6 +146,9 @@ class Workplace(models.Model):
 
 
 class Equipment(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(
         verbose_name='Название',
         max_length=124,
@@ -185,6 +197,9 @@ class Equipment(models.Model):
 
 
 class Subnet(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     subnet = models.CharField(
         verbose_name='Подсеть',
         max_length=24,

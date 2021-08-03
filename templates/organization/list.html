@@ -1,10 +1,8 @@
 {% extends "base.html" %}{% load static %}
 
-{% block html_head %}
-    <link rel='stylesheet' href='{% static "css/main.css" %}' type='text/css' />
-{% endblock %}
 {% block html_body %}
     <main role="main" class="container-fluid">
+        {% include "messages.html" %}
         <div class="shadow card border-dark mb-3">
             <div class="card-header">
                 <div class="row">
