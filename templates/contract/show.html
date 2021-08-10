@@ -1,102 +1,64 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <h4>{{ title }}:</h4>
-                    </div>
-                    <div class="col-auto mr-0 text-right">
-                        {% if organization_edit %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalOrgDelete" title="Удалить организацию"><i class="fas fa-minus-square"></i> Удалить</button>
-                        {% endif %}
-                    </div>
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <h5>{{ organization.short_title }}</h5>
-                        <small class="form-text text-muted border-top">Краткое наименование</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-12 mb-3">
-                        <h5>{{ organization.long_title }}</h5>
-                        <small class="form-text text-muted border-top">Полное наименование</small>
-                    </div>
-                </div>
-                {% if organization.parent_organization %}
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <h5>{{ organization.parent_organization }}</h5>
-                            <small class="form-text text-muted border-top">Вышестоящая организация</small>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if list_address %}
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <h5>
-                            {% for address in list_address %}
-                                <p class="mb-1">{{ address.address }}</p>
-                            {% endfor %}
-                            </h5>
-                            <small class="form-text text-muted border-top">Адрес{% if list_address.count > 1 %}а{% endif %} организации</small>
-                        </div>
-                    </div>
-                {% endif %}
-                {% if list_subnet %}
-                    <div class="row">
-                        <div class="col-md-12 mb-3">
-                            <h5>
-                            {% for subnet in list_subnet %}
-                                <p class="mb-1">{{ subnet.subnet }}</p>
-                            {% endfor %}
-                            </h5>
-                            <small class="form-text text-muted border-top">Подсет{% if list_address.count > 1 %}и{% else %}ь{% endif %} организации</small>
-                        </div>
-                    </div>
-                {% endif %}
-            </div>
-            <div class="card-footer">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <a href="{% url 'profile_list_org' organization.id %}" class="btn btn-outline-primary" title="Перейти к списку пользователей организации"><i class="fas fa-user-friends"></i> Список пользователей</a>
-                    </div>
-                    {% if organization_edit %}
-                        <div class="col-auto mr-0 text-right">
-                            <a href="{% url 'organization_edit' organization.id %}" type="button" class="btn btn-outline-info" title="Редактировать организацию"><i class="fas fa-pen-square"></i> Редактировать</a>
-                        </div>
-                    {% endif %}
-                </div>
-            </div>
-
-        </div>
-    </main>
-    {% if organization_edit %}
-        <!-- Окно запроса подтверждения на удаление -->
-        <div class="modal fade" id="ModalOrgDelete" tabindex="-1" role="dialog" aria-labelledby="ModalOrgDeleteTitle" aria-hidden="true">
-            <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
-                <div class="modal-content">
-                    <form method='post' action='{% url 'organization_delete' organization.id %}' >
-                        {% csrf_token %}
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="ModalOrgDeleteTitle">Удалить организацию</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
-                        </div>
-                        <div class="modal-body">Вы действительно хотите удалить организацию <strong>{{ organization }}</strong>?</div>
-                        <div class="modal-footer">
-                            <button class="btn btn-danger" type="submit">Удалить</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не удалять</button>
-                        </div>
-                    </form>
-                </div>
+                <div class="col-auto mr-0 text-right"></div>
             </div>
         </div>
-        <!-- /Окно запроса подтверждения на удаление -->
-    {% endif %}
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <h5>{{ contract.title }}</h5>
+                    <small class="form-text text-muted border-top">Наименование контракта</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <h5>{{ contract.amount }}</h5>
+                    <small class="form-text text-muted border-top">Планируемая сумма контракта</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 mb-3">
+                    <h5>{{ contract.comment }}</h5>
+                    <small class="form-text text-muted border-top">Описание контракта</small>
+                </div>
+            </div>
+            {% for stage, list_attach in list_stage %}
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h5>{{ stage.status }}</h5>
+                        <h6>{{ stage.comment_stage }}</h6>
+                        <h6>Приложения:</h6>
+                        <ul>
+                            {% for attache in list_attach %}
+                                <li>
+                                    <form method="post" action='{% url 'attache_download' attache.id %}' class="mb-0">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-link p-0" title='Скачать файл "{{ attache.name }}"'>
+                                            {{ attache.name | truncatechars:80 }}
+                                        </button>
+                                        ({{ attache.get_human_size }})
+                                    </form>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        <div class="card-footer">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <a href="" class="btn btn-outline-primary" title="Перейти к списку пользователей организации">Добавить стадию</a>
+                </div>
+                <div class="col-auto mr-0 text-right"></div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

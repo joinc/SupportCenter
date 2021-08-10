@@ -1,90 +1,87 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="row">
-            <div class="col-auto mr-auto">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb">
-                        <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
-                        <li class="breadcrumb-item"><a href="{% url 'esign_list' %}">Список электронных подписей</a></li>
-                        <li class="breadcrumb-item active" aria-current="page">{{ esign }}</li>
-                    </ol>
-                </nav>
-            </div>
-            <div class="col-auto mr-0 text-right">
-                {% if current_user.access.esign_edit %}
-                    <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignDelete" title="Удалить сертификат"><i class="fas fa-times"></i> Удалить</button>
-                {% endif %}
-            </div>
+    <div class="row">
+        <div class="col-auto mr-auto">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'index' %}">Главная</a></li>
+                    <li class="breadcrumb-item"><a href="{% url 'esign_list' %}">Список электронных подписей</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ esign }}</li>
+                </ol>
+            </nav>
         </div>
-        <div class="shadow card {% if esign.is_terminate %}border-danger{% elif esign.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if esign.is_terminate %}bg-danger{% elif esign.is_extended %}bg-warning{% endif %}">
-                <h4>Сертификат электронной подписи:</h4>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray mb-0">{{ esign.entity }}</h5>
-                        <small class="form-text text-muted mt-0 mb-3">Кому выдан</small>
-                        {% if sub %}
-                            <table class="table table-sm table-hover">
-                                {% for key,val in sub.items %}
-                                    <tr>
-                                        <td>{{ key }}</td>
-                                        <td>{{ val }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        {% endif %}
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray mb-0">{{ esign.issuer }}</h5>
-                        <small class="form-text text-muted mt-0 mb-3">Кем выдан</small>
-                        {% if iss %}
-                            <table class="table table-sm table-hover">
-                                {% for key,val in iss.items %}
-                                    <tr>
-                                        <td>{{ key }}</td>
-                                        <td>{{ val }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        {% endif %}
-                    </div>
+        <div class="col-auto mr-0 text-right">
+            {% if current_user.access.esign_edit %}
+                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignDelete" title="Удалить сертификат"><i class="fas fa-times"></i> Удалить</button>
+            {% endif %}
+        </div>
+    </div>
+    <div class="shadow card {% if esign.is_terminate %}border-danger{% elif esign.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
+        <div class="card-header {% if esign.is_terminate %}bg-danger{% elif esign.is_extended %}bg-warning{% endif %}">
+            <h4>Сертификат электронной подписи:</h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <h5 class="border-bottom border-gray mb-0">{{ esign.entity }}</h5>
+                    <small class="form-text text-muted mt-0 mb-3">Кому выдан</small>
+                    {% if sub %}
+                        <table class="table table-sm table-hover">
+                            {% for key,val in sub.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ val }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
                 </div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.valid_from|date:"d E Y" }} - {{ esign.valid_for|date:"d E Y" }}</h5>
-                        <small class="form-text text-muted">Срок действия</small>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5 class="border-bottom border-gray">{{ esign.serial }}</h5>
-                        <small class="form-text text-muted">Серийный номер</small>
-                    </div>
+                <div class="col-md-6 mb-2">
+                    <h5 class="border-bottom border-gray mb-0">{{ esign.issuer }}</h5>
+                    <small class="form-text text-muted mt-0 mb-3">Кем выдан</small>
+                    {% if iss %}
+                        <table class="table table-sm table-hover">
+                            {% for key,val in iss.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ val }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    {% endif %}
                 </div>
             </div>
-            <div class="card-footer text-right">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        {% if esign.is_extended %}
-                            Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом</a>.
-                        {% endif %}
-                        Разместил <a href="{% url 'profile_show' esign.owner.id %}">{{ esign.owner }}</a>.
-                    </div>
-                    <div class="col-auto">
-                        {% if esign.file_sign %}
-                            <a href="{% url 'esign_file_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
-                        {% endif %}
-                        {% if not esign.is_terminate %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
-                        {% endif %}
-                    </div>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <h5 class="border-bottom border-gray">{{ esign.valid_from|date:"d E Y" }} - {{ esign.valid_for|date:"d E Y" }}</h5>
+                    <small class="form-text text-muted">Срок действия</small>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <h5 class="border-bottom border-gray">{{ esign.serial }}</h5>
+                    <small class="form-text text-muted">Серийный номер</small>
                 </div>
             </div>
         </div>
-    </main>
+        <div class="card-footer text-right">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    {% if esign.is_extended %}
+                        Продлен <a href="{% url 'esign_show' esign.extended_id %}">сертификатом</a>.
+                    {% endif %}
+                    Разместил <a href="{% url 'profile_show' esign.owner.id %}">{{ esign.owner }}</a>.
+                </div>
+                <div class="col-auto">
+                    {% if esign.file_sign %}
+                        <a href="{% url 'esign_file_download' esign.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                    {% endif %}
+                    {% if not esign.is_terminate %}
+                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalEsignTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
     {% if not esign.is_terminate %}
         <!-- Окно запроса подтверждения на аннулирование -->
         <div class="modal fade" id="ModalEsignTerminate" tabindex="-1" role="dialog" aria-labelledby="ModalEsignTerminateTitle" aria-hidden="true">

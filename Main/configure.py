@@ -48,7 +48,9 @@ def preset_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список шаблонов разрешений',
-        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+        ),
         'list': PresetAccess.objects.filter(is_sample=True, ),
         'url_create': 'preset_create',
         'title_create': 'Добавить новый шаблон',
@@ -71,7 +73,9 @@ def address_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список адресов',
-        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+        ),
         'list': Address.objects.all(),
         'url_create': 'address_create',
         'title_create': 'Добавить новый адрес',
@@ -94,7 +98,9 @@ def subnet_list(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Список подсетей',
-        'list_breadcrumb': (('configure_list', 'Список конфигураций'),),
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+        ),
         'list': Subnet.objects.all(),
         'url_create': 'subnet_create',
         'title_create': 'Добавить новую подсеть',
@@ -119,7 +125,7 @@ def preset_create(request):
         formset = FormPresetTitle(request.POST, instance=preset)
         if formset.is_valid():
             if PresetAccess.objects.filter(title=preset.title).exists():
-                messages.error(request, 'Шаблон разрешений с этим названием уже существует.')
+                messages.error(request, 'Шаблон разрешений "{0}" уже существует.'.format(preset.title))
             else:
                 formset.save()
                 messages.info(request, 'Новый шаблон разрешений {0} создан.'.format(preset))
@@ -131,9 +137,13 @@ def preset_create(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Создание шаблона разрешений',
-        'form_preset_title': formset,
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('preset_list'), 'Список шаблонов разрешений'),
+        ),
+        'formset': formset,
     }
-    return render(request=request, template_name='configure/preset_create.html', context=context)
+    return render(request=request, template_name='configure/create.html', context=context)
 
 
 ######################################################################################################################
@@ -159,7 +169,10 @@ def address_create(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Создание адреса',
-        'list_breadcrumb': (('address_list', 'Список адресов'),),
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('address_list'), 'Список адресов'),
+        ),
         'formset': formset,
     }
     return render(request=request, template_name='configure/create.html', context=context)
@@ -192,8 +205,10 @@ def subnet_create(request):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Создание подсети',
-        'url_breadcrumb': 'subnet_list',
-        'title_breadcrumb': 'Список подсетей',
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('subnet_list'), 'Список подсетей'),
+        ),
         'formset': formset,
     }
     return render(request=request, template_name='configure/create.html', context=context)
@@ -220,12 +235,16 @@ def preset_edit(request, preset_id):
                 access = request.POST.get(permission.name, False)
                 if access:
                     Access(permission=permission, preset=preset, value=True).save()
-            messages.success(request, 'Шаблон разрешений успешно сохранен.')
+            messages.success(request, 'Шаблон разрешений "{0}" успешно сохранен.'.format(preset.title))
         else:
             messages.error(request, 'Шаблон разрешений с этим названием уже существует.')
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Шаблон разрешений ' + preset.title,
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('preset_list'), 'Список шаблонов разрешений'),
+        ),
         'preset': preset,
         'form_preset_title': FormPresetTitle(initial={'title': preset.title}),
         'list_access': get_list_access(preset=preset),
@@ -258,8 +277,10 @@ def address_edit(request, address_id):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Адрес {0}'.format(address),
-        'url_breadcrumb': 'address_list',
-        'title_breadcrumb': 'Список адресов',
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('address_list'), 'Список адресов'),
+        ),
         'url_delete': 'address_delete',
         'title_delete': 'Удалить адрес',
         'item': address,
@@ -293,8 +314,10 @@ def subnet_edit(request, subnet_id):
     context = {
         'current_user': get_profile(user=request.user),
         'title': 'Подсеть {0}'.format(subnet),
-        'url_breadcrumb': 'subnet_list',
-        'title_breadcrumb': 'Список подсетей',
+        'list_breadcrumb': (
+            (reverse('configure_list'), 'Список конфигураций'),
+            (reverse('subnet_list'), 'Список подсетей'),
+        ),
         'url_delete': 'subnet_delete',
         'title_delete': 'Удалить подсеть',
         'item': subnet,

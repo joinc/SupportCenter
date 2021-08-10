@@ -1,69 +1,66 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if profile.blocked %}text-danger{% endif %}">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <h4>{{ title }}:</h4>
-                    </div>
-                    <div class="col-auto mr-0 text-right">
-                        {% if profile_edit %}
-                            {% if profile.blocked %}
-                                <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
-                            {% else %}
-                                <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
-                            {% endif %}
-                        {% endif %}
-                    </div>
+    <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
+        <div class="card-header {% if profile.blocked %}text-danger{% endif %}">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <h5>{{ profile.user.first_name }}</h5>
-                        <small class="form-text text-muted border-top">Имя</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <h5>{{ profile.user.last_name }}</h5>
-                        <small class="form-text text-muted border-top">Фамилия</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <h5>{{ profile.user.username }}</h5>
-                        <small class="form-text text-muted border-top">Логин</small>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <h5>{{ profile.user.email }}</h5>
-                        <small class="form-text text-muted border-top">Адрес электронной почты</small>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col mb-3">
-                        <h5>
-                            {% if profile.organization %}
-                                <a href="{% url 'organization_show' profile.organization.id %}">{{ profile.organization }}</a>
-                            {% else %}
-                                &nbsp;
-                            {% endif %}
-                        </h5>
-                        <small class="form-text text-muted border-top">Организация</small>
-                    </div>
-                </div>
-            </div>
-            {% if current_user == profile or profile_edit %}
-                <div class="card-footer text-right">
-                    <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
+                <div class="col-auto mr-0 text-right">
                     {% if profile_edit %}
-                        <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
+                        {% if profile.blocked %}
+                            <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#ModalUserUnblock" title="Разблокировать пользователя"><i class="fas fa-lock-open"></i> Разблокировать</button>
+                        {% else %}
+                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalUserBlock" title="Заблокировать пользователя"><i class="fas fa-lock"></i> Заблокировать</button>
+                        {% endif %}
                     {% endif %}
                 </div>
-            {% endif %}
+            </div>
         </div>
-    </main>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>{{ profile.user.first_name }}</h5>
+                    <small class="form-text text-muted border-top">Имя</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>{{ profile.user.last_name }}</h5>
+                    <small class="form-text text-muted border-top">Фамилия</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-3">
+                    <h5>{{ profile.user.username }}</h5>
+                    <small class="form-text text-muted border-top">Логин</small>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <h5>{{ profile.user.email }}</h5>
+                    <small class="form-text text-muted border-top">Адрес электронной почты</small>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col mb-3">
+                    <h5>
+                        {% if profile.organization %}
+                            <a href="{% url 'organization_show' profile.organization.id %}">{{ profile.organization }}</a>
+                        {% else %}
+                            &nbsp;
+                        {% endif %}
+                    </h5>
+                    <small class="form-text text-muted border-top">Организация</small>
+                </div>
+            </div>
+        </div>
+        {% if current_user == profile or profile_edit %}
+            <div class="card-footer text-right">
+                <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
+                {% if profile_edit %}
+                    <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
     {% if current_user == profile or profile_edit %}
         <!-- Окно смены пароля -->
         <div class="modal fade" id="ModalUserPassword" tabindex="-1" role="dialog" aria-labelledby="ModalUserPasswordTitle" aria-hidden="true">

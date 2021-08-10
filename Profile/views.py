@@ -78,10 +78,6 @@ def profile_create(request):
     :param request:
     :return:
     """
-    context = {
-        'current_user': get_profile(user=request.user),
-        'title': 'Добавление нового пользователя',
-    }
     if request.POST:
         formset = FormCreateUser(request.POST)
         username = formset['username'].value()
@@ -105,9 +101,17 @@ def profile_create(request):
                 message_list.append('Пользователь ' + username + ' уже существует.')
         for message in message_list:
             messages.error(request, message)
-        context['form_create_user'] = FormCreateUser(initial=initial)
+        form_create_user = FormCreateUser(initial=initial)
     else:
-        context['form_create_user'] = FormCreateUser()
+        form_create_user = FormCreateUser()
+    context = {
+        'current_user': get_profile(user=request.user),
+        'title': 'Добавление нового пользователя',
+        'list_breadcrumb': (
+            (reverse('profile_list'), 'Список пользователей'),
+        ),
+        'form_create_user': form_create_user,
+    }
     return render(request=request, template_name='profile/create.html', context=context)
 
 
@@ -128,6 +132,9 @@ def profile_show(request, profile_id):
         'current_user': current_user,
         'profile': profile,
         'title': 'Пользователь ' + profile.__str__(),
+        'list_breadcrumb': (
+            (reverse('profile_list'), 'Список пользователей'),
+        ),
         'form_password': FormChangePassword(),
         'profile_edit': current_user.access(list_permission=['profile_edit', ]),
     }
@@ -195,12 +202,16 @@ def profile_edit(request, profile_id):
             # Если роль была не шаблонная, то она удаляется, чтобы не накапливать бесхозные роли
             old_preset.delete()
         messages.success(request, 'Профиль пользователя {0} успешно сохранен.'.format(profile))
-        return redirect(reverse('profile_edit', args=(profile_id, )))
+        return redirect(reverse('profile_show', args=(profile_id, )))
     else:
         context = {
             'current_user': get_profile(user=request.user),
             'profile': profile,
             'title': 'Редактирование профиля ' + profile.__str__(),
+            'list_breadcrumb': (
+                (reverse('profile_list'), 'Список пользователей'),
+                (reverse('profile_show', args=(profile.id, )), 'Пользователь {0}'.format(profile)),
+            ),
             'form_edit_user': FormEditUser(instance=profile.user),
             'list_access': get_list_access(preset=profile.preset),
             'form_preset_access': FormPresetAccess(initial={'preset_access': profile.preset_id}),

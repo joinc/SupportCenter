@@ -1,35 +1,32 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <h4>{{ title }}:</h4>
-                    </div>
-                    <div class="col-auto mr-0 text-right">
-                        {% if organization_edit %}
-                            <a href="{% url 'organization_create' %}" class="btn btn-outline-primary" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</a>
-                        {% endif %}
-                    </div>
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
+                </div>
+                <div class="col-auto mr-0 text-right">
+                    {% if organization_edit %}
+                        <a href="{% url 'organization_create' %}" class="btn btn-outline-primary" title="Добавить новую организацию"><i class="fas fa-plus-square"></i> Добавить организацию</a>
+                    {% endif %}
                 </div>
             </div>
-            <div class="card-body">
-                <table class="table table-hover table-sm table-borderless">
-                    {% for organization in organization_list %}
-                        <tr>
-                            <td>
-                                <strong class="text-gray-dark">{{ organization.short_title }}</strong>
-                            </td>
-                            <td class="text-right ">
-                                <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary btn-sm" title="Просмотр организации"><i class="fas fa-user"></i> Просмотр организации</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
-            </div>
         </div>
-    </main>
+        <div class="card-body">
+            <table class="table table-hover table-sm">
+                {% for organization in organization_list %}
+                    <tr>
+                        <td>
+                            <strong class="h5">{{ organization.short_title }}</strong>
+                        </td>
+                        <td class="text-right ">
+                            <a href="{% url 'organization_show' organization.id %}" class="btn btn-outline-secondary" title="Просмотр организации">Просмотр организации</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

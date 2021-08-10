@@ -7,82 +7,79 @@
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <h4>{{ title }}:</h4>
-            </div>
-            <form method='post' action='' class="mb-0">
-                {% csrf_token %}
-                <div class="card-body">
-                    {% for field in form_organization %}
-                        <div class="row">
-                            <div class="col-md-12 mb-2">
-                                <h6>{{ field.label }}:</h6>
-                                {{ field }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <table class="table table-hover table-borderless table-sm">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Адреса организации:</th>
-                                    <th scope="col" class="text-right">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#ModalAddressAdd" title="Добавить адрес организации"><i class="fas fa-plus-square"></i> Добавить</button>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {% for address in list_address %}
-                                        <tr>
-                                            <td>
-                                                {{ address.address }}
-                                            </td>
-                                            <td class="text-right">
-                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="DeleteModal('Удалить адрес организации', '{{ address.address }}', '{% url 'org_address_delete' address.id %}')" title="Удалить адрес организации"><i class="fas fa-minus-square"></i> Удалить</button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <table class="table table-hover table-borderless table-sm">
-                                <thead>
-                                <tr>
-                                    <th scope="col">Подсети организации:</th>
-                                    <th scope="col" class="text-right">
-                                        <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#ModalSubnetAdd" title="Добавить подсеть организации"><i class="fas fa-plus-square"></i> Добавить</button>
-                                    </th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                    {% for subnet in list_subnet %}
-                                        <tr>
-                                            <td>
-                                                {{ subnet.subnet }}
-                                            </td>
-                                            <td class="text-right">
-                                                <button type="button" class="btn btn-outline-danger btn-sm" onclick="DeleteModal('Удалить подсеть организации', '{{ subnet.subnet }}', '{% url 'org_subnet_delete' subnet.id %}')" title="Удалить подсеть организации"><i class="fas fa-minus-square"></i> Удалить</button>
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-primary" type="submit">Сохранить</button>
-                </div>
-            </form>
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <h4>{{ title }}:</h4>
         </div>
-    </main>
+        <form method='post' action='' class="mb-0">
+            {% csrf_token %}
+            <div class="card-body">
+                {% for field in form_organization %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <h6>{{ field.label }}:</h6>
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <table class="table table-hover table-borderless table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">Адреса организации:</th>
+                                <th scope="col" class="text-right">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#ModalAddressAdd" title="Добавить адрес организации"><i class="fas fa-plus-square"></i> Добавить</button>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for address in list_address %}
+                                    <tr>
+                                        <td>
+                                            {{ address.address }}
+                                        </td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="DeleteModal('Удалить адрес организации', '{{ address.address }}', '{% url 'org_address_delete' address.id %}')" title="Удалить адрес организации"><i class="fas fa-minus-square"></i> Удалить</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <table class="table table-hover table-borderless table-sm">
+                            <thead>
+                            <tr>
+                                <th scope="col">Подсети организации:</th>
+                                <th scope="col" class="text-right">
+                                    <button type="button" class="btn btn-outline-primary btn-sm" data-toggle="modal" data-target="#ModalSubnetAdd" title="Добавить подсеть организации"><i class="fas fa-plus-square"></i> Добавить</button>
+                                </th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for subnet in list_subnet %}
+                                    <tr>
+                                        <td>
+                                            {{ subnet.subnet }}
+                                        </td>
+                                        <td class="text-right">
+                                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="DeleteModal('Удалить подсеть организации', '{{ subnet.subnet }}', '{% url 'org_subnet_delete' subnet.id %}')" title="Удалить подсеть организации"><i class="fas fa-minus-square"></i> Удалить</button>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
     <!-- Окно запроса на добавление адреса -->
     <div class="modal fade" id="ModalAddressAdd" tabindex="-1" role="dialog" aria-labelledby="ModalAddressAddTitle" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg" role="document">

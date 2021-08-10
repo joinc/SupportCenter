@@ -7,38 +7,38 @@
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <h4>{{ form_contract.name }}:</h4>
-            </div>
-            <form method='post' action='' class="mb-0">
-                {% csrf_token %}
-                <div class="card-body">
-                    {% for field in form_contract %}
-                        <div class="row">
-                            <div class="col-md-12 mb-2">
-                                <h6>{{ field.label }}:</h6>
-                                {{ field }}
-                            </div>
-                        </div>
-                    {% endfor %}
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-primary" type="submit">Сохранить</button>
-                </div>
-            </form>
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <h4>{{ form_contract.name }}:</h4>
         </div>
-    </main>
-    <script>
-        $(document).ready(function() {
-            $('select[name=parent_organization]').select2({
-                allowClear: true,
-                placeholder: "Выберите вышестоящую организацию",
-                theme: "bootstrap4",
-                language: "ru"
-            });
-        });
-    </script>
+        <form method='post' action='' class="mb-0" enctype='multipart/form-data'>
+            {% csrf_token %}
+            <div class="card-body">
+                {% for field in form_contract %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <h6>{{ field.label }}:</h6>
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h5>{{ first_status.title }}</h5>
+                    </div>
+                </div>
+                {% for field in form_stage %}
+                    <div class="row">
+                        <div class="col-md-12 mb-2">
+                            <h6>{{ field.label }}:</h6>
+                            {{ field }}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
 {% endblock %}

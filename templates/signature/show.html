@@ -1,89 +1,86 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card {% if signature.is_terminate %}border-danger{% elif signature.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if signature.is_terminate %}text-danger{% elif signature.is_extended %}text-warning{% endif %}">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <h4>{{ title }}:</h4>
-                    </div>
-                    <div class="col-auto mr-0 text-right">
-                        {% if current_user.access.signature_edit %}
-                            <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить сертификат"><i class="fas fa-minus-square"></i> Удалить</button>
-                        {% endif %}
-                    </div>
+    <div class="shadow card {% if signature.is_terminate %}border-danger{% elif signature.is_extended %}border-warning{% else %}border-dark{% endif %} mb-3">
+        <div class="card-header {% if signature.is_terminate %}text-danger{% elif signature.is_extended %}text-warning{% endif %}">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
                 </div>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5>{{ signature.entity }}</h5>
-                        <small class="form-text text-muted border-top">Кому выдан</small>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5>{{ signature.issuer }}</h5>
-                        <small class="form-text text-muted border-top">Кем выдан</small>
-                    </div>
-                </div>
-                <div class="row">
-                    {% if sub %}
-                        <div class="col-md-6 mb-2">
-                            <table class="table table-sm table-borderless table-hover">
-                                {% for key,val in sub.items %}
-                                    <tr>
-                                        <td>{{ key }}</td>
-                                        <td>{{ val }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
+                <div class="col-auto mr-0 text-right">
+                    {% if current_user.access.signature_edit %}
+                        <button type="button" class="btn btn-outline-danger" data-toggle="modal" data-target="#ModalDelete" title="Удалить сертификат"><i class="fas fa-minus-square"></i> Удалить</button>
                     {% endif %}
-                    {% if iss %}
-                        <div class="col-md-6 mb-2">
-                            <table class="table table-sm table-borderless table-hover">
-                                {% for key,val in iss.items %}
-                                    <tr>
-                                        <td>{{ key }}</td>
-                                        <td>{{ val }}</td>
-                                    </tr>
-                                {% endfor %}
-                            </table>
-                        </div>
-                    {% endif %}
-                </div>
-                <div class="row">
-                    <div class="col-md-6 mb-2">
-                        <h5>{{ signature.valid_from|date:"d E Y" }} - {{ signature.valid_for|date:"d E Y" }}</h5>
-                        <small class="form-text text-muted border-top">Срок действия</small>
-                    </div>
-                    <div class="col-md-6 mb-2">
-                        <h5>{{ signature.serial }}</h5>
-                        <small class="form-text text-muted border-top">Серийный номер</small>
-                    </div>
-                </div>
-            </div>
-            <div class="card-footer text-right">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        {% if signature.is_extended %}
-                            Продлен <a href="{% url 'signature_show' signature.extended_id %}">сертификатом</a>.
-                        {% endif %}
-                        Разместил <a href="{% url 'profile_show' signature.owner.id %}">{{ signature.owner }}</a>.
-                    </div>
-                    <div class="col-auto">
-                        {% if signature.file_sign %}
-                            <a href="{% url 'signature_file_download' signature.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
-                        {% endif %}
-                        {% if signature.status == 0 %}
-                            <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#ModalTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
-                        {% endif %}
-                    </div>
                 </div>
             </div>
         </div>
-    </main>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <h5>{{ signature.entity }}</h5>
+                    <small class="form-text text-muted border-top">Кому выдан</small>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <h5>{{ signature.issuer }}</h5>
+                    <small class="form-text text-muted border-top">Кем выдан</small>
+                </div>
+            </div>
+            <div class="row">
+                {% if sub %}
+                    <div class="col-md-6 mb-2">
+                        <table class="table table-sm table-borderless table-hover">
+                            {% for key,val in sub.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ val }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+                {% if iss %}
+                    <div class="col-md-6 mb-2">
+                        <table class="table table-sm table-borderless table-hover">
+                            {% for key,val in iss.items %}
+                                <tr>
+                                    <td>{{ key }}</td>
+                                    <td>{{ val }}</td>
+                                </tr>
+                            {% endfor %}
+                        </table>
+                    </div>
+                {% endif %}
+            </div>
+            <div class="row">
+                <div class="col-md-6 mb-2">
+                    <h5>{{ signature.valid_from|date:"d E Y" }} - {{ signature.valid_for|date:"d E Y" }}</h5>
+                    <small class="form-text text-muted border-top">Срок действия</small>
+                </div>
+                <div class="col-md-6 mb-2">
+                    <h5>{{ signature.serial }}</h5>
+                    <small class="form-text text-muted border-top">Серийный номер</small>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer text-right">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    {% if signature.is_extended %}
+                        Продлен <a href="{% url 'signature_show' signature.extended_id %}">сертификатом</a>.
+                    {% endif %}
+                    Разместил <a href="{% url 'profile_show' signature.owner.id %}">{{ signature.owner }}</a>.
+                </div>
+                <div class="col-auto">
+                    {% if signature.file_sign %}
+                        <a href="{% url 'signature_file_download' signature.id %}" type="button" class="btn btn-outline-info" title="Скачать файл сертификата"><i class="fas fa-download"></i> Скачать файл сертификата</a>
+                    {% endif %}
+                    {% if signature.status == 0 %}
+                        <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#ModalTerminate" title="Аннулировать сертификат"><i class="fas fa-times"></i> Аннулировать</button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
     {% if signature.status == 0 %}
         <!-- Окно запроса подтверждения на аннулирование -->
         <div class="modal fade" id="ModalTerminate" tabindex="-1" role="dialog" aria-labelledby="ModalTerminateTitle" aria-hidden="true">

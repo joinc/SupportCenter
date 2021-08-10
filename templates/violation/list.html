@@ -1,35 +1,32 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <div class="row">
-                    <div class="col-auto mr-auto">
-                        <h4>{{ title }}:</h4>
-                    </div>
-                    {% if violation_moderator %}
-                        <div class="col-auto mr-0 text-right">
-                            <a href="{% url 'violation_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
-                        </div>
-                    {% endif %}
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
                 </div>
-            </div>
-            <div class="card-body">
-                <table class="table table-hover table-sm table-borderless">
-                    {% for violation in list_violation %}
-                        <tr>
-                            <td>
-                                <h5>Отчет от {{ violation.date_violation|date:"d E Y" }} года</h5>
-                            </td>
-                            <td class="text-right ">
-                                <a href="{% url 'violation_show' violation.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к отчету"><i class="fas fa-list-alt"></i> Перейти к отчету</a>
-                            </td>
-                        </tr>
-                    {% endfor %}
-                </table>
+                {% if violation_moderator %}
+                    <div class="col-auto mr-0 text-right">
+                        <a href="{% url 'violation_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
+                    </div>
+                {% endif %}
             </div>
         </div>
-    </main>
+        <div class="card-body">
+            <table class="table table-hover table-sm table-borderless">
+                {% for violation in list_violation %}
+                    <tr>
+                        <td>
+                            <h5>Отчет от {{ violation.date_violation|date:"d E Y" }} года</h5>
+                        </td>
+                        <td class="text-right ">
+                            <a href="{% url 'violation_show' violation.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к отчету"><i class="fas fa-list-alt"></i> Перейти к отчету</a>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

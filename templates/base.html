@@ -13,54 +13,52 @@
     {% block html_head %}{% endblock %}
 </head>
 <body>
-{% block html_menu %}
-    {% if request.user.is_authenticated %}
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
-            <div class="btn-toolbar" role="toolbar">
-                <div class="btn-group mr-2" role="group">
-                    <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                        {% if current_user %}
-                            <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
-                            <div class="dropdown-divider"></div>
-                            {% for item in current_user.get_menu %}
-                                <a href="{% url item.1 %}" class="dropdown-item">
-                                    <div class="row">
-                                        <div class="col-auto mr-auto">{{ item.2 }}</div>
-                                        <div class="col-auto mt-1 text-right"><i class="{{ item.3 }}"></i></div>
-                                    </div>
-                                </a>
-                            {% endfor %}
-                        {% endif %}
+{% if request.user.is_authenticated %}
+    <nav class="navbar navbar-expand-md navbar-dark fixed-top bg-dark">
+        <div class="btn-toolbar" role="toolbar">
+            <div class="btn-group mr-2" role="group">
+                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    {% if current_user %}
+                        <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
                         <div class="dropdown-divider"></div>
-                        <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
-                    </div>
+                        {% for menu in current_user.get_menu %}
+                            <a href="{% url menu.1 %}" class="dropdown-item">
+                                <div class="row">
+                                    <div class="col-auto mr-auto">{{ menu.2 }}</div>
+                                    <div class="col-auto mt-1 text-right"><i class="{{ menu.3 }}"></i></div>
+                                </div>
+                            </a>
+                        {% endfor %}
+                    {% endif %}
+                    <div class="dropdown-divider"></div>
+                    <a href="{% url 'logout' %}" class="dropdown-item">Выход</a>
                 </div>
             </div>
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item active">
-                    <a href="{% url 'index' %}" class="nav-link">Главная</a>
+        </div>
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a href="{% url 'index' %}" class="nav-link">Главная</a>
+            </li>
+            {% if not request.get_full_path == '/' %}
+                <li class="nav-item">
+                    <span class="navbar-text">/</span>
                 </li>
-                {% if not request.get_full_path == '/' %}
+                {% for breadcrumb in list_breadcrumb %}
+                    <li class="nav-item active">
+                        <a href="{{ breadcrumb.0 }}" class="nav-link">{{ breadcrumb.1 }}</a>
+                    </li>
                     <li class="nav-item">
                         <span class="navbar-text">/</span>
                     </li>
-                    {% for breadcrumb in list_breadcrumb %}
-                        <li class="nav-item active">
-                            <a href="{% url breadcrumb.0 %}" class="nav-link">{{ breadcrumb.1 }}</a>
-                        </li>
-                        <li class="nav-item">
-                            <span class="navbar-text">/</span>
-                        </li>
-                    {% endfor %}
-                    <li class="nav-item">
-                        <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
-                    </li>
-                {% endif %}
-            </ul>
-        </nav>
-    {% endif %}
-{% endblock %}
+                {% endfor %}
+                <li class="nav-item">
+                    <a href="{{ request.get_full_path }}" class="nav-link">{{ title }}</a>
+                </li>
+            {% endif %}
+        </ul>
+    </nav>
+{% endif %}
 {% if toast %}
     <div class="toast" role="alert" aria-live="assertive" aria-atomic="true" style="position: absolute; bottom: 0; right: 10px;" data-delay="10000">
         <div class="toast-header">
@@ -77,6 +75,9 @@
         });
     </script>
 {% endif %}
-{% block html_body %}{% endblock %}
+    <main role="main" class="container-fluid">
+        {% include "messages.html" %}
+        {% block html_body %}{% endblock %}
+    </main>
 </body>
 </html>

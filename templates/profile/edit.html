@@ -7,83 +7,80 @@
     <script src='{% static "js/locales/select2.ru.js" %}'></script>
 {% endblock %}
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
-            <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
-                <h4>{{ title }}:</h4>
-            </div>
-            <form method='post' action='' class="mb-0">
-                <div class="card-body">
-                    {% csrf_token %}
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <h6>{{ form_edit_user.first_name.label }}:</h6>
-                            {{ form_edit_user.first_name }}
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <h6>{{ form_edit_user.last_name.label }}:</h6>
-                            {{ form_edit_user.last_name }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-6 mb-2">
-                            <h6>Логин пользователя:</h6>
-                            <div class="input-group">
-                                <div class="input-group-prepend"><span class="input-group-text">@</span></div>
-                                <input disabled value="{{ profile.user.username }}" class="form-control">
-                            </div>
-                        </div>
-                        <div class="col-md-6 mb-2">
-                            <h6>{{ form_edit_user.email.label }}:</h6>
-                            {{ form_edit_user.email }}
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <h6>{{ form_organization.organization.label }}:</h6>
-                            {{ form_organization.organization }}
-                        </div>
-                    </div>
-                    <h6>Доступ:</h6>
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" value="sample"{% if profile.preset.is_sample %} checked{% endif %}>
-                                {{ form_preset_access }}
-                            </div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-md-12 mb-2">
-                            <div class="form-check">
-                                <input class="form-check-input" type="radio" name="access_choice" value="not_sample"{% if not profile.preset.is_sample %} checked{% endif %}>
-                                <label>Права:</label>
-                                <div class="card-columns disabled">
-                                    {% for category, list_permission in list_access %}
-                                        <div class="card">
-                                            <div class="card-body">
-                                                <h5 class="card-title">{{ category }}:</h5>
-                                                {% for permission in list_permission %}
-                                                    <div class="custom-control custom-checkbox">
-                                                        <input type="checkbox" name="{{ permission.1 }}" class="custom-control-input" id="id_{{ permission.1 }}" {% if permission.2 %}checked{% endif %}>
-                                                        <label class="custom-control-label" for="id_{{ permission.1 }}">{{ permission.0 }}</label>
-                                                    </div>
-                                                {% endfor %}
-                                            </div>
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <button class="btn btn-primary" type="submit">Сохранить</button>
-                </div>
-            </form>
+    <div class="shadow card {% if profile.blocked %}border-danger{% else %}border-dark{% endif %} mb-3">
+        <div class="card-header {% if profile.blocked %}bg-danger{% endif %}">
+            <h4>{{ title }}:</h4>
         </div>
-    </main>
+        <form method='post' action='' class="mb-0">
+            <div class="card-body">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <h6>{{ form_edit_user.first_name.label }}:</h6>
+                        {{ form_edit_user.first_name }}
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <h6>{{ form_edit_user.last_name.label }}:</h6>
+                        {{ form_edit_user.last_name }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-2">
+                        <h6>Логин пользователя:</h6>
+                        <div class="input-group">
+                            <div class="input-group-prepend"><span class="input-group-text">@</span></div>
+                            <input disabled value="{{ profile.user.username }}" class="form-control">
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-2">
+                        <h6>{{ form_edit_user.email.label }}:</h6>
+                        {{ form_edit_user.email }}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <h6>{{ form_organization.organization.label }}:</h6>
+                        {{ form_organization.organization }}
+                    </div>
+                </div>
+                <h6>Доступ:</h6>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="access_choice" value="sample"{% if profile.preset.is_sample %} checked{% endif %}>
+                            {{ form_preset_access }}
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 mb-2">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="access_choice" value="not_sample"{% if not profile.preset.is_sample %} checked{% endif %}>
+                            <label>Права:</label>
+                            <div class="card-columns disabled">
+                                {% for category, list_permission in list_access %}
+                                    <div class="card">
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ category }}:</h5>
+                                            {% for permission in list_permission %}
+                                                <div class="custom-control custom-checkbox">
+                                                    <input type="checkbox" name="{{ permission.1 }}" class="custom-control-input" id="id_{{ permission.1 }}" {% if permission.2 %}checked{% endif %}>
+                                                    <label class="custom-control-label" for="id_{{ permission.1 }}">{{ permission.0 }}</label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card-footer">
+                <button class="btn btn-primary" type="submit">Сохранить</button>
+            </div>
+        </form>
+    </div>
     <script type="text/javascript">
         $(document).ready(function(){
             $('select[name=organization]').select2({

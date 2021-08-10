@@ -1,44 +1,41 @@
 {% extends "base.html" %}{% load static %}
 
 {% block html_body %}
-    <main role="main" class="container-fluid">
-        {% include "messages.html" %}
-        <div class="shadow card border-dark mb-3">
-            <div class="card-header">
-                <h4>{{ title }}:</h4>
-            </div>
-            <div class="card-body">
-                {% if list_violation %}
-                    <table class="table table-hover table-sm table-borderless">
-                        <thead>
-                        <tr>
-                            <th scope="col">IP-адрес</th>
-                            <th scope="col">Организации</th>
-                            <th scope="col"></th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            {% for violator, list_organization in list_violation %}
-                                <tr>
-                                    <td class="small">
-                                        <h5>{{ violator.ip_violator }}</h5>
-                                    </td>
-                                    <td class="small">
-                                        {% for organization in list_organization %}
-                                            <span class="d-block"><a href="{% url 'organization_show' organization.organization.id %}">{{ organization.organization }}</a></span>
-                                        {% endfor %}
-                                    </td>
-                                    <td class="text-right ">
-                                        <a href="{% url 'violator_show' violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
-                                    </td>
-                                </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                {% else %}
-                    <div class="alert alert-success" role="alert">В данном отчете для Вашей организации отсутсвуют выявленные инциденты.</div>
-                {% endif %}
-            </div>
+    <div class="shadow card border-dark mb-3">
+        <div class="card-header">
+            <h4>{{ title }}:</h4>
         </div>
-    </main>
+        <div class="card-body">
+            {% if list_violation %}
+                <table class="table table-hover table-sm table-borderless">
+                    <thead>
+                    <tr>
+                        <th scope="col">IP-адрес</th>
+                        <th scope="col">Организации</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                        {% for violator, list_organization in list_violation %}
+                            <tr>
+                                <td class="small">
+                                    <h5>{{ violator.ip_violator }}</h5>
+                                </td>
+                                <td class="small">
+                                    {% for organization in list_organization %}
+                                        <span class="d-block"><a href="{% url 'organization_show' organization.organization.id %}">{{ organization.organization }}</a></span>
+                                    {% endfor %}
+                                </td>
+                                <td class="text-right ">
+                                    <a href="{% url 'violator_show' violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="alert alert-success" role="alert">В данном отчете для Вашей организации отсутсвуют выявленные инциденты.</div>
+            {% endif %}
+        </div>
+    </div>
 {% endblock %}
