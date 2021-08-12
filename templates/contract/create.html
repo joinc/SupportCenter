@@ -11,7 +11,7 @@
         <div class="card-header">
             <h4>{{ form_contract.name }}:</h4>
         </div>
-        <form method='post' action='' class="mb-0" enctype='multipart/form-data'>
+        <form method='post' action='' enctype='multipart/form-data' class="mb-0">
             {% csrf_token %}
             <div class="card-body">
                 {% for field in form_contract %}

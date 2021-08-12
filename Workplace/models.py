@@ -47,6 +47,9 @@ class Address(models.Model):
 
 
 class TypeEquipment(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     title = models.CharField(
         verbose_name='Тип оборудования',
         max_length=124,

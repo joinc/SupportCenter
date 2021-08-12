@@ -7,7 +7,9 @@
                 <div class="col-auto mr-auto">
                     <h4>{{ title }}:</h4>
                 </div>
-                <div class="col-auto mr-0 text-right"></div>
+                <div class="col-auto mr-0 text-right">
+                    <small>{{ contract.create_date }}</small>
+                </div>
             </div>
         </div>
         <div class="card-body">
@@ -30,35 +32,79 @@
                 </div>
             </div>
             {% for stage, list_attach in list_stage %}
+                <div class="row border-bottom">
+                    <div class="col-auto mr-auto">
+                        <h5>{{ stage.status.title }}:</h5>
+                    </div>
+                    <div class="col-auto mr-0 text-right">
+                        <small>{{ stage.create_date }}</small>
+                    </div>
+                </div>
                 <div class="row">
                     <div class="col-md-12 mb-2">
-                        <h5>{{ stage.status }}</h5>
-                        <h6>{{ stage.comment_stage }}</h6>
+                        <h6>({{ stage.comment_stage }})</h6>
                         <h6>Приложения:</h6>
-                        <ul>
-                            {% for attache in list_attach %}
-                                <li>
-                                    <form method="post" action='{% url 'attache_download' attache.id %}' class="mb-0">
-                                        {% csrf_token %}
-                                        <button type="submit" class="btn btn-link p-0" title='Скачать файл "{{ attache.name }}"'>
-                                            {{ attache.name | truncatechars:80 }}
-                                        </button>
-                                        ({{ attache.get_human_size }})
-                                    </form>
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        {% if list_attach %}
+                            <ul>
+                                {% for attache in list_attach %}
+                                    <li>
+                                        <form method="post" action='{% url 'attache_download' attache.id %}' class="mb-0">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-link p-0" title='Скачать файл "{{ attache.name }}"'>
+                                                {{ attache.name | truncatechars:80 }}
+                                            </button>
+                                            ({{ attache.get_human_size }})
+                                        </form>
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% else %}
+                            приложений нет
+                        {% endif %}
                     </div>
                 </div>
             {% endfor %}
         </div>
-        <div class="card-footer">
-            <div class="row">
-                <div class="col-auto mr-auto">
-                    <a href="" class="btn btn-outline-primary" title="Перейти к списку пользователей организации">Добавить стадию</a>
+        {% if current_stage.status.next_status %}
+            <div class="card-footer">
+                <button type="button" class="btn btn-outline-primary" data-toggle="modal" data-target="#ModalAddStage" title="Добавить информацию о следующей стадии контракта"><i class="fas fa-plus-square"></i> Добавить стадию</button>
+            </div>
+        {% endif %}
+    </div>
+    {% if current_stage.status.next_status %}
+        <!-- Окно добавления стадии контракта -->
+        <div class="modal fade" id="ModalAddStage" tabindex="-1" role="dialog" aria-labelledby="ModalAddStageTitle" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered modal-xl" role="document">
+                <div class="modal-content">
+                    <form method='post' action='{% url 'add_stage' contract.id %}' enctype='multipart/form-data'>
+                        {% csrf_token %}
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="ModalAddStageTitle">Добавить стадию контракта</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Закрыть"><span aria-hidden="true">&times;</span></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-12 mb-2">
+                                    <h5>{{ current_stage.status.next_status.title }}</h5>
+                                </div>
+                            </div>
+                            {% for field in form_stage %}
+                                <div class="row">
+                                    <div class="col-md-12 mb-2">
+                                        <h6>{{ field.label }}:</h6>
+                                        {{ field }}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-primary" type="submit">Добавить</button>
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Не добавлять</button>
+                        </div>
+                    </form>
                 </div>
-                <div class="col-auto mr-0 text-right"></div>
             </div>
         </div>
-    </div>
+        <!-- /Окно добавления стадии контракта -->
+    {% endif %}
 {% endblock %}

@@ -123,6 +123,9 @@ class Stage(models.Model):
 
 
 class Attache(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
     name = models.CharField(
         verbose_name='Название файла',
         max_length=124,
