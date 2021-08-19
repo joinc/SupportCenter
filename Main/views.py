@@ -46,12 +46,12 @@ def login(request):
         if user:
             profile = get_profile(user=user)
             if profile.blocked:
-                messages.info(request, 'Выша учетная запись заблокирована, обратитесь к администратору.')
+                messages.warning(request, 'Выша учетная запись заблокирована, обратитесь к администратору.')
                 return redirect(reverse('login'))
             auth.login(request, user)
             return redirect(request.POST['next'])
         else:
-            messages.info(request, 'Не правильно введенные данные')
+            messages.error(request, 'Не правильно введенные данные')
             return redirect(reverse('login'))
     else:
         context = {

@@ -1,16 +1,15 @@
 from django.db import models
-from uuid import uuid4
 from Workplace.models import Subnet
 from Organization.models import OrganizationSubnet
 
 ######################################################################################################################
 
 
-class ReportViolation(models.Model):
+class Report(models.Model):
     id = models.AutoField(
         primary_key=True,
     )
-    date_violation = models.DateField(
+    date_report = models.DateField(
         verbose_name='Дата отчета',
     )
     create_date = models.DateTimeField(
@@ -20,10 +19,10 @@ class ReportViolation(models.Model):
     )
 
     def __str__(self):
-        return '{0}'.format(self.date_violation)
+        return '{0}'.format(self.date_report)
 
     class Meta:
-        ordering = 'date_violation',
+        ordering = 'date_report',
         verbose_name = 'Отчет об инцидентах'
         verbose_name_plural = 'Отчеты об инцидентах'
         managed = True
@@ -32,17 +31,17 @@ class ReportViolation(models.Model):
 ######################################################################################################################
 
 
-class FileViolation(models.Model):
+class FileReport(models.Model):
     id = models.AutoField(
         primary_key=True,
     )
     file = models.FileField(
         verbose_name='Файл с инцидентами',
-        upload_to='violation/%Y/%m/%d/' + uuid4().hex,
+        upload_to='violation/%Y/%m/%d/',
         null=True,
     )
-    violation = models.ForeignKey(
-        ReportViolation,
+    report = models.ForeignKey(
+        Report,
         verbose_name='Отчет об инцидентах',
         null=True,
         blank=True,
@@ -57,7 +56,7 @@ class FileViolation(models.Model):
     )
 
     def __str__(self):
-        return '{0} - {1}'.format(self.violation, self.file)
+        return '{0} - {1}'.format(self.report, self.file)
 
     class Meta:
         ordering = 'create_date',
@@ -87,10 +86,10 @@ class Violator(models.Model):
         on_delete=models.SET_NULL,
     )
 
-    def get_list_subnet(self):
-        list_violator = []
-        for violator in Violator.objects.filter(violation=self.violation):
-            list_violator.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet)])
+    # def get_list_subnet(self):
+    #     list_violator = []
+    #     for violator in Violator.objects.filter(violation=self.violation):
+    #         list_violator.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet)])
 
     def __str__(self):
         return '{0}'.format(self.ip_violator)
@@ -118,14 +117,83 @@ class Incident(models.Model):
         related_name='IncidentViolator',
         on_delete=models.CASCADE,
     )
-    incident = models.CharField(
-        verbose_name='Инцидент',
-        max_length=512,
+    violation = models.ForeignKey(
+        Report,
+        verbose_name='Отчет об инцидентах',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='ReportIncident',
+        on_delete=models.CASCADE,
+    )
+    id_ids = models.CharField(
+        verbose_name='id_ids',
+        max_length=24,
+        default='',
+    )
+    time_stamp = models.CharField(
+        verbose_name='Timestamp',
+        max_length=64,
+        default='',
+    )
+    code_incident = models.CharField(
+        verbose_name='Code',
+        max_length=64,
+        default='',
+    )
+    source_ip = models.CharField(
+        verbose_name='Src IP',
+        max_length=24,
+        default='',
+    )
+    source_port = models.CharField(
+        verbose_name='Src port',
+        max_length=8,
+        default='',
+    )
+    source_MAC = models.CharField(
+        verbose_name='Src MAC',
+        max_length=24,
+        default='',
+    )
+    destination_ip = models.CharField(
+        verbose_name='Dst IP',
+        max_length=24,
+        default='',
+    )
+    destination_port = models.CharField(
+        verbose_name='Dst port',
+        max_length=8,
+        default='',
+    )
+    destination_MAC = models.CharField(
+        verbose_name='Dst MAC',
+        max_length=24,
+        default='',
+    )
+    protocol_name = models.CharField(
+        verbose_name='Protocol name',
+        max_length=8,
+        default='',
+    )
+    class_incident = models.CharField(
+        verbose_name='Class',
+        max_length=24,
+        default='',
+    )
+    message_incident = models.CharField(
+        verbose_name='Msg',
+        max_length=124,
+        default='',
+    )
+    priority = models.CharField(
+        verbose_name='Priority',
+        max_length=24,
         default='',
     )
 
     def __str__(self):
-        return '{0}'.format(self.incident)
+        return '{0}'.format(self.violator)
 
     class Meta:
         ordering = 'violator',
@@ -151,7 +219,7 @@ class Violation(models.Model):
         on_delete=models.CASCADE,
     )
     report = models.ForeignKey(
-        ReportViolation,
+        Report,
         verbose_name='Отчет об инцидентах',
         null=True,
         blank=True,

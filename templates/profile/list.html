@@ -21,17 +21,13 @@
             </div>
         </div>
         <div class="card-body">
-            <div class="alert alert-{% if list_profile %}info{% else %}danger{% endif %} alert-dismissible fade show" role="alert">
-                {% if list_profile %}
-                    Отображается пользователей - {{ list_profile | length }}, всего пользователей - {{ total_profile }}.
-                {% else %}
-                    Совпадений в логине или фамилии пользователей не найдено.
-                {% endif %}
+            <div class="alert alert-info alert-dismissible fade show" role="alert">
+                Отображается пользователей - {{ list_profile | length }}, всего пользователей - {{ total_profile }}.
                 <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form method='post' action='{% url 'profile_list' %}'>
+            <form method='post' action=''>
                 {% csrf_token %}
                 <div class="input-group">
                     <div class="input-group-prepend">
@@ -58,7 +54,7 @@
                             {% if profile.blocked %}Заблокирован{% endif %}
                         </td>
                         <td class="text-right ">
-                            <a href="{% url 'profile_show' profile.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя">Перейти в профиль</a>
+                            <a href="{% url 'profile_show' profile.user.id %}" class="btn btn-outline-secondary" title="Перейти в профиль пользователя">Перейти в профиль</a>
                         </td>
                     </tr>
                 {% endfor %}

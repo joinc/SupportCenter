@@ -156,34 +156,20 @@ class FormEditUser(forms.ModelForm):
 ######################################################################################################################
 
 
-class FormPresetAccess(forms.Form):
-    preset_access = forms.ChoiceField(
-        label='Роль',
-        widget=forms.Select(
-            attrs={
-                'class': 'custom-select',
-            }
-        ),
-        choices=list(
-            map(
-                lambda x: [x['id'], x['title']],
-                list(PresetAccess.objects.values('id', 'title').filter(is_sample=True))
-            )
-        ),
-        required=True,
-    )
-
-
-######################################################################################################################
-
-
 class FormOrganization(forms.ModelForm):
+
     class Meta:
         model = UserProfile
         fields = [
+            'preset',
             'organization',
         ]
         widgets = {
+            'preset': forms.Select(
+                attrs={
+                    'class': 'custom-select',
+                }
+            ),
             'organization': forms.Select(
                 attrs={
                     'class': 'custom-select',
@@ -191,8 +177,13 @@ class FormOrganization(forms.ModelForm):
             ),
         }
         labels = {
+            'preset': 'Роль',
             'organization': 'Организация',
         }
+
+    def __init__(self, *args, **kwargs):
+        super(FormOrganization, self).__init__(*args, **kwargs)
+        self.fields['preset'].queryset = PresetAccess.objects.filter(is_sample=True)
 
 
 ######################################################################################################################

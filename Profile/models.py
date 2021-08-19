@@ -70,14 +70,10 @@ class Permission(models.Model):
 
 
 class UserProfile(models.Model):
-    id = models.AutoField(
-        primary_key=True,
-    )
     user = models.OneToOneField(
         User,
+        primary_key=True,
         on_delete=models.CASCADE,
-    # OneToOne
-    # primary_key = True,
     )
     organization = models.ForeignKey(
         Organization,

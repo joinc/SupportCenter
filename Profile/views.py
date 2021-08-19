@@ -5,8 +5,7 @@ from django.contrib import messages
 from django.contrib.auth.models import User
 from Profile.models import UserProfile, PresetAccess, Permission, Access
 from Profile.tools import get_list_profile, check_password
-from Profile.forms import FormChangePassword, FormSearchUser, FormOrganization, FormCreateUser, FormEditUser, \
-    FormPresetAccess
+from Profile.forms import FormChangePassword, FormSearchUser, FormOrganization, FormCreateUser, FormEditUser
 from Main.decorators import permission_required
 from Main.tools import get_profile, get_list_access
 from Organization.models import Organization
@@ -22,24 +21,28 @@ def profile_list(request):
     :return:
     """
     current_user = get_profile(user=request.user)
-    context = {
-        'current_user': current_user,
-        'title': 'Список пользователей',
-        'profile_edit': current_user.access(list_permission=['profile_edit', ]),
-    }
     if request.POST:
         string_search = request.POST.get('find', '')
         organization_search = request.POST.get('organization', 0)
         organization_search = int(organization_search) if organization_search.isdigit() else 0
         total_profile, list_profile = get_list_profile(username=string_search, organization=organization_search)
-        context['form_search_user'] = FormSearchUser(initial={'find': string_search})
-        context['form_organization_user'] = FormOrganization(initial={'organization': organization_search})
+        form_search_user = FormSearchUser(initial={'find': string_search})
+        form_organization = FormOrganization(initial={'organization': organization_search})
     else:
-        total_profile, list_profile = get_list_profile(username='', organization=0)
-        context['form_search_user'] = FormSearchUser()
-        context['form_organization_user'] = FormOrganization()
-    context['total_profile'] = total_profile
-    context['list_profile'] = list_profile
+        total_profile = UserProfile.objects.filter(user__is_superuser=False, user__is_active=True).count()
+        list_profile = []
+        form_search_user = FormSearchUser()
+        form_organization = FormOrganization()
+    context = {
+        'current_user': current_user,
+        'title': 'Список пользователей',
+        'profile_edit': current_user.access(list_permission=['profile_edit', ]),
+        'total_profile': total_profile,
+        'list_profile': list_profile,
+        'form_search_user': form_search_user,
+        'form_organization_user': form_organization,
+    }
+
     return render(request=request, template_name='profile/list.html', context=context)
 
 
@@ -59,7 +62,10 @@ def profile_list_organization(request, organization_id):
     total_profile, list_profile = get_list_profile(username='', organization=organization_id)
     context = {
         'current_user': current_user,
-        'title': 'Список пользователей',
+        'title': 'Пользователи {0}'.format(organization.short_title),
+        'list_breadcrumb': (
+            (reverse('profile_list'), 'Список пользователей'),
+        ),
         'form_search_user': FormSearchUser(),
         'form_organization_user': FormOrganization(initial={'organization': organization.id}),
         'total_profile': total_profile,
@@ -94,7 +100,7 @@ def profile_create(request):
             formset.save()
             profile = UserProfile(user=get_object_or_404(User, username=username))
             profile.save()
-            return redirect(reverse('profile_edit', args=(profile.id, )))
+            return redirect(reverse('profile_edit', args=(profile.user.id, )))
         else:
             if User.objects.filter(username=username).exists():
                 del initial['username']
@@ -126,7 +132,7 @@ def profile_show(request, profile_id):
     :param profile_id:
     :return:
     """
-    profile = get_object_or_404(UserProfile, id=profile_id)
+    profile = get_object_or_404(UserProfile, user=profile_id)
     current_user = get_profile(user=request.user)
     context = {
         'current_user': current_user,
@@ -171,38 +177,34 @@ def profile_edit(request, profile_id):
     :param profile_id:
     :return:
     """
-    profile = get_object_or_404(UserProfile, id=profile_id)
+    user = get_object_or_404(User, id=profile_id)
+    profile = get_object_or_404(UserProfile, user=user)
     if profile.user.is_superuser:
         return redirect(reverse('profile_show', args=(profile_id, )))
 
     if request.POST:
+        current_preset = profile.preset
         FormEditUser(request.POST, instance=profile.user).save()
         FormOrganization(request.POST, instance=profile).save()
         access_choice = request.POST.get('access_choice', 'not_sample')
         if access_choice == 'sample':
-            # Если выбран определенный набор прав, то присваивается этот роль
-            preset_access = request.POST.get('preset_access', None)
-            if preset_access:
-                preset = get_object_or_404(PresetAccess, id=preset_access)
-            else:
-                messages.error(request, 'Не правильно указана роль доступа пользователя {0}.'.format(profile))
-                return redirect(reverse('profile_edit', args=(profile_id,)))
+            if not current_preset.is_sample:
+                # Если выбрана определенная роль, а старая роль была индивидуальной (набором отдельных прав),
+                # то она удаляется
+                current_preset.delete()
         else:
-            # Если выбраны отдельные права, то создается новая роль с этими правами
-            preset = PresetAccess(title=profile.user.username, is_sample=False, )
-            preset.save()
+            # Если выбраны отдельные права, то создается роль с этими правами
+            if current_preset.is_sample:
+                current_preset = PresetAccess(title=profile.user.username, is_sample=False, )
+                current_preset.save()
             for permission in Permission.objects.all():
                 access = request.POST.get(permission.name, False)
                 if access:
-                    Access(permission=permission, preset=preset, value=True).save()
-        old_preset = profile.preset
-        profile.preset = preset
-        profile.save(update_fields=['preset', ])
-        if old_preset and not old_preset.is_sample:
-            # Если роль была не шаблонная, то она удаляется, чтобы не накапливать бесхозные роли
-            old_preset.delete()
+                    Access(permission=permission, preset=current_preset, value=True).save()
+            profile.preset = current_preset
+            profile.save(update_fields=['preset', ])
         messages.success(request, 'Профиль пользователя {0} успешно сохранен.'.format(profile))
-        return redirect(reverse('profile_show', args=(profile_id, )))
+        return redirect(reverse('profile_show', args=(profile.user.id, )))
     else:
         context = {
             'current_user': get_profile(user=request.user),
@@ -210,12 +212,17 @@ def profile_edit(request, profile_id):
             'title': 'Редактирование профиля ' + profile.__str__(),
             'list_breadcrumb': (
                 (reverse('profile_list'), 'Список пользователей'),
-                (reverse('profile_show', args=(profile.id, )), 'Пользователь {0}'.format(profile)),
+                (reverse('profile_show', args=(profile.user.id, )), 'Пользователь {0}'.format(profile)),
             ),
-            'form_edit_user': FormEditUser(instance=profile.user),
             'list_access': get_list_access(preset=profile.preset),
-            'form_preset_access': FormPresetAccess(initial={'preset_access': profile.preset_id}),
-            'form_organization': FormOrganization(initial={'organization': profile.organization}),
+            'form_edit_user': FormEditUser(instance=profile.user),
+            'form_organization': FormOrganization(
+                initial={
+                    'preset': profile.preset,
+                    'organization': profile.organization,
+                },
+                instance=profile,
+            ),
         }
         return render(request=request, template_name='profile/edit.html', context=context)
 

@@ -52,6 +52,9 @@ def organization_create(request):
         context = {
             'current_user': get_profile(user=request.user),
             'title': 'Добавление организации',
+            'list_breadcrumb': (
+                (reverse('organization_list'), 'Список организаций'),
+            ),
             'form_organization': FormOrganization(),
         }
         return render(request=request, template_name='organization/create.html', context=context)
@@ -143,6 +146,9 @@ def organization_show(request, organization_id):
     context = {
         'current_user': current_user,
         'title': organization.short_title,
+        'list_breadcrumb': (
+            (reverse('organization_list'), 'Список организаций'),
+        ),
         'organization': organization,
         'list_address': OrganizationAddress.objects.filter(organization=organization),
         'list_subnet': OrganizationSubnet.objects.filter(organization=organization),
@@ -175,6 +181,11 @@ def organization_edit(request, organization_id):
         context = {
             'current_user': get_profile(user=request.user),
             'title': 'Редактирование организации',
+            'list_breadcrumb': (
+                (reverse('organization_list'), 'Список организаций'),
+                (reverse('organization_show', args=(organization.id, )), organization.short_title),
+            ),
+
             'organization': organization,
             'form_organization': FormOrganization(instance=organization),
             'form_address': FormAddress(),

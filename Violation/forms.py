@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 
 from django import forms
-from Violation.models import ReportViolation
+from Violation.models import Report
 
 ######################################################################################################################
 
 
-class FormViolation(forms.ModelForm):
+class FormReport(forms.ModelForm):
     files = forms.FileField(
         label='Выберите файлы отчета об инцидентах в формате csv',
         widget=forms.ClearableFileInput(
@@ -19,19 +19,19 @@ class FormViolation(forms.ModelForm):
     )
 
     class Meta:
-        model = ReportViolation
+        model = Report
         fields = [
-            'date_violation',
+            'date_report',
         ]
         widgets = {
-            'date_violation': forms.DateInput(
+            'date_report': forms.DateInput(
                 attrs={
                     'type': 'date',
                 }
             ),
         }
         labels = {
-            'date_violation': 'Укажите дату формирования отчета об инцидентах',
+            'date_report': 'Укажите дату формирования отчета об инцидентах',
         }
 
 

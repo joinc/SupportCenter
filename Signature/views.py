@@ -98,6 +98,9 @@ def signature_show(request, signature_id):
         context = {
             'current_user': get_profile(user=request.user),
             'title': 'Сертификат электронной подписи',
+            'list_breadcrumb': (
+                (reverse('signature_list'), 'Список электронных подписей'),
+            ),
             'signature': signature,
         }
         if signature.file_sign:

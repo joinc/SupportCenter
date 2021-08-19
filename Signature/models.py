@@ -1,6 +1,6 @@
 from django.db import models
-from Profile.models import UserProfile
 from Main.choices import STATUS_SIGNATURE_CHOICES
+from Profile.models import UserProfile
 from Signature.certificate import CertificateFile
 
 ######################################################################################################################

@@ -27,7 +27,7 @@
                                     {% endfor %}
                                 </td>
                                 <td class="text-right ">
-                                    <a href="{% url 'violator_show' violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
+                                    <a href="{% url 'violator_show' report.id violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
                                 </td>
                             </tr>
                         {% endfor %}

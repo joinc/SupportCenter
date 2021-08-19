@@ -20,7 +20,7 @@
                 <button class="btn btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">☰</button>
                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                     {% if current_user %}
-                        <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.id %}">{{ current_user }}</a></strong></span>
+                        <span class="dropdown-item"><strong>Здравствуйте, <a href="{% url 'profile_show' current_user.user.id %}">{{ current_user }}</a></strong></span>
                         <div class="dropdown-divider"></div>
                         {% for menu in current_user.get_menu %}
                             <a href="{% url menu.1 %}" class="dropdown-item">

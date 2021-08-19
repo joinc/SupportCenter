@@ -47,16 +47,17 @@
                 <div class="row">
                     <div class="col-md-12 mb-2">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="access_choice" value="sample"{% if profile.preset.is_sample %} checked{% endif %}>
-                            {{ form_preset_access }}
+                            <input class="form-check-input" type="radio" name="access_choice" id="role" value="sample"{% if profile.preset.is_sample %} checked{% endif %}>
+                            <label for="role">Роль:</label>
+                            {{ form_organization.preset }}
                         </div>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-12 mb-2">
                         <div class="form-check">
-                            <input class="form-check-input" type="radio" name="access_choice" value="not_sample"{% if not profile.preset.is_sample %} checked{% endif %}>
-                            <label>Права:</label>
+                            <input class="form-check-input" type="radio" name="access_choice" id="rights" value="not_sample"{% if not profile.preset.is_sample %} checked{% endif %}>
+                            <label for="rights">Права:</label>
                             <div class="card-columns disabled">
                                 {% for category, list_permission in list_access %}
                                     <div class="card">
@@ -89,13 +90,18 @@
                 theme: "bootstrap4",
                 language: "ru"
             });
+            $('select[name=preset]').select2({
+                allowClear: true,
+                placeholder: "Выберите роль доступа",
+                theme: "bootstrap4",
+                language: "ru"
+            });
             $('select[name=preset_access]').select2({
                 allowClear: true,
                 placeholder: "Выберите роль доступа",
                 theme: "bootstrap4",
                 language: "ru"
             });
-
         });
     </script>
 {% endblock %}

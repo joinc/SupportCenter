@@ -55,8 +55,8 @@
         {% if current_user == profile or profile_edit %}
             <div class="card-footer text-right">
                 <button type="button" class="btn btn-outline-info" data-toggle="modal" data-target="#ModalUserPassword" title="Сменить пароль пользователя"><i class="fas fa-key"></i> Сменить пароль</button>
-                {% if profile_edit %}
-                    <a href="{% url 'profile_edit' profile.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
+                {% if profile_edit and not profile.user.is_superuser %}
+                    <a href="{% url 'profile_edit' profile.user.id %}" type="button" class="btn btn-outline-info" title="Редактировать пользователя"><i class="fas fa-user-edit"></i> Редактировать</a>
                 {% endif %}
             </div>
         {% endif %}
