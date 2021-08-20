@@ -3,31 +3,46 @@
 {% block html_body %}
     <div class="shadow card border-dark mb-3">
         <div class="card-header">
-            <h4>{{ title }}:</h4>
+            <div class="row">
+                <div class="col-auto mr-auto">
+                    <h4>{{ title }}:</h4>
+                </div>
+                <div class="col-auto mr-0 text-right">
+                    <small>Количество нарушителей - {{ count_violation }}</small>
+                </div>
+            </div>
         </div>
         <div class="card-body">
-            {% if list_violation %}
-                <table class="table table-hover table-sm table-borderless">
+            {% if list_violation_org %}
+                <table class="table table-hover table-sm">
                     <thead>
                     <tr>
                         <th scope="col">IP-адрес</th>
                         <th scope="col">Организации</th>
+                        <th scope="col">Количество критических угроз</th>
+                        <th scope="col">Количество средних угроз</th>
                         <th scope="col"></th>
                     </tr>
                     </thead>
                     <tbody>
-                        {% for violator, list_organization in list_violation %}
+                        {% for violation, list_organization, count_high, count_mid in list_violation_org %}
                             <tr>
                                 <td class="small">
-                                    <h5>{{ violator.ip_violator }}</h5>
+                                    <h5>{{ violation.violator }}</h5>
                                 </td>
                                 <td class="small">
                                     {% for organization in list_organization %}
                                         <span class="d-block"><a href="{% url 'organization_show' organization.organization.id %}">{{ organization.organization }}</a></span>
                                     {% endfor %}
                                 </td>
+                                <td {% if count_high > 0 %}class="table-danger"{% endif %}>
+                                    {{ count_high }}
+                                </td>
+                                <td {% if count_mid > 0 %}class="table-warning"{% endif %}>
+                                    {{ count_mid }}
+                                </td>
                                 <td class="text-right ">
-                                    <a href="{% url 'violator_show' report.id violator.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
+                                    <a href="{% url 'violation:violation_show' violation.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к инцидентам"><i class="fas fa-list-alt"></i> Перейти к инцидентам</a>
                                 </td>
                             </tr>
                         {% endfor %}

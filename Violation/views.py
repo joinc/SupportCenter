@@ -2,7 +2,7 @@
 
 from django.shortcuts import render, redirect, reverse, get_object_or_404
 from django.contrib import messages
-from Violation.models import Incident, Violator, Report, FileReport
+from Violation.models import Incident, Report, FileReport, Violation
 from Violation.forms import FormReport
 from Violation.tools import violation_create
 from Organization.models import OrganizationSubnet
@@ -45,12 +45,12 @@ def report_load(request):
         if formset.is_valid():
             formset.save()
             for file in request.FILES.getlist('files'):
-                file_violation = FileReport(violation=report, )
+                file_violation = FileReport(report=report, )
                 file_violation.file.save(file.name, file)
                 file_violation.save()
-            if violation_create(report_violation=report_violation):
-                messages.success(request, 'Отчет {0} успешно загружен.'.format(report_violation))
-                return redirect(reverse('violation_show', args=(report_violation.id, )))
+            if violation_create(report=report):
+                messages.success(request, 'Отчет {0} успешно загружен.'.format(report))
+                return redirect(reverse('violation:report_show', args=(report.id, )))
             else:
                 messages.error(request, 'Ошибка при загрузке файлов отчета')
         else:
@@ -59,7 +59,7 @@ def report_load(request):
         'current_user': get_profile(user=request.user),
         'title': 'Загрузка инцидентов',
         'list_breadcrumb': (
-            (reverse('violation_list'), 'Список отчетов об инцидентах'),
+            (reverse('violation:report_list'), 'Список отчетов об инцидентах'),
         ),
         'form_violation': FormReport(),
     }
@@ -79,7 +79,7 @@ def report_show(request, report_id):
     """
     current_user = get_profile(user=request.user)
     report = get_object_or_404(Report, id=report_id)
-    is_moderator = current_user.access(list_permission=['violation_moderator', ])
+    # is_moderator = current_user.access(list_permission=['violation_moderator', ])
     # if is_moderator:
     #     list_violator = Violator.objects.filter(
     #         violation=violation,
@@ -89,18 +89,27 @@ def report_show(request, report_id):
     #         violation=violation,
     #         subnet__SubnetOrganization__organization=current_user.organization,
     #     )
-    list_violator = Violator.objects.all()
-    list_violation = []
-    for violator in list_violator:
-        list_violation.append([violator, OrganizationSubnet.objects.filter(subnet=violator.subnet), ])
+
+    list_violation = Violation.objects.filter(report=report)
+    list_violation_org = []
+    for violation in list_violation:
+        list_violation_org.append(
+            [
+                violation,
+                OrganizationSubnet.objects.filter(subnet=violation.violator.subnet),
+                Incident.objects.filter(violation=violation, priority='high').count(),
+                Incident.objects.filter(violation=violation, priority='mid').count(),
+            ]
+        )
     context = {
         'current_user': current_user,
         'title': 'Отчет об инцидентах за ' + report.date_report.strftime('%d.%m.%Y'),
         'list_breadcrumb': (
-            (reverse('violation_list'), 'Список отчетов об инцидентах'),
+            (reverse('violation:report_list'), 'Список отчетов об инцидентах'),
         ),
         'report': report,
-        'list_violation': list_violation,
+        'list_violation_org': list_violation_org,
+        'count_violation': list_violation.count(),
         'violation_moderator': current_user.access(list_permission=['violation_moderator', ]),
         'violation_edit': current_user.access(list_permission=['violation_edit', ]),
     }
@@ -111,37 +120,41 @@ def report_show(request, report_id):
 
 
 @permission_required(['violation_list', 'violation_edit', 'violation_moderator', ])
-def violator_show(request, report_id, violator_id):
+def violation_show(request, violation_id):
     """
     Список нарушителей в отчете об инцидентах
     :param request:
-    :param report_id:
-    :param violator_id:
+    :param violation_id:
     :return:
     """
     current_user = get_profile(user=request.user)
-    is_moderator = current_user.access(list_permission=['violation_moderator', ])
-    is_editor = current_user.access(list_permission=['violation_edit', ])
-    violator = get_object_or_404(Violator, id=violator_id)
-    violation = get_object_or_404(Report, id=report_id)
-    if OrganizationSubnet.objects.filter(subnet=violator.subnet, organization=current_user.organization).exists() or is_moderator:
-        if request.POST:
-            ...
-        else:
-            ...
+    # is_moderator = current_user.access(list_permission=['violation_moderator', ])
+    # is_editor = current_user.access(list_permission=['violation_edit', ])
+    violation = get_object_or_404(Violation, id=violation_id)
 
-    else:
-        return redirect(reverse('violation_list'))
-    print(violation.id)
+    # if OrganizationSubnet.objects.filter(subnet=violator.subnet, organization=current_user.organization).exists()
+    # or is_moderator:
+    #     if request.POST:
+    #         ...
+    #     else:
+    #         ...
+    # else:
+    #     return redirect(reverse('report_list'))
     context = {
         'current_user': current_user,
-        'title': 'Отчет об инцидентах узла ' + violator.ip_violator,
+        'title': 'Отчет об инцидентах узла ' + violation.violator.ip_violator,
         'list_breadcrumb': (
-            (reverse('violation_list'), 'Список отчетов об инцидентах'),
-            (reverse('violation_show', args=(violation.id, )), 'Отчет об инцидентах за {0}'.format(violation.date_report.strftime('%d.%m.%Y'))),
+            (
+                reverse('violation:report_list'),
+                'Список отчетов об инцидентах',
+            ),
+            (
+                reverse('violation:report_show', args=(violation.report.id, )),
+                'Отчет об инцидентах за {0}'.format(violation.report.date_report.strftime('%d.%m.%Y')),
+            ),
         ),
-        'violator': violator,
-        'list_incident': Incident.objects.filter(violator=violator),
+        'violation': violation,
+        'list_incident': Incident.objects.filter(violation=violation),
     }
 
     return render(request=request, template_name='violation/incident.html', context=context)

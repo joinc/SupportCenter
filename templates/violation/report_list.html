@@ -9,7 +9,7 @@
                 </div>
                 {% if violation_moderator %}
                     <div class="col-auto mr-0 text-right">
-                        <a href="{% url 'report_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
+                        <a href="{% url 'violation:report_load' %}" class="btn btn-outline-primary" title="Загрузить новый отчет"><i class="fas fa-file-upload"></i> Загрузить отчет</a>
                     </div>
                 {% endif %}
             </div>
@@ -22,7 +22,7 @@
                             <h5>Отчет от {{ report.date_report|date:"d E Y" }} года</h5>
                         </td>
                         <td class="text-right ">
-                            <a href="{% url 'report_show' report.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к отчету"><i class="fas fa-list-alt"></i> Перейти к отчету</a>
+                            <a href="{% url 'violation:report_show' report.id %}" class="btn btn-outline-secondary btn-sm" title="Перейти к отчету"><i class="fas fa-list-alt"></i> Перейти к отчету</a>
                         </td>
                     </tr>
                 {% endfor %}

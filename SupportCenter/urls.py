@@ -11,7 +11,7 @@ urlpatterns = [
     path('organization/', include('Organization.urls')),
     path('profile/', include('Profile.urls')),
     path('signature/', include('Signature.urls')),
-    path('violation/', include('Violation.urls')),
+    path('violation/', include('Violation.urls', namespace='violation')),
 ]
 
 # urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

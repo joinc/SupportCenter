@@ -5,7 +5,7 @@
 
 SELECT_SIGNATURE_CHOICES = (
     (0, 'Новый'),
-    (1, 'Продление')
+    (1, 'Продление'),
 )
 
 
@@ -16,7 +16,7 @@ STATUS_SIGNATURE_CHOICES = (
     (0, 'Действующие'),
     (1, 'Продленные'),
     (2, 'Истекшие'),
-    (3, 'Аннулированные')
+    (3, 'Аннулированные'),
 )
 
 
@@ -66,7 +66,7 @@ FULL_MENU = (
     ),
     (
         ('violation_list', 'violation_edit', 'violation_moderator', ),
-        'violation_list',
+        'violation:report_list',
         'Инциденты',
         'fab fa-galactic-republic',
     ),

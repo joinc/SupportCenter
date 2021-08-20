@@ -1,20 +1,18 @@
 # -*- coding: utf-8 -*-
 
-from ipaddress import IPv4Address, IPv4Network
-from Violation.models import Incident, Violator, FileReport
-from Workplace.models import Subnet
+from Violation.models import Incident, Violator, FileReport, Violation
 import csv
 
 ######################################################################################################################
 
 
-def violation_create(report_violation):
+def violation_create(report):
     """
     Загрузка отчета об инцидентах
-    :param report_violation:
+    :param report:
     :return:
     """
-    list_file_violation = FileReport.objects.filter(violation=report_violation)
+    list_file_violation = FileReport.objects.filter(report=report)
     if list_file_violation:
         for file_violation in list_file_violation:
             with open(file_violation.file.path) as csv_file:
@@ -27,13 +25,13 @@ def violation_create(report_violation):
                                 ip_violator=row[5],
                             )
                             if create:
-                                for subnet in Subnet.objects.all():
-                                    if IPv4Address(violator.ip_violator) in IPv4Network(subnet.subnet):
-                                        violator.subnet = subnet
-                                        violator.save(update_fields=['subnet'])
-                            incident = Incident(
+                                violator.set_subnet()
+                            violation, create = Violation.objects.get_or_create(
                                 violator=violator,
-                                violation=report_violation,
+                                report=report,
+                            )
+                            incident = Incident(
+                                violation=violation,
                                 id_ids=row[0],
                                 time_stamp=row[1],
                                 code_incident=row[2],

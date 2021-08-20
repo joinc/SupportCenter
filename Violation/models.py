@@ -1,4 +1,5 @@
 from django.db import models
+from ipaddress import IPv4Address, IPv4Network
 from Workplace.models import Subnet
 from Organization.models import OrganizationSubnet
 
@@ -86,6 +87,12 @@ class Violator(models.Model):
         on_delete=models.SET_NULL,
     )
 
+    def set_subnet(self):
+        for subnet in Subnet.objects.all():
+            if IPv4Address(self.ip_violator) in IPv4Network(subnet.subnet):
+                self.subnet = subnet
+                self.save(update_fields=['subnet'])
+
     # def get_list_subnet(self):
     #     list_violator = []
     #     for violator in Violator.objects.filter(violation=self.violation):
@@ -104,26 +111,53 @@ class Violator(models.Model):
 ######################################################################################################################
 
 
-class Incident(models.Model):
+class Violation(models.Model):
     id = models.AutoField(
         primary_key=True,
     )
     violator = models.ForeignKey(
         Violator,
-        verbose_name='IP-адрес нарушителя',
+        verbose_name='Нарушитель',
         null=True,
         blank=True,
         default=None,
-        related_name='IncidentViolator',
+        related_name='ViolatorViolation',
         on_delete=models.CASCADE,
     )
-    violation = models.ForeignKey(
+    report = models.ForeignKey(
         Report,
         verbose_name='Отчет об инцидентах',
         null=True,
         blank=True,
         default=None,
-        related_name='ReportIncident',
+        related_name='ReportViolation',
+        on_delete=models.CASCADE,
+    )
+
+    def __str__(self):
+        return '{0} - {1}'.format(self.report, self.violator)
+
+    class Meta:
+        ordering = 'report', 'violator',
+        verbose_name = 'Нарушение'
+        verbose_name_plural = 'Нарушения'
+        managed = True
+
+
+######################################################################################################################
+
+
+class Incident(models.Model):
+    id = models.AutoField(
+        primary_key=True,
+    )
+    violation = models.ForeignKey(
+        Violation,
+        verbose_name='Нарушение',
+        null=True,
+        blank=True,
+        default=None,
+        related_name='ViolationIncident',
         on_delete=models.CASCADE,
     )
     id_ids = models.CharField(
@@ -193,48 +227,12 @@ class Incident(models.Model):
     )
 
     def __str__(self):
-        return '{0}'.format(self.violator)
+        return '{0}'.format(self.violation)
 
     class Meta:
-        ordering = 'violator',
+        ordering = 'violation',
         verbose_name = 'Инциент'
         verbose_name_plural = 'Инциденты'
-        managed = True
-
-
-######################################################################################################################
-
-
-class Violation(models.Model):
-    id = models.AutoField(
-        primary_key=True,
-    )
-    violator = models.ForeignKey(
-        Violator,
-        verbose_name='Нарушитель',
-        null=True,
-        blank=True,
-        default=None,
-        related_name='Violator',
-        on_delete=models.CASCADE,
-    )
-    report = models.ForeignKey(
-        Report,
-        verbose_name='Отчет об инцидентах',
-        null=True,
-        blank=True,
-        default=None,
-        related_name='ReportViolation',
-        on_delete=models.CASCADE,
-    )
-
-    def __str__(self):
-        return '{0} - {1}'.format(self.report, self.violator)
-
-    class Meta:
-        ordering = 'report', 'id',
-        verbose_name = 'Нарушение'
-        verbose_name_plural = 'Нарушения'
         managed = True
 
 
